@@ -265,7 +265,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                  alpha=alpha0)
 
         #for i in range(np.size(name)):
-            #plt.text(x[i],y[i], name[i],fontsize=12)
+        #    plt.text(x[i],y[i], name[i],fontsize=12)
 
         plt.xlabel("$Mass$ / $Mass_{sun}$",fontsize=16)
         plt.ylabel("$R_e$ (kpc)",fontsize=16)
@@ -308,11 +308,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                     "Disk" : "#3535da", 
                     "Ring" : "#12e3e7", 
                     "Point Source": "#3cf017"}
-                
-        #Q = create_table("Dtable_Into_all_compare.txt", "Ctable_Into_all.txt", 
-        #4.53,103)
-        #P = create_table("Dtable_Into_BD_all_compare.txt", 
-        #"Ctable_Into_all.txt", 4.53,103)
 
         category_names = list(category.keys())
         catagory_colour = list(category.values())
@@ -396,8 +391,52 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             plt.legend(loc=1, fontsize = 13)
         return fig, ax
 
+    def vdis_mass_plot(mass, vdis, colour, legend):
+        """
+        Plot central velocity dispersion versus stellar mass.
+        
 
-    
+        Parameters
+        ----------
+        mass : numpy array, list
+            The stellar mass of the spheroid.
+            
+        vdis: numpy array, list
+            The central velocity dispersion
+            
+        colour: str, list
+            The colour and the point style for the data points.
+            
+        legend: str, list
+            The description of the 
+        
+        Return
+        ------
+        fig, ax
+            The histogram of the luminosity porportion of each galaxies.
+        """
+
+            
+        fig, ax = plt.subplots()        
+
+        if type(colour) == list and type(legend) == list:
+
+            i = 0
+            for i in range(len(mass)):
+                ax.plot(mass[i], vdis[i], 
+                        "%s" %colour[i], label="%s" %legend[i], markersize=6)
+            
+        elif type(colour) == str and type(legend) == str: 
+            ax.plot(mass, vdis, "%s"%colour,label="%s"%legend, markersize=6) 
+        
+        plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
+        plt.ylabel("$\sigma$ (km/s)",fontsize=16)
+            
+        plt.xscale( 'log' )
+        plt.yscale( 'log' )
+        plt.legend()
+        return fig, ax
+
     def n_Re_plot():
         return None
     def mu0_Re_plot():
@@ -450,8 +489,103 @@ class ShowcaseCompare2(ShowcaseIndi):
         super().__init__(*args, **kwargs)
         
     
-    def dist_compare():
-        return None
+    def plot_distdist(DD,scale,dc,sc,name,limit):
+        """
+        A method to plot the difference in distance estimation 
+        ----------                        
+        DD : 1D numpy array
+            Distance by redshift independent measurement.
+                
+        dc : 1D numpy array         
+            Distance by redshift dependent measurement.
+
+            
+        name : str
+            The name of each galaxy. 
+        
+        scale:
+    
+        limit : float
+            Marker of selection limit.
+        
+        Return
+        ------
+        Plot    
+    
+        """
+        dc, DD = np.array(dc), np.array(DD)
+        index = np.linspace(0.5,len(DD),len(DD))
+        x_edge,y_edge= [limit,limit,120,120], \
+            [min(index),max(index),max(index),min(index)]
+    
+        fig = plt.figure()
+        gs = gridspec.GridSpec(1, 2, wspace=0.0,width_ratios=[3,1]) 
+    
+        # fig, axs = plt.subplot(1,2, sharey= 'row', gridspec_kw={'hspace': 0,'wspace': 0})
+    
+        axs1 = plt.subplot(gs[1])
+        axs0 = plt.subplot(gs[0], sharey = axs1)
+    
+        for i in DD:
+            axs0.hlines(index,0, 120, linestyle="dashed", 
+                        linewidth = 1, color= 'k')
+            axs1.hlines(index,0, 0.6, linestyle="dashed", 
+                        linewidth = 1, color= 'k')
+
+        axs0.plot(DD,index, "bo",label="z-independent")
+        axs0.plot(dc,index, "go",label="z-dependent")
+    
+        axs1.plot(scale,index, "bo",label="z-independent")
+        axs1.plot(sc,index, "go",label="z-dependent")
+
+    
+        axs0.vlines(limit, 0, len(DD), linestyle="dashed",
+                    linewidth=3, color='black')
+    
+        axs0.vlines(np.average(dc), 0, len(dc), linestyle="solid",
+                    linewidth=1, color='green', 
+                    label='mean Dist(z-independent)')
+        axs0.vlines(np.average(DD), 0, len(DD), linestyle="solid",
+                    linewidth=1, color='blue', 
+                    label='mean Dist(z-dependent)')
+
+        axs0.vlines(np.average(dc)+np.std(dc), 0, len(dc), 
+                    linestyle="dashed",linewidth=1, color='green')
+        axs0.vlines(np.average(DD)+np.std(DD), 0, len(DD), 
+                    linestyle="dashed",linewidth=1, color='blue')
+    
+        axs0.vlines(np.average(dc)-np.std(dc), 0, len(dc), 
+                    linestyle="dashed",linewidth=1, color='green')
+        axs0.vlines(np.average(DD)-np.std(DD), 0, len(DD), 
+                    linestyle="dashed",linewidth=1, color='blue')
+    
+        axs0.fill(x_edge,y_edge, alpha=0.3, color='red',
+                  label='selection limit')
+    
+    
+        axs0.fill([np.average(DD)-np.std(DD),np.average(DD)-np.std(DD),
+               np.average(DD)+np.std(DD),np.average(DD)+np.std(DD)],[min(index),
+                         max(index),max(index),min(index)], alpha=0.15, 
+                                        color='blue', label = '1 $\sigma$')
+        axs0.fill([np.average(dc)-np.std(dc),np.average(dc)-np.std(dc),
+               np.average(dc)+np.std(dc),np.average(dc)+np.std(dc)],[min(index),
+                         max(index),max(index),min(index)],y_edge, alpha=0.15, 
+                                        color='green',label = '1 $\sigma$')
+
+
+        axs0.invert_yaxis()
+        #plt.subplots_adjust(wspace = 0)
+        plt.yticks(index, name)
+        #ax2.yticks.set_visible(False)
+        plt.setp(axs1.get_yticklabels(), visible=False)
+        
+        
+        axs0.set_xlabel("$Distance / Mpc$",fontsize=16)
+        axs1.set_xlabel("$Angular   scale$ \n  $kpc/arcsec$",fontsize=12)
+        axs0.legend(loc='center left', bbox_to_anchor=(1.4, 0.5))
+
+
+        return fig, axs0, axs1
     
     
     def plot_compare_rms(input_list1,input_list2): #tested
@@ -520,8 +654,13 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         mark = r"$\langle \Delta rms \rangle$"
         
-        ax.text(50, np.average(rms1)+0.005, f"{mark} {round(avg_rms1,3)} $\pm$ {round(s_rms1,2)}",fontsize=14, color="#453816")
-        ax.text(50, np.average(rms2)+0.005, r"$\langle \Delta rms \rangle$ = %s $\pm$ %s"  %(round(avg_rms2,3),round(s_rms2,2)),fontsize=14, color="#162945")    
+        ax.text(50, np.average(rms1)+0.005, 
+                f"{mark} {round(avg_rms1,3)} $\pm$ {round(s_rms1,2)}",
+                fontsize=14, color="black")
+        ax.text(50, np.average(rms2)+0.005, 
+                r"$\langle \Delta rms \rangle$ = %s $\pm$ %s"  
+                %(round(avg_rms2,3),round(s_rms2,2)),fontsize=14, 
+                color="black")    
 
         #plt.xticks(index,gal_name,rotation='vertical', fontsize)
         plt.ylabel("$\Delta$ rms", fontsize=16)
@@ -530,7 +669,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         return fig, ax
     
         
-    def scat_arrow(x1,y1,name1,colour1,legend1,x2,y2,name2,colour2,legend2):
+    def scat_arrow(x1,y1,name1,colour1,legend1,x2,y2,name2,colour2,legend2): #tested
         """
         Produce arrow plot pointing from x1, y1 to x2, y2.
         
@@ -565,8 +704,10 @@ class ShowcaseCompare2(ShowcaseIndi):
         fig, ax
             The histogram of the luminosity porportion of each galaxies.
         """
-        ShowcaseCompare.Mass_Re_plot(x1,y1,name1,colour1,legend1,0)
-        ShowcaseCompare.Mass_Re_plot(x2,y2,name2,colour2,legend2,0)
+        fig, ax = plt.subplots()
+
+        ShowcaseIndi.Mass_Re_plot(x1,y1,name1,colour1,legend1,1.0)
+        ShowcaseIndi.Mass_Re_plot(x2,y2,name2,colour2,legend2,1.0)
 
         N = len(x1)
 
@@ -576,23 +717,55 @@ class ShowcaseCompare2(ShowcaseIndi):
             #head_width=1, head_length=1, fc='k', ec='k')
             arrow = mpatches.FancyArrowPatch((x1[i],y1[i]), ((x2[i]),(y2[i])),
                                              mutation_scale=15)
-            plt.add_patch(arrow)
+            ax.add_patch(arrow)
+            
+#############################
+    def comapre_generic():
+        fig,ax = plt.subplots()
 
-       
+        delta = para1 - para2
+        
+        index = np.linspace(0,len(para1),len(para1))
+
+        
+        ax.plot(delta, index, 'o')
+        ax.vlines(0,min(index),max(index), linestyle="dashed",linewidth=5, color='black')
+        ax.vlines(np.average(total_mag- mag_i_p),min(index),max(index), linestyle="solid",linewidth=3, color='blue')
+
+        ax.vlines(np.average(total_mag- mag_i_p)+np.std(total_mag- mag_i_p),min(index),max(index), linestyle="dashed",linewidth=2, color='blue')
+        ax.vlines(np.average(total_mag- mag_i_p)-np.std(total_mag- mag_i_p),min(index),max(index), linestyle="dashed",linewidth=2, color='blue')
+
+
+        ax.invert_yaxis()
+        return None
+            
+    
     def compare_para(list_input1,list_input2, func_index, element_index, 
                      para_name):  
-        ####################################################################################################
-        ## Compare the parameters of the fitting components
-        ## Export an ASCII file containing the  
-        ####################################################################################################
-        ## list_input1, 2: The python lists containing the information of ALL galaxy
-        ## func_index: The function you are inteested in 
-        ## element_index: The parameters of interest in the function 
-        ## para_name: the parameter name
-        ####################################################################################################
+        """
+         Compare the parameters of the fitting components 
+         Base on indexing
+        ----------
+        list_input1, list_input2 : list
+            The python lists containing the information of ALL galaxy
+                        
+        func_index :
+            The function of interest
+            
+        element_index :             
+            The parameters of interest in the function
+            
+        para_name : 
+            the parameter name
+        
+        Return
+        ------
+        delta_para
+        
+        """
         fig, ax = plt.subplots()
     
-        list1, list2 = read_list(list_input1), read_list(list_input2)
+        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
         delta_para, index, gal_name = [], [], []
         i = 0 
         for i in range(len(list1)):
@@ -615,6 +788,27 @@ class ShowcaseCompare2(ShowcaseIndi):
         
     def compare_para2(list_input1,list_input2, feature, 
                       element_index, para_name):  
+        """
+         Compare the parameters of the fitting components 
+         Base on feature name
+        ----------
+        list_input1, list_input2 : list
+            The python lists containing the information of ALL galaxy
+                        
+        func_index :
+            The function of interest
+            
+        element_index :             
+            The parameters of interest in the function
+            
+        para_name : 
+            the parameter name
+        
+        Return
+        ------
+        delta_para
+        
+        """
         #######################################################################
         ## Compare the parameters of the fitting components
         ## Export an ASCII file containing the  
@@ -630,7 +824,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         #################################################################################################### 
         fig, ax = plt.subplots()
     
-        list1, list2 = read_list(list_input1), read_list(list_input2)
+        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
         delta_para, index, gal_name = [], [], []
         
         #i = 0 
@@ -662,7 +856,27 @@ class ShowcaseCompare2(ShowcaseIndi):
         return delta_para
 
 
-    def compare_para3(list_input1,list_input2, feature, element_index, para_name1,para_name2):  
+    def compare_para3(list_input1,list_input2, feature, element_index, para_name1,para_name2):
+        """
+         Compare the parameters of the fitting components 
+        ----------
+        list_input1, list_input2 : list
+            The python lists containing the information of ALL galaxy
+                        
+        func_index :
+            The function of interest
+            
+        element_index :             
+            The parameters of interest in the function
+            
+        para_name : 
+            the parameter name
+        
+        Return
+        ------
+        delta_para
+        
+        """
         ####################################################################################################
         ## Compare the parameters of the fitting components
         ## Export an ASCII file containing the  
@@ -678,7 +892,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         #################################################################################################### 
         fig, ax = plt.subplots()
         
-        list1, list2 = read_list(list_input1), read_list(list_input2)
+        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
         delta_para, index, gal_name = [], [], []
         
         #i = 0 
@@ -710,17 +924,28 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         return delta_para
 
-    def compare_mag(list_input1,list_input2, element_index, para_name):  
-        ####################################################################################################
-        ## Compare the magnitude of the fitting components
-        ## 
-        ####################################################################################################
-        ## list_input1, 2: The python lists containing the information of ALL galaxy
-        ## func_index: The function you are inteested in 
-        ## element_index: The parameters of interest in the function 
-        ## para_name: the parameter name
-        #################################################################################################### 
-        list1, list2 = read_list(list_input1), read_list(list_input2)
+    def compare_mag(list_input1,list_input2, element_index, para_name):
+        """
+         Compare the parameters of the fitting components 
+        ----------
+        list_input1, list_input2 : list
+            The python lists containing the information of ALL galaxy
+                        
+        func_index :
+            The function of interest
+            
+        element_index :             
+            The parameters of interest in the function
+            
+        para_name : 
+            the parameter name
+        
+        Return
+        ------
+        delta_para
+        
+        """
+        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
         delta_para, index, gal_name = [], [], []
         i = 0 
         for i in range(len(list1)):

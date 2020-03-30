@@ -13,6 +13,40 @@ import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
 from SphRead import read_list
+from SphRead import grab_dist
+from SphRead import grab_parameter
+from SphRead import grab_mag
+#%%
+def outliers(name,input_array,limit):
+    
+    """
+    A generic function to select outliers larger than the limit
+    ----------                        
+    name : str
+        The name of the outlier
+            
+    input_array : 1D numpy array         
+        The array in question
+            
+    limit : float
+        The outlier cut. 
+        
+    Return
+    ------
+    Dictionary containing the selected sample name and values
+        
+    """
+    
+    #the outlier name and attribute
+    outliers_name, outliers =[], []
+    
+    for row in range(len(input_array)):
+        if (input_array[row] > limit):
+            outliers_name.append(name[row])
+            outliers.append(input_array[row])
+        else: 
+            pass
+    return {"name":outliers_name, "Dist":outliers}
 
 #%% tested
 def cpt_seperator_demo(input_list_name): 
@@ -30,13 +64,6 @@ def cpt_seperator_demo(input_list_name):
 
     
     """
-    ####################################################################################################
-    ## replacing analytic function label to component label
-    ## 
-    ####################################################################################################
-    ## input_list_name:
-    ## output_list_name:
-    #################################################################################################### 
     sample = read_list(input_list_name) #sample package
     
     master_Bulge_can, master_Bulge_can_index = [], []
@@ -46,6 +73,7 @@ def cpt_seperator_demo(input_list_name):
     master_Disk_can1_index, master_Disk_can2_index, master_Disk_can3_index = [],[],[]
     master_Bar_can, master_Bar_can_index = [], []
     master_Ring_can, master_Ring_can_index = [],[]
+    master_Total_mag_can, master_Total_mag_can_index = [], []
     
     master_Bulge_can_row = []
     master_CoreBulge_can_row = []
@@ -54,6 +82,7 @@ def cpt_seperator_demo(input_list_name):
     master_Disk_can3_row = []
     master_Bar_can_row = []
     master_Ring_can_row = []
+    master_Total_mag_can_row = []
     
     for number in range(len(sample)):
         
@@ -65,7 +94,9 @@ def cpt_seperator_demo(input_list_name):
         Disk_can1, Disk_can2, Disk_can3, Disk_can1_index, Disk_can2_index, Disk_can3_index = [],[],[],[],[],[]
         Bar_can, Bar_can_index = [], []
         Ring_can, Ring_can_index = [],[]
-        
+        Total_mag_can, Total_mag_can_index = [],[]
+                  
+                
         Bulge_can_row = []
         CoreBulge_can_row = []
 
@@ -74,6 +105,7 @@ def cpt_seperator_demo(input_list_name):
         Disk_can3_row = []
         Bar_can_row = []
         Ring_can_row = []
+        Total_mag_can_row = []
         
         for index in range(len(sample_indi)):
             ###############################
@@ -125,7 +157,13 @@ def cpt_seperator_demo(input_list_name):
                 Ring_can_index.append(index)  
                 Ring_can_row.append(number)
                 #print(sample_indi[0],"Gauss")
-
+            ################################
+            # Anse, Rings
+            elif sample_indi[index] == "Total_mag":
+                Total_mag_can.append(sample_indi[index+1])
+                Total_mag_can_index.append(index)  
+                Total_mag_can_row.append(number)
+                #print(sample_indi[0],"Gauss")
             ################################
         master_Bulge_can.append(Bulge_can), master_Bulge_can_index.append(Bulge_can_index) 
         master_CoreBulge_can.append(CoreBulge_can), master_CoreBulge_can_index.append(CoreBulge_can_index) 
@@ -135,6 +173,8 @@ def cpt_seperator_demo(input_list_name):
         master_Bar_can.append(Bar_can), master_Bar_can_index.append(Bar_can_index)
         master_Ring_can.append(Ring_can), master_Ring_can_index.append(Ring_can_index)
         
+        master_Total_mag_can.append(Total_mag_can), master_Total_mag_can_index.append(Total_mag_can_index)
+        
         master_Bulge_can_row.append(Bulge_can_row)
         master_CoreBulge_can_row.append(CoreBulge_can_row)
         master_Disk_can1_row.append(Disk_can1_row)
@@ -142,18 +182,20 @@ def cpt_seperator_demo(input_list_name):
         master_Disk_can3_row.append(Disk_can3_row)
         master_Bar_can_row.append(Bar_can_row)
         master_Ring_can_row.append(Ring_can_row)
-        
+        master_Total_mag_can_row.append(Total_mag_can_row)
+
     return{"master_Bulge_can":master_Bulge_can, "master_Bulge_can_index":master_Bulge_can_index, "master_Bulge_can_row":master_Bulge_can_row,\
            "master_CoreBulge_can":master_CoreBulge_can, "master_CoreBulge_can_index":master_CoreBulge_can_index, "master_CoreBulge_can_row":master_CoreBulge_can_row,\
            "master_Disk_can1":master_Disk_can1, "master_Disk_can1_index":master_Disk_can1_index, "master_Disk_can1_row":master_Disk_can1_row,\
            "master_Disk_can2":master_Disk_can2, "master_Disk_can2_index":master_Disk_can2_index,"master_Disk_can2_row":master_Disk_can2_row,\
            "master_Disk_can3":master_Disk_can3, "master_Disk_can3_index":master_Disk_can3_index,"master_Disk_can3_row":master_Disk_can3_row,\
            "master_Bar_can":master_Bar_can, "master_Bar_can_index":master_Bar_can_index,"master_Bar_can_row":master_Bar_can_row,\
-           "master_Ring_can":master_Ring_can, "master_Ring_can_index":master_Ring_can_index, "master_Ring_can_row":master_Ring_can_row}
-            
+           "master_Ring_can":master_Ring_can, "master_Ring_can_index":master_Ring_can_index, "master_Ring_can_row":master_Ring_can_row,\
+           "master_Total_mag_can":master_Total_mag_can, "master_Total_mag_can_index":master_Total_mag_can_index, "master_Total_mag_can_row":master_Total_mag_can_row}            
                     
 #%% tested
-def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, override_instruction):
+def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, 
+                        override_instruction):
     
     sample = read_list(input_list_name) #sample package
     sep_dict = input_sep_dict #the result of sperator, a dictionary of each cpt, with row and index
@@ -230,8 +272,8 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
     #####Disk2####
     for number in range(len(sep_dict["master_Disk_can2"])):
         Disk_can2 = sep_dict["master_Disk_can2"][number]
-        Disk_can2_index = sep_dict["master_Disk_can2_index"][number]# the cpt marker
-        Disk_can2_row = sep_dict["master_Disk_can2_row"][number] #the galaxy
+        Disk_can2_index = sep_dict["master_Disk_can2_index"][number]
+        Disk_can2_row = sep_dict["master_Disk_can2_row"][number] 
                 
         #print("Gal",sample[number][0], number,"BrokenExp")
         if Disk_can2 ==[]:
@@ -251,8 +293,8 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
     #####Disk3###
     for number in range(len(sep_dict["master_Disk_can3"])):
         Disk_can3 = sep_dict["master_Disk_can3"][number]
-        Disk_can3_index = sep_dict["master_Disk_can3_index"][number]# the cpt marker
-        Disk_can3_row = sep_dict["master_Disk_can3_row"][number] #the galaxy
+        Disk_can3_index = sep_dict["master_Disk_can3_index"][number]
+        Disk_can3_row = sep_dict["master_Disk_can3_row"][number]
         
         #print(Disk_can3,Disk_can3_index,Disk_can3_row)        
         #print("Gal",sample[number][0], number,"InclExp")
@@ -269,8 +311,8 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
     ####Bar######
     for number in range(len(sep_dict["master_Bar_can"])):
         Bar_can = sep_dict["master_Bar_can"][number]
-        Bar_can_index = sep_dict["master_Bar_can_index"][number]# the cpt marker
-        Bar_can_row = sep_dict["master_Bar_can_row"][number] #the galaxy
+        Bar_can_index = sep_dict["master_Bar_can_index"][number]
+        Bar_can_row = sep_dict["master_Bar_can_row"][number]
         
         #print("Gal",sample[number][0], number, "Ferrer")
         if Bar_can == []:
@@ -299,8 +341,8 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
     ####Ring#####
     for number in range(len(sep_dict["master_Ring_can"])):
         Ring_can = sep_dict["master_Ring_can"][number]
-        Ring_can_index = sep_dict["master_Ring_can_index"][number]# the cpt marker
-        Ring_can_row = sep_dict["master_Ring_can_row"][number] #the galaxy
+        Ring_can_index = sep_dict["master_Ring_can_index"][number]
+        Ring_can_row = sep_dict["master_Ring_can_row"][number]
         
         #print("Gal",sample[number][0], number,"Gauss")
         if Ring_can ==[]:
@@ -330,7 +372,7 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
                 if sample[i][0] == override_instruction[number]:
                     cpt_index = override_instruction[number+1]
                     sample[i][cpt_index] = override_instruction[number+2]
-                    #print("replaced!", sample[i][cpt_index], override_instruction[number+2])
+                    print("replaced!", sample[i][cpt_index], override_instruction[number+2])
                 else:
                     pass
     #############
@@ -339,6 +381,233 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, overr
         
     return sample
 
+#%% tested
+def plus_minus_seperator(name,input_array,limit):
+    """
+    A method to select seprate positive and negative number
+    ----------                        
+    name : str
+        The name of the outlier
+            
+    input_array : 1D numpy array         
+        The array in question
+            
+    limit : float
+        The outlier cut. 
+        
+    Return
+    ------
+    A dictionary containing the selected sample name and values
+        
+    """
+    
+    outliers_name_positive, outliers_name_negative =[], [] 
+    outliers_positive, outliers_negative = [], []
+    
+    for row in range(len(input_array)):
+        if (input_array[row] < 0):
+            outliers_name_negative.append(name[row])
+            outliers_negative.append(input_array[row])
+        elif (input_array[row] > 0): 
+            outliers_name_positive.append(name[row])
+            outliers_positive.append(input_array[row])
+            
+    return {"name_positive":outliers_name_positive, 
+            "Dist_positive":outliers_positive,
+            "name_negative":outliers_name_negative, 
+            "Dist_negative":outliers_negative}
+    
+#%% tested
+def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
+    """
+    A function to match the existing velocity dispersion with galaxy property 
+    ----------                        
+    input_list_name:
+        Galaxy bundle with all the components
+    vdis_list:
+        
+    Dist: py list, 2 name
+        e.g. ["./distance/dir_dist_list.txt","./distance/dist_list.txt"]
+    output_list_name:
+        
+    Return
+    ------
+    A dictionary with galaxy essential inforamtion 
+    """
+    input_list = read_list(input_list_name)
+    
+    sph_mag_p = grab_mag(input_list_name, ["Bulge","CoreBulge"])
+    sph_Re_p =grab_parameter(input_list_name, ["Bulge","CoreBulge"], 1)
+        
+    V1= np.genfromtxt(vdis_list, dtype='str') 
+    V2= np.genfromtxt(vdis_list, dtype='float') 
+    
+    vdis_name_p, vdis_p, vdis_err_p = V1[:,0], V2[:,3], V2[:,4]
+    mag_g_p, mag_i_p = V2[:,10], V2[:,9]
+    
+    Dist_p = grab_dist(Dist_list[0],Dist_list[1])["Dist"]
+    Dist_name_p = grab_dist(Dist_list[0],Dist_list[1])["Gal_name"]
+
+    #Gal_bundle_BD_equvi
+
+    sph_mag, sph_Re = [],[]
+    name, vdis, vdis_err, Dist = [], [] ,[], []
+    mag_g, mag_i = [], []
+
+    for row in range(len(input_list)):
+        name_0 = input_list[row][0]
+        
+        for i in range(len(vdis_name_p)):
+            if vdis_name_p[i] == name_0:
+                name.append(name_0)
+                vdis.append(vdis_p[i])
+                vdis_err.append(vdis_err_p[i])
+                
+                mag_g.append(mag_g_p[i])
+                mag_i.append(mag_i_p[i])
+                sph_mag.append(sph_mag_p[row])
+                sph_Re.append(sph_Re_p[row])                
+            else:
+                pass
+            
+        for j in range(len(Dist_name_p)):
+            if  Dist_name_p[j] == name_0:
+                Dist.append(Dist_p[j])
+            else:
+                pass
+            
+    vdis, vdis_err, Dist = np.array(vdis), np.array(vdis_err), np.array(Dist)
+    mag_g, mag_i = np.array(mag_g), np.array(mag_i)
+    sph_mag = np.array(sph_mag)
+    sph_Re = np.array(sph_Re)
+        #input_list[][]
+    
+    output = {"name": name, 
+              "vdis": vdis,
+              "vdis_err": vdis_err,
+              "Dist": Dist,
+              "mag_g": mag_g,
+              "mag_i": mag_i,
+              "sph_mag": sph_mag,
+              "sph_Re": sph_Re
+              }
+    
+    with open(output_list_name, 'wb') as f:
+        pickle.dump(output, f)
+    return output
+
+#%% tested
+def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
+                      output_list_name_ETG):    
+    
+    """
+    A method to seprate Early-Type and Late-Type Galaxy.
+    The seperation condition is whether the galaxy contain a extended disk.
+    ----------                        
+    input_lis_name : str
+        The galaxy component bundle 
+            
+    output_list_name1,2 : str      
+        The name for the output dictionary
+
+        
+    Return
+    ------
+    Dictionary containing two list: ETG and LTG.
+    """
+    input_list = read_list(input_list_name)
+    ETG, LTG = [],[]
+    
+    for row in range(len(input_list)):
+        #for index in range(len(input_list[row])):
+        if "Disk" in input_list[row]:
+            #print("LTG",input_list[row][0])
+
+            LTG.append(input_list[row])
+        elif "Disk" not in input_list[row]:
+            #print("ETG",input_list[row][0])
+            ETG.append(input_list[row])
+            
+    
+    output = {"ETG": ETG, "LTG": LTG}
+
+    
+    with open(output_list_name_LTG, 'wb') as f:
+        pickle.dump(output["LTG"], f)
+    with open(output_list_name_ETG, 'wb') as f:
+        pickle.dump(output["ETG"], f)
+        
+    return output
+    
+#%% tested
+def remove_item(input_list_name,keyword_list):
+    """
+    A method to remove lists base on specified keywords, from the galaxy bundle.
+    ----------                        
+    input_list_name: str
+        The galaxy bundle
+        
+    keyword_list: list
+        A list containing the names of the galaxy
+        
+    Return
+    ------
+    Galaxy Bundle
+    """    
+    sample = read_list(input_list_name)
+    row_list=[]
+    for item in keyword_list:
+        keyword = item
+
+        for row in range(len(sample)):
+
+            if sample[row][0] == keyword:
+                print("Bingo")
+                row_list.append(row)
+                pass
+            else:
+                pass
+        
+        for i in row_list:
+            sample.remove(sample[i])
+            
+            
+    with open(input_list_name, 'wb') as f:
+        pickle.dump(sample, f)
+    return sample
+
+#%% tested
+def add_item(parent_list_name, target_list_name, keyword_list):
+    """
+    A method to add lists into abundle based on specified keywords.
+    ----------                        
+    parent_list_name: str
+        The parent galaxy bundle
+        
+    target_list_name: str
+        The target bindle
+    
+    keyword_list: list
+        A list containing the names of the galaxy
+        
+    Return
+    ------
+    New target list
+    """    
+    parent_sample = read_list(parent_list_name)
+    target_sample = read_list(target_list_name)
+    
+    for item in keyword_list:
+       keyword = item
+       for row in range(len(parent_sample)):
+            if parent_sample[row][0] == keyword:
+                target_sample.append(parent_sample[row])
+            else:
+                pass
+            
+    with open(target_list_name, 'wb') as f:
+        pickle.dump(target_sample, f)
+    return target_sample
 #%%
     #select base on mass bin 
     #morph Bin

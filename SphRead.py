@@ -33,6 +33,16 @@ def read_list(input_file):
 def read_table(table):
     D=np.genfromtxt(table, dtype='float')
     return D
+#%% tested
+def match_list_dim(input1,input2):
+    """
+    """
+    if len(input1) == len(input2):
+        pass
+    else:
+        raise Exception("Dimension not matching, \
+                        size of %s =\= %s" %((input1),(input2))) 
+
 
 #%% tested
 def lookup_bundle(gal_bundle,gal_name):
@@ -42,9 +52,11 @@ def lookup_bundle(gal_bundle,gal_name):
     
     Parameters
     ----------
-    gal_bundle : 
+    gal_bundle: 
         
-    Optional
+    gal_name:
+        
+    Return
     ----------
     
     Generates..functiona blah blah
@@ -52,10 +64,11 @@ def lookup_bundle(gal_bundle,gal_name):
     GN= read_list(gal_bundle)
     for row in range(len(GN)):
         if GN[row][0]==gal_name:
+            Gal = GN[row]
             print(GN[row])
         else:
             pass
-        
+    return Gal
 #%% tested
 def grab_parameter(filename, keyword, number):
     """
@@ -83,13 +96,13 @@ def grab_mag(filename, keyword):
     ----------
     filename : str
         The file name of the galaxy bundle.
-    keyword: str
+    keyword: str, list
         The name of the componets, such as: "Bulge", "Disk", "PrimBar", etc.
 
     Return
     -------
     storage
-        A numpy array of the apparant magnitude of set component.
+        A 1D numpy array of the apparant magnitude of set component.
 
     """
     table = read_list(filename)
@@ -98,6 +111,34 @@ def grab_mag(filename, keyword):
         for item in range(len(table[row])):
             if table[row][item] in (keyword):
                 storage.append(table[row][item+2])
+                
+    storage = np.array(storage)       
+    return storage
+
+#%% tested
+def grab_total_mag(filename):
+    """
+    A function for grab the total magnitude of a component from a galaxy bundle.
+
+    ...
+
+    Parameters
+    ----------
+    filename : str
+        The file name of the galaxy bundle.
+
+    Return
+    -------
+    storage
+        A 1D numpy array of the total apparant magnitude.
+
+    """
+    table = read_list(filename)
+    storage = []
+    for row in range(len(table)):
+        for item in range(len(table[row])):
+            if table[row][item] == 'Total_mag':
+                storage.append(table[row][item+1][0])
                 
     storage = np.array(storage)       
     return storage
@@ -114,13 +155,15 @@ def pd_read(filename,check_equvi):
     filename : str
         The ASCII file name containing inoformation of one decomposition
     check_equvi: bool
-        The indication if the input file is on equvalent axis. check_equvi = TRUE if so.
+        The indication if the input file is on equvalent axis. 
+        check_equvi = TRUE if so.
 
     Return
     -------
     Gal_list
         A list containing the information of each components.
-        e.g.: [NGC1234, 1.02,"Sersic", [3,12,1.5], 12, "Exp", [15,5],15, "Total_mag",11] 
+        e.g.: [NGC1234, 1.02,"Sersic", [3,12,1.5], 12, "Exp", [15,5],15, 
+        "Total_mag",11] 
     """
 
     A = pd.read_table(filename,sep='\n')  #seperating the string by \n
@@ -130,15 +173,15 @@ def pd_read(filename,check_equvi):
     #equvi = str(check_equvi)
     i=0 
     for i in range(A.shape[0]):
+        
+        # record the rms for the residual as the second element of the list
         if A.iloc[i][0] == "-----------------------------Detailed fit report:-------------------------------- ":
-                ## record the rms for the residual as the second element of the list
                 Gal_list.append(float(A.iloc[i-1][0].split()[3]))
-
+        
+        # record the fitting parameters for the Sersic function 
+        # ['Sersic', np.array([mu_e. r_e, n])], np.array([mag]])
         elif A.iloc[i][0][0:17] == "Sersic component:":
-                ########################################################################################
-                ## record the fitting parameters for the Sersic function 
-                ## ['Sersic', np.array([mu_e. r_e, n])], np.array([mag]])
-                ########################################################################################
+                
                 mu_e = float(A.iloc[i+1][0].split()[2])
                 r_e = float(A.iloc[i+2][0].split()[2])
                 n = float(A.iloc[i+3][0].split()[2])
@@ -147,12 +190,11 @@ def pd_read(filename,check_equvi):
                 Gal_list.append('Sersic')
                 Gal_list.append(np.array([mu_e,r_e,n]))
                 Gal_list.append(Sersic_mag)
-
+                
+        # record the fitting parameters for the Core Sersic function 
+        # ['CoreSersic', np.array([mu_p. r_e, r_b, n, alpha, gamma])], np.array([mag]])
         elif A.iloc[i][0][0:22] == "Core-Sersic component:":
-                ########################################################################################
-                ## record the fitting parameters for the Core Sersic function 
-                ## ['CoreSersic', np.array([mu_p. r_e, r_b, n, alpha, gamma])], np.array([mag]])
-                ########################################################################################
+            
                 mu_p = float(A.iloc[i+1][0].split()[2])
                 r_e = float(A.iloc[i+2][0].split()[2])
                 r_b = float(A.iloc[i+3][0].split()[2])
@@ -165,11 +207,10 @@ def pd_read(filename,check_equvi):
                 Gal_list.append(np.array([mu_p,r_e,r_b,n,alpha,gamma]))
                 Gal_list.append(CoreSersic_mag)
                 
+        # record the fitting parameters for the Exponential function 
+        # ['Exp', np.array([mu_0. h])], np.array([mag]])
         elif A.iloc[i][0][0:22] == "Exponential component:":
-                ########################################################################################
-                ## record the fitting parameters for the Exponential function 
-                ## ['Exp', np.array([mu_0. h])], np.array([mag]])
-                ########################################################################################
+
                 mu_0 = float(A.iloc[i+1][0].split()[2])
                 h = float(A.iloc[i+2][0].split()[2])
                 Exp_mag = float(A.iloc[i+3][0].split()[4]) if check_equvi else 0
@@ -178,11 +219,11 @@ def pd_read(filename,check_equvi):
                 Gal_list.append(np.array([mu_0,h]))
                 Gal_list.append(Exp_mag)
 
+        # record the fitting parameters for the Borken Exponential function 
+        # ['BrokenExp', np.array([mu_0td. r_b , h1, h2])], np.array([BrokenExp_mag])
         elif A.iloc[i][0][0:25] == "Truncated disc component:":
-                ########################################################################################
-                ## record the fitting parameters for the Borken Exponential function 
-                ## ['BrokenExp', np.array([mu_0td. r_b , h1, h2])], np.array([BrokenExp_mag])
-                ########################################################################################
+
+                
                 mu_0td = float(A.iloc[i+1][0].split()[2])
                 r_b = float(A.iloc[i+2][0].split()[2])
                 h1 = float(A.iloc[i+3][0].split()[2])
@@ -192,12 +233,13 @@ def pd_read(filename,check_equvi):
                 Gal_list.append('BrokenExp')                                
                 Gal_list.append(np.array([mu_0td,r_b,h1,h2]))
                 Gal_list.append(BrokenExp_mag)
-
+                
+        # record the fitting parameters for the Ferrer function 
+        # ['Ferrer', np.array([mu_0,r_0,alpha,beta])], np.array([Ferrer_mag]])
         elif A.iloc[i][0][0:17] == "Ferrer component:":
-                ########################################################################################
-                ## record the fitting parameters for the Ferrer function 
-                ## ['Ferrer', np.array([mu_0,r_0,alpha,beta])], np.array([Ferrer_mag]])
-                ########################################################################################           
+                
+
+                           
                 mu_0 = float(A.iloc[i+1][0].split()[2])
                 r_0 = float(A.iloc[i+2][0].split()[2])
                 alpha = float(A.iloc[i+3][0].split()[2])
@@ -208,11 +250,10 @@ def pd_read(filename,check_equvi):
                 Gal_list.append(np.array([mu_0,r_0,alpha,beta]))
                 Gal_list.append(Ferrer_mag)
                 
+        # record the fitting parameters for the Gaussian function 
+        # ['InclExp', np.array([mu_0z. z0])], np.array([InclExp_mag]])                
         elif A.iloc[i][0][0:24] == "Inclined disc component:":
-                ########################################################################################
-                ## record the fitting parameters for the Gaussian function 
-                ## ['InclExp', np.array([mu_0z. z0])], np.array([InclExp_mag]])
-                ########################################################################################
+
                 mu_0z = float(A.iloc[i+1][0].split()[2])
                 z_0 = float(A.iloc[i+2][0].split()[2])
                 InclExp_mag = float(A.iloc[i+3][0].split()[4]) if check_equvi else 0
@@ -222,12 +263,11 @@ def pd_read(filename,check_equvi):
                 Gal_list.append(InclExp_mag)
                 
                 print(filename[2:9])
-   
+                
+        # record the fitting parameters for the Gaussian function 
+        # ['Gauss', np.array([mu_0. r_0, FWHM])], np.array([Gauss_mag]])
         elif A.iloc[i][0][0:19] == "Gaussian component:":
-                ########################################################################################
-                ## record the fitting parameters for the Gaussian function 
-                ## ['Gauss', np.array([mu_0. r_0, FWHM])], np.array([Gauss_mag]])
-                ########################################################################################
+
                 mu_0 = float(A.iloc[i+1][0].split()[2])
                 r_0 = float(A.iloc[i+2][0].split()[2])
                 FWHM = float(A.iloc[i+3][0].split()[2])          
@@ -237,26 +277,25 @@ def pd_read(filename,check_equvi):
                 Gal_list.append(np.array([mu_0,r_0,FWHM]))
                 Gal_list.append(Gauss_mag)
                 
+        # record the fitting parameters for the Gaussian function 
+        # ['PSF', np.array([mu_0])], np.array([PSF_mag]])              
         elif A.iloc[i][0][0:24] == "PSF [nuclear] component:":
-                ########################################################################################
-                ## record the fitting parameters for the Gaussian function 
-                ## ['PSF', np.array([mu_0])], np.array([PSF_mag]])
-                ########################################################################################
+
                 mu_0 = float(A.iloc[i+1][0].split()[2])
                 PSF_mag = float(A.iloc[i+2][0].split()[4]) if check_equvi else 0
                 
                 Gal_list.append('PSF')                                                
                 Gal_list.append(np.array([mu_0]))
                 Gal_list.append(PSF_mag)
+                
+        # record the total magnitude of the galaxy 
+        # ['Total_mag',  total_mag]
         elif A.iloc[i][0][0:23] == "Total galaxy magnitude:":
-                ########################################################################################
-                ## record the total magnitude of the galaxy 
-                ## ['Total_mag',  total_mag]
-                ########################################################################################
+
                 total_mag = float(A.iloc[i][0].split()[3])
                 
                 Gal_list.append('Total_mag')                                                
-                Gal_list.append(total_mag)            
+                Gal_list.append([total_mag])            
     return Gal_list
 
 #%% tested
@@ -274,7 +313,8 @@ def run_list(input_list,output_name,check_equvi):
     output_name: str
         The name of the output pickle file
     check_equvi: bool
-        The indication if the input file is on equvalent axis. check_equvi = TRUE if so.
+        The indication if the input file is on equvalent axis. 
+        check_equvi = TRUE if so.
 
 
     Return
@@ -301,29 +341,32 @@ def run_list(input_list,output_name,check_equvi):
 #%%
 def grab_dist(dir_dist_list,dist_list):
     """
-    A function for reading Profiler(by Bogdan) output log file, using pandas.
-    It generate a machine readable list for further analysis.
+
     ...
 
     Parameters
     ----------
     dir_dist_list : str
-        The ASCII file name with 
+        The ASCII file name  
     dist_list: str
         The ASCII file name
 
     Return
     -------
-    A dictionary containing: "Gal_name": the name of the galaxy, "Dist": the distance in Mpc, 
+    A dictionary containing: 
+    "Gal_name": the name of the galaxy, 
+    "Dist": the distance in Mpc, 
     "Scale": the angular scale of kpc/arcsec
     
     """
     
-    dir_dist_list1 ,dir_dist_list2 = np.genfromtxt(dir_dist_list, dtype='str'), np.genfromtxt(dir_dist_list, dtype='float')
+    dir_dist_list1 ,dir_dist_list2 = np.genfromtxt(dir_dist_list, dtype='str'),\
+    np.genfromtxt(dir_dist_list, dtype='float')
     
-    dist_list1,dist_list2 = np.genfromtxt(dist_list, dtype='str'), np.genfromtxt(dist_list, dtype='float')
+    dist_list1,dist_list2 = np.genfromtxt(dist_list, dtype='str'), \
+    np.genfromtxt(dist_list, dtype='float')
     
-    ##calculate v/H = dist
+    ## calculate v/H = dist
     ## replace dir_dist and calculate scale
     ## store in numpy array
     
@@ -354,7 +397,11 @@ def grab_dist(dir_dist_list,dist_list):
     return {"Gal_name": name, "Dist": dist, "Scale": scale}
 
 #%%
-#%% require heavy modification
+
+def grab_info_mag():
+    return None
+#%%
+#%% require heavy modification or deletion, haven't decided yet
 def create_table(Dtable,Ctable,M_sun,N):
     D1 = np.genfromtxt(Dtable , dtype='str')
     D2 = np.genfromtxt(Dtable , dtype='float')
