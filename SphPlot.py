@@ -815,6 +815,7 @@ class ShowcaseCompare2(ShowcaseIndi):
     def plot_compare_index_para(list_input1, list_input2, 
                                   func_index, number, sub =True , div = False, 
                                   para_name="para", colour="green", name=[]):
+        #tested
         """
         Compare the parameters of the fitting components base on indexing
         ----------
@@ -874,6 +875,7 @@ class ShowcaseCompare2(ShowcaseIndi):
     def plot_compare_feature_para(list_input1, list_input2, 
                                   keyword, number, sub =True , div = False, 
                                   para_name="para", colour="green", name=[]):
+        #tested
         """
         Compare the parameters of the fitting components, base on feature.
         ----------
@@ -917,6 +919,7 @@ class ShowcaseCompare2(ShowcaseIndi):
     def plot_compare_feature_mag(list_input1, list_input2, 
                                   keyword, sub =True, div = False, 
                                   para_name="mag", colour="green", name=[]):
+        #tested
         """
         Compare the magnitude of the components, base on feature.
         ----------
@@ -955,11 +958,11 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      colour=colour,name=name)
         return plot
     
-    def plot_compare_feature_total_mag(list_input1,list_input2, 
+    def plot_compare_total_mag(list_input1,list_input2, 
                                        sub =True, div = False, 
-                                       para_name="mag", colour="green", 
+                                       para_name="Total mag", colour="green", 
                                        name=[]):
-        
+        #tested
         """
         Compare the total magnitude of the galaxy..
         ----------
@@ -993,12 +996,35 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      sub=sub , div=div, 
                                                      para_name=para_name, 
                                                      colour=colour,name=name)
-        
         return plot
     
-
 #%%
+from astropy.io import fits
 
+class Plot2D(object):
+    def __init__(file):
+        self.file = file
+    
+    
+    #scaling function
+    #minmax with a dial
+    # log scale
+    
+    def plot_galaxy(file):
+        
+        hdul = fits.open(file)
+        hdul.info()
+        data = np.array(hdul[0].data)
+        data_log = np.log(data)
+        plt.imshow(data_log)
+        plt.show()
+        
+        #print(data)
+        
+        
+
+Plot2D.plot_galaxy("NGC2872.fits")     
+Plot2D.plot_galaxy("res1_NGC2872.fits") 
 #%%
 
 
