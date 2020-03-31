@@ -16,6 +16,7 @@ from SphRead import read_list
 from SphRead import grab_dist
 from SphRead import grab_parameter
 from SphRead import grab_mag
+from SphRead import grab_total_mag
 #%%
 def outliers(name,input_array,limit):
     
@@ -387,7 +388,7 @@ def plus_minus_seperator(name,input_array,limit):
     A method to select seprate positive and negative number
     ----------                        
     name : str
-        The name of the outlier
+        The name of the galaxy.
             
     input_array : 1D numpy array         
         The array in question
@@ -437,8 +438,9 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     input_list = read_list(input_list_name)
     
     sph_mag_p = grab_mag(input_list_name, ["Bulge","CoreBulge"])
-    sph_Re_p =grab_parameter(input_list_name, ["Bulge","CoreBulge"], 1)
-        
+    sph_Re_p = grab_parameter(input_list_name, ["Bulge","CoreBulge"], 1)
+    profiler_total_mag_p = grab_total_mag(input_list_name)
+    
     V1= np.genfromtxt(vdis_list, dtype='str') 
     V2= np.genfromtxt(vdis_list, dtype='float') 
     
@@ -453,6 +455,7 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     sph_mag, sph_Re = [],[]
     name, vdis, vdis_err, Dist = [], [] ,[], []
     mag_g, mag_i = [], []
+    profiler_total_mag =[]
 
     for row in range(len(input_list)):
         name_0 = input_list[row][0]
@@ -465,6 +468,9 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
                 
                 mag_g.append(mag_g_p[i])
                 mag_i.append(mag_i_p[i])
+                
+                profiler_total_mag.append(profiler_total_mag_p[row])
+                
                 sph_mag.append(sph_mag_p[row])
                 sph_Re.append(sph_Re_p[row])                
             else:
@@ -478,6 +484,8 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
             
     vdis, vdis_err, Dist = np.array(vdis), np.array(vdis_err), np.array(Dist)
     mag_g, mag_i = np.array(mag_g), np.array(mag_i)
+    profiler_total_mag = np.array(profiler_total_mag)
+    
     sph_mag = np.array(sph_mag)
     sph_Re = np.array(sph_Re)
         #input_list[][]
@@ -488,6 +496,7 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
               "Dist": Dist,
               "mag_g": mag_g,
               "mag_i": mag_i,
+              "total_mag": profiler_total_mag,
               "sph_mag": sph_mag,
               "sph_Re": sph_Re
               }
