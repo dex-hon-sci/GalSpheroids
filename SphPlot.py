@@ -450,8 +450,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         return None
         
 #%%
-
-
 #Mass_Re_plot_hist
 
 #hist_4plot
@@ -479,13 +477,15 @@ class ShowcaseCompare2(ShowcaseIndi):
 
     Methods
     -------
-    dist_compatre
+    plot_distdist
         To plot the difference in distance estimation from the two input
     plot_compare_rms
         To plot the difference in rms of two decomposition
     scat_arrow
         To plot the shift in the size-mass diagram 
-
+    comapre_generic
+    
+    
     """
     
     def __init__(self,input_list1,input_list2):
@@ -674,8 +674,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         return fig, ax
     
         
-    def scat_arrow(x1,y1,name1,colour1,legend1
-                   ,x2,y2,name2,colour2,legend2): #tested
+    def plot_scat_arrow(x1,y1,name1,colour1,legend1, 
+                        x2,y2,name2,colour2,legend2): #tested
         """
         Produce arrow plot pointing from x1, y1 to x2, y2.
         
@@ -726,7 +726,8 @@ class ShowcaseCompare2(ShowcaseIndi):
             ax.add_patch(arrow)
             
 
-    def comapre_generic_sub(para1,para2, para_name="", colour="blue",name=None): 
+    def plot_compare_generic(para1, para2, sub=True , div=False,
+                            para_name="", colour="blue",name=None): 
         #tested
         """
         A generic method to plot the difference between the same parameter from
@@ -738,6 +739,19 @@ class ShowcaseCompare2(ShowcaseIndi):
             parameter 2
 
         
+        Optional
+        ---------
+        sub: bool
+            Subtraction indicator, default: True
+        div: bool
+            Division indicator, default: False
+        para_name: str
+            The name of the parameter
+        colour: str
+            The colour of the lines.
+        name: list
+            A list of galaxy names.
+        
         Return
         ------
         delta: numpy array
@@ -747,10 +761,24 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         fig,ax = plt.subplots()
 
-        delta = para1 - para2
+        delta_sub = para1-para2
+        delta_div = para1/para2
         
+        if sub == div:
+            raise Exception("Mode has to be either subtraction or division")
+        elif sub == True:
+            delta = delta_sub
+        elif div == True:
+            delta = delta_div
+        else: 
+            raise Exception("Impossible, you will \
+                            never reach this error message.")
+
         index = np.linspace(0,len(para1),len(para1))
         min_index, max_index = min(index),max(index)
+        
+        
+        xlabel = "$ %s_{1} \,-\, %s_{2}$"  %(para_name, para_name)
         
         avg_delta = np.average(delta)
         std_delta = np.std(delta)
@@ -780,242 +808,194 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         plt.yticks(index, name)
 
-        ax.set_xlabel("$\Delta \, %s$" %para_name, fontsize=16)
+        ax.set_xlabel(xlabel, fontsize=16)
         ax.legend(loc='center left', bbox_to_anchor=(0.5, 0.5))
         return fig, ax, delta
     
-    def compare_mag(list_input1,list_input2, element_index, para_name):
-        """
-         Compare the parameters of the fitting components 
-        ----------
-        list_input1, list_input2 : list
-            The python lists containing the information of ALL galaxy
-                        
-        func_index :
-            The function of interest
-            
-        element_index :             
-            The parameters of interest in the function
-            
-        para_name : 
-            the parameter name
-        
-        Return
-        ------
-        delta_para
-        
-        """
-        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
-        delta_para, index, gal_name = [], [], []
-        i = 0 
-        for i in range(len(list1)):
-            delta_para.append(list1[i][element_index] - list2[i][element_index])
-            index.append(i)
-            gal_name.append(list1[i][0])
-            
-            ax.plot(index, delta_para, 'bo')
-            
-        j=0
-        for j in range(len(list1)):
-            ax.text(index[j],delta_para[j], gal_name[j],fontsize=12)
-            
-            #plt.xlabel(para_name,fontsize=16)
-
-    
-        plt.ylabel("$\Delta$ %s" %para_name,fontsize=16)
-        return delta_para         
-    
-    #compare_para: use function index to query subtraction
-    #compare_para2: use function feature name to query,subtraction
-    #compare_para3: use function feature name to query, division
-
-    def compare_para():
-        return None
-    
-    def old_compare_para(list_input1,list_input2, func_index, element_index, 
-                     para_name):  #delete this or modified it using generic method
+    def plot_compare_index_para(list_input1, list_input2, 
+                                  func_index, number, sub =True , div = False, 
+                                  para_name="para", colour="green", name=[]):
         """
         Compare the parameters of the fitting components base on indexing
         ----------
-        list_input1, list_input2 : list
-            The python lists containing the information of ALL galaxy
-                        
-        func_index :
-            The function of interest
+        list_input1, list_input2: str
+            The galaxy bundle containing the information of ALL galaxy
+
+
+        func_index: float
+            The index of the function.
             
-        element_index :             
-            The parameters of interest in the function
-            
-        para_name : 
-            the parameter name
+        number: float
+            The index of the parameter.
+        
+        Optional
+        ---------
+        sub: bool
+            Subtraction indicator, default: True
+        div: bool
+            Division indicator, default: False
+        para_name: str
+            The name of the parameter
+        colour: str
+            The colour of the lines.
+        name: list
+            A list of galaxy names.
         
         Return
         ------
-        delta_para
-        
+        plot:
+            
+            
         """
-        fig, ax = plt.subplots()
-    
-        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
-        delta_para, index, gal_name = [], [], []
-        i = 0 
+        list1 = SRead.read_list(list_input1)
+        list2 = SRead.read_list(list_input2)
+        
+        
+        para1, para2, gal_name = [], [], []
+        
+        
         for i in range(len(list1)):
-            delta_para.append(list1[i][func_index][element_index] - list2[i][func_index][element_index])
-            index.append(i)
+            para1.append(list1[i][func_index][number]) 
+            para2.append(list2[i][func_index][number])
+
             gal_name.append(list1[i][0])
             #delta_para = np.array(delta_para)
+        para1 = np.array(para1)
+        para2 = np.array(para2)
 
-        ax.plot(index, delta_para, 'bo')
-    
-        j=0
-        for j in range(len(list1)):
-            ax.text(index[j],delta_para[j], gal_name[j],fontsize=12)
         
-        #plt.xlabel(para_name,fontsize=16)
-        plt.ylabel("$\Delta$ %s" %para_name,fontsize=16)
-        plt.hlines(1.0, 0, 150, linestyle="dashed",linewidth=3, color='b' )
-        plt.hlines(-1.0, 0, 150, linestyle="dashed",linewidth=3, color='b' )
-        return delta_para       
-        
-    def compare_para2(list_input1,list_input2, feature, 
-                      element_index, para_name):  
+        plot = ShowcaseCompare2.plot_compare_generic(para1, para2, 
+                                                     sub=sub , div=div, 
+                                                     para_name=para_name, 
+                                                     colour=colour,
+                                                     name=gal_name)
+        return plot
+
+    def plot_compare_feature_para(list_input1, list_input2, 
+                                  keyword, number, sub =True , div = False, 
+                                  para_name="para", colour="green", name=[]):
         """
-         Compare the parameters of the fitting components 
-         Base on feature name
+        Compare the parameters of the fitting components, base on feature.
         ----------
         list_input1, list_input2 : list
-            The python lists containing the information of ALL galaxy
+            The galaxy bundle containing the information of ALL galaxy
                         
-        func_index :
-            The function of interest
+        keyword : list
+            The feature name.
+            e.g. ["Bulge","CoreBulge"]
+        
+        number: float
+            The index of the parameter .
             
-        element_index :             
-            The parameters of interest in the function
-            
-        para_name : 
-            the parameter name
+        Optional
+        ---------
+        sub: bool
+            Subtraction indicator, default: True
+        div: bool
+            Division indicator, default: False
+        para_name: str
+            The name of the parameter
+        colour: str
+            The colour of the lines.
+        name: list
+            A list of galaxy names.
         
         Return
         ------
-        delta_para
+        plot
         
         """
-        #######################################################################
-        ## Compare the parameters of the fitting components
-        ## Export an ASCII file containing the  
-        ## 
-        #######################################################################
-        ## list_input1, 2: The python lists containing the information of ALL galaxy
-        ## func_index: The function you are inteested in 
-        ## feature: The component you are interested in, acceptable input: 
-        ## 1) Bulge, 2)Core-depleted Bulge 3) Extended Disk, 4) Nuclear Disk, 5) Intermediate Disk, 
-        ## 6) outer dearth (typeII truncation), 7) outer Surplus (typeIII truncation) 
-        ## 8) Primary Bar, 9) Secondary Bar 
-        ## Extra label to override the selection scheme
-        #################################################################################################### 
-        fig, ax = plt.subplots()
-    
-        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
-        delta_para, index, gal_name = [], [], []
+        para1 = SRead.grab_parameter(list_input1, keyword, number)
+        para2 = SRead.grab_parameter(list_input2, keyword, number)
         
-        #i = 0 
-        for i in range(len(list1)):  #i=row
-            j=0
-            for j in range(len(list1[i])): #j=index and element
-                
-                if list1[i][j] == feature and list2[i][j] == feature:
-                    delta_para.append(list1[i][j+1][element_index] - list2[i][j+1][element_index])
-                    index.append(i)
-                    gal_name.append(list1[i][0])
-                else:
-                    pass
-        #delta_para = np.array(delta_para)
+        plot = ShowcaseCompare2.plot_compare_generic(para1, para2, 
+                                                     sub=sub , div=div, 
+                                                     para_name=para_name, 
+                                                     colour=colour,name=name)
+        return plot
 
-        #ax.plot(index, delta_para, 'bo')
-        ax.plot(index, delta_para, 'bo')
-
-        k=0
-        for k in range(len(index)):
-            ax.text(index[k],delta_para[k], gal_name[k],fontsize=12)
-       
-        print(feature, len(index))
-        
-        #plt.xlabel(para_name,fontsize=16)
-        plt.ylabel("$\Delta$ %s" %para_name,fontsize=16)
-        plt.hlines(1.0, 0, 150, linestyle="dashed",linewidth=3, color='b')
-        plt.hlines(-1.0, 0, 150, linestyle="dashed",linewidth=3, color='b')
-        return delta_para
-
-
-    def compare_para3(list_input1,list_input2, feature, element_index, para_name1,para_name2):
+    def plot_compare_feature_mag(list_input1, list_input2, 
+                                  keyword, sub =True, div = False, 
+                                  para_name="mag", colour="green", name=[]):
         """
-         Compare the parameters of the fitting components 
+        Compare the magnitude of the components, base on feature.
         ----------
         list_input1, list_input2 : list
-            The python lists containing the information of ALL galaxy
+            The galaxy bundle containing the information of ALL galaxy
                         
-        func_index :
-            The function of interest
+        keyword : list
+            The feature name.
+            e.g. ["Bulge","CoreBulge"]
             
-        element_index :             
-            The parameters of interest in the function
             
-        para_name : 
-            the parameter name
+        Optional
+        ---------
+        sub: bool
+            Subtraction indicator, default: True
+        div: bool
+            Division indicator, default: False
+        para_name: str
+            The name of the parameter
+        colour: str
+            The colour of the lines.
+        name: list
+            A list of galaxy names.
         
         Return
         ------
-        delta_para
+        plot
         
         """
-        ####################################################################################################
-        ## Compare the parameters of the fitting components
-        ## Export an ASCII file containing the  
-        ## 
-        ####################################################################################################
-        ## list_input1, 2: The python lists containing the information of ALL galaxy
-        ## func_index: The function you are inteested in 
-        ## feature: The component you are interested in, acceptable input: 
-        ## 1) Bulge, 2)Core-depleted Bulge 3) Extended Disk, 4) Nuclear Disk, 5) Intermediate Disk, 
-        ## 6) outer dearth (typeII truncation), 7) outer Surplus (typeIII truncation) 
-        ## 8) Primary Bar, 9) Secondary Bar 
-        ## Extra label to override the selection scheme
-        #################################################################################################### 
-        fig, ax = plt.subplots()
+        mag1 = SRead.grab_mag(list_input1, keyword)
+        mag2 = SRead.grab_mag(list_input2, keyword)
         
-        list1, list2 = SRead.read_list(list_input1), SRead.read_list(list_input2)
-        delta_para, index, gal_name = [], [], []
+        plot = ShowcaseCompare2.plot_compare_generic(mag1, mag2, 
+                                                     sub=sub , div=div, 
+                                                     para_name=para_name, 
+                                                     colour=colour,name=name)
+        return plot
+    
+    def plot_compare_feature_total_mag(list_input1,list_input2, 
+                                       sub =True, div = False, 
+                                       para_name="mag", colour="green", 
+                                       name=[]):
         
-        #i = 0 
-        for i in range(len(list1)):  #i=row
-            j=0
-            for j in range(len(list1[i])): #j=index and element
-                
-                if list1[i][j] == feature and list2[i][j] == feature:
-                    delta_para.append(list1[i][j+1][element_index]/list2[i][j+1][element_index])
-                    index.append(i)
-                    gal_name.append(list1[i][0])
-                else:
-                    pass
-        #delta_para = np.array(delta_para)
+        """
+        Compare the total magnitude of the galaxy..
+        ----------
+        list_input1, list_input2 : list
+            The galaxy bundle containing the information of ALL galaxy
+                                    
+            
+        Optional
+        ---------
+        sub: bool
+            Subtraction indicator, default: True
+        div: bool
+            Division indicator, default: False
+        para_name: str
+            The name of the parameter
+        colour: str
+            The colour of the lines.
+        name: list
+            A list of galaxy names.
         
-        #ax.plot(index, delta_para, 'bo')
-        ax.plot(index, delta_para, 'bo')
-
-        #k=0
-        #for k in range(len(index)):
-        #   ax.text(index[k],delta_para[k], gal_name[k],fontsize=12)
-       
-        print(feature, len(index))
+        Return
+        ------
+        plot
         
-        plt.xlabel(feature,fontsize=16)
-        plt.ylabel("$log(%s/%s)$" %(para_name1,para_name2),fontsize=16)
-        plt.yscale( 'log' )
-        plt.xticks([1,50,100], [])
+        """
         
-        return delta_para
-
-
+        total_mag1 = SRead.grab_total_mag(list_input1)
+        total_mag2 = SRead.grab_total_mag(list_input2)
+        
+        plot = ShowcaseCompare2.plot_compare_generic(total_mag1, total_mag2, 
+                                                     sub=sub , div=div, 
+                                                     para_name=para_name, 
+                                                     colour=colour,name=name)
+        
+        return plot
+    
 
 #%%
 
@@ -1058,24 +1038,6 @@ class ShowcaseCompare2(ShowcaseIndi):
 
 #%%
 #plot old area
-
-
-def Mass_Re_plot_line(x,y1,y2,name,colour):
-    x_edge,y_edge= [0,0,2,2], [7e10,6e11,6e11,7e10]
-
-    yp= (y1+y2)/2.
-
-    ax.errorbar(x,yp,xerr=[abs(y2-yp),abs(y1-yp)], fmt='|', ecolor="%s" %colour)
-
-    for i in range(np.size(name)):
-        ax.text(x[i],yp[i], name[i],fontsize=12)
-
-    plt.ylabel("$Mass$ / $Mass_{sun}$")
-    plt.xlabel("$R_e$ (kpc)")
-    plt.vlines(2,7e10,6e11,color='k', linestyle="dashed", linewidth=3)
-    plt.hlines(7e10,0,2, color='k', linestyle="dashed", linewidth=3)
-    ax.fill(x_edge,y_edge, alpha=0.3, color='green')
-    plt.legend()
 #
 def n_Re_plot(x,y, name ,colour,legend):
     ax.plot(x,y,"%s"%(colour) ,label="%s" %(legend) )

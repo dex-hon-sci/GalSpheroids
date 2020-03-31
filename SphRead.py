@@ -169,8 +169,9 @@ def grab_total_mag(filename):
                 
     storage = np.array(storage)       
     return storage
+
 #%%
-def grab_dist(dir_dist_list=None,dist_list):
+def grab_dist(dir_dist_list,dist_list):
     """
     A function for grabing the distance of galaxy base on two lists.
     
