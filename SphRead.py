@@ -14,35 +14,47 @@ import pickle
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
-#read txt
+__all__ = ["read_list", "read_table", "match_list_dim", "lookup_bundle",
+           "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
+           "grab_info_mag","pd_read","run_list"]
 
-#read log
-
-#read 
 
 ###########initial parameters###############
 c, H0=    299792.458, 68.0        #speed of light in km/s, Hubble constant in(km/s)/Mpc
 ############################################
 #%% tested
 def read_list(input_file):
+    """
+    Just a function using pickle to load objects
+    """
     with open(input_file, 'rb') as f:
         mylist = pickle.load(f)
     return mylist
 
 #%% tested
 def read_table(table):
+    """
+    Just a function using genfromtext to load objects
+    assuming the data is float
+    """
     D=np.genfromtxt(table, dtype='float')
     return D
-#%% tested
+#%% tested # under construction
 def match_list_dim(input1,input2):
     """
+    A generic method matching the dimension of two input
+    
+    Parameters
+    ----------
+    input1, input2: list
+        
+
     """
     if len(input1) == len(input2):
         pass
     else:
         raise Exception("Dimension not matching, \
                         size of %s =\= %s" %((input1),(input2))) 
-
 
 #%% tested
 def lookup_bundle(gal_bundle,gal_name):
@@ -72,9 +84,23 @@ def lookup_bundle(gal_bundle,gal_name):
 #%% tested
 def grab_parameter(filename, keyword, number):
     """
-    
-    
+    A function for grab the magnitude of a component from a galaxy bundle.
+
+    ...
+
+    Parameters
+    ----------
+    filename : str
+        The file name of the galaxy bundle.
+    keyword: str, list
+        The name of the componets, such as: "Bulge", "Disk", "PrimBar", etc.
+
+    Return
+    -------
+    storage
+        A 1D numpy array of the apparant magnitude of set component.
     """
+    
     table = read_list(filename)
     storage = []
     #generate a list of singular parameter
@@ -118,7 +144,8 @@ def grab_mag(filename, keyword):
 #%% tested
 def grab_total_mag(filename):
     """
-    A function for grab the total magnitude of a component from a galaxy bundle.
+    A function for grabing the total magnitude of a 
+    component from a galaxy bundle.
 
     ...
 
@@ -142,7 +169,77 @@ def grab_total_mag(filename):
                 
     storage = np.array(storage)       
     return storage
+#%%
+def grab_dist(dir_dist_list=None,dist_list):
+    """
+    A function for grabing the distance of galaxy base on two lists.
+    
+    ...
 
+    Parameters
+    ----------
+    dist_list: str
+        The ASCII file name of a list with estimated velocity. 
+        It is assume as default this list contains all the galaxy of interested 
+
+    Optional
+    --------
+    dir_dist_list : str
+        The ASCII file name of the redshift independent distance 
+        measurement list. It override the dist_list distance estimation.
+        This list is allowed to have different dimension as dist_list.
+         
+        
+    Return
+    -------
+    
+    A dictionary containing: 
+        "Gal_name": the name of the galaxy, 
+        "Dist": the distance in Mpc, 
+        "Scale": the angular scale of kpc/arcsec
+    
+    """
+    
+    dir_dist_list1 ,dir_dist_list2 = np.genfromtxt(dir_dist_list, dtype='str'),\
+    np.genfromtxt(dir_dist_list, dtype='float')
+    
+    dist_list1,dist_list2 = np.genfromtxt(dist_list, dtype='str'), \
+    np.genfromtxt(dist_list, dtype='float')
+    
+    ## calculate v/H = dist
+    ## replace dir_dist and calculate scale
+    ## store in numpy array
+    
+    name = dist_list1[:,0]
+    vel , vel_err= dist_list2[:,3], dist_list2[:,4]
+    scale = dist_list2[:,5]
+    
+    dist = vel / H0 
+    dist_err = vel_err / H0
+    
+    #####
+    dir_name = dir_dist_list1[:,0]
+    dir_dist, dir_dist_err = dir_dist_list2[:,1], dir_dist_list2[:,2]
+    dir_method = dir_dist_list1[:,5]
+    dir_method_flag = dir_dist_list2[:,7]
+    #####
+    dir_scale = dir_dist* ((1e3) / 206264.806) #turn Mpc/rad to kpc/arcsec 
+    
+    ####replace####
+    for row in range(len(name)):
+        for row2 in range(len(dir_name)):
+            if name[row] == dir_name[row2]:
+                dist[row] = dir_dist[row2]
+                scale[row] = dir_scale[row2]
+            else:
+                pass
+                
+    return {"Gal_name": name, "Dist": dist, "Scale": scale}
+
+#%%
+
+def grab_info_mag():
+    return None
 #%% tested
 def pd_read(filename,check_equvi):
     """
@@ -336,70 +433,8 @@ def run_list(input_list,output_name,check_equvi):
         pickle.dump(Gal_bundle, f)
         
     return Gal_bundle
-
-
-#%%
-def grab_dist(dir_dist_list,dist_list):
-    """
-
-    ...
-
-    Parameters
-    ----------
-    dir_dist_list : str
-        The ASCII file name  
-    dist_list: str
-        The ASCII file name
-
-    Return
-    -------
-    A dictionary containing: 
-    "Gal_name": the name of the galaxy, 
-    "Dist": the distance in Mpc, 
-    "Scale": the angular scale of kpc/arcsec
-    
-    """
-    
-    dir_dist_list1 ,dir_dist_list2 = np.genfromtxt(dir_dist_list, dtype='str'),\
-    np.genfromtxt(dir_dist_list, dtype='float')
-    
-    dist_list1,dist_list2 = np.genfromtxt(dist_list, dtype='str'), \
-    np.genfromtxt(dist_list, dtype='float')
-    
-    ## calculate v/H = dist
-    ## replace dir_dist and calculate scale
-    ## store in numpy array
-    
-    name = dist_list1[:,0]
-    vel , vel_err= dist_list2[:,3], dist_list2[:,4]
-    scale = dist_list2[:,5]
-    
-    dist = vel / H0 
-    dist_err = vel_err / H0
-    
-    #####
-    dir_name = dir_dist_list1[:,0]
-    dir_dist, dir_dist_err = dir_dist_list2[:,1], dir_dist_list2[:,2]
-    dir_method = dir_dist_list1[:,5]
-    dir_method_flag = dir_dist_list2[:,7]
-    #####
-    dir_scale = dir_dist* ((1e3) / 206264.806) #turn Mpc/rad to kpc/arcsec 
-    
-    ####replace####
-    for row in range(len(name)):
-        for row2 in range(len(dir_name)):
-            if name[row] == dir_name[row2]:
-                dist[row] = dir_dist[row2]
-                scale[row] = dir_scale[row2]
-            else:
-                pass
-                
-    return {"Gal_name": name, "Dist": dist, "Scale": scale}
-
 #%%
 
-def grab_info_mag():
-    return None
 #%%
 #%% require heavy modification or deletion, haven't decided yet
 def create_table(Dtable,Ctable,M_sun,N):

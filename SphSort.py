@@ -12,11 +12,84 @@ import pickle
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
-from SphRead import read_list
-from SphRead import grab_dist
-from SphRead import grab_parameter
-from SphRead import grab_mag
-from SphRead import grab_total_mag
+from SphRead import *
+
+
+__all__ = ["remove_item", "add_item", "outliers", "cpt_seperator_demo",
+           "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
+           "LTG_ETG_seperator", "prop_seperation"]
+
+#%% tested
+def remove_item(input_list_name,keyword_list):
+    """
+    A method to remove lists base on specified keywords, 
+    from the galaxy bundle.
+    ----------                        
+    input_list_name: str
+        The galaxy bundle
+        
+    keyword_list: list
+        A list containing the names of the galaxy
+        
+    Return
+    ------
+    Galaxy Bundle
+    """    
+    sample = read_list(input_list_name)
+    row_list=[]
+    for item in keyword_list:
+        keyword = item
+
+        for row in range(len(sample)):
+
+            if sample[row][0] == keyword:
+                print("Bingo")
+                row_list.append(row)
+                pass
+            else:
+                pass
+        
+        for i in row_list:
+            sample.remove(sample[i])
+            
+            
+    with open(input_list_name, 'wb') as f:
+        pickle.dump(sample, f)
+    return sample
+
+#%% tested
+def add_item(parent_list_name, target_list_name, keyword_list):
+    """
+    A method to add lists into abundle based on specified keywords.
+    ----------                        
+    parent_list_name: str
+        The parent galaxy bundle.
+        
+    target_list_name: str
+        The target bindle.
+    
+    keyword_list: list
+        A list containing the names of the galaxy.
+        
+    Return
+    ------
+    New target list
+    """    
+    parent_sample = read_list(parent_list_name)
+    target_sample = read_list(target_list_name)
+    
+    for item in keyword_list:
+       keyword = item
+       for row in range(len(parent_sample)):
+            if parent_sample[row][0] == keyword:
+                target_sample.append(parent_sample[row])
+            else:
+                pass
+            
+    with open(target_list_name, 'wb') as f:
+        pickle.dump(target_sample, f)
+    return target_sample
+
 #%%
 def outliers(name,input_array,limit):
     
@@ -52,7 +125,8 @@ def outliers(name,input_array,limit):
 #%% tested
 def cpt_seperator_demo(input_list_name): 
     """
-    A demo function for seperating galaxy components to 
+    A demo function for seperating galaxy components to different bins.
+    It create the candidate list for component assignment.
     ...
 
     Parameters
@@ -166,15 +240,23 @@ def cpt_seperator_demo(input_list_name):
                 Total_mag_can_row.append(number)
                 #print(sample_indi[0],"Gauss")
             ################################
-        master_Bulge_can.append(Bulge_can), master_Bulge_can_index.append(Bulge_can_index) 
-        master_CoreBulge_can.append(CoreBulge_can), master_CoreBulge_can_index.append(CoreBulge_can_index) 
-        master_Disk_can1.append(Disk_can1), master_Disk_can1_index.append(Disk_can1_index)
-        master_Disk_can2.append(Disk_can2), master_Disk_can2_index.append(Disk_can2_index)
-        master_Disk_can3.append(Disk_can3), master_Disk_can3_index.append(Disk_can3_index)
-        master_Bar_can.append(Bar_can), master_Bar_can_index.append(Bar_can_index)
-        master_Ring_can.append(Ring_can), master_Ring_can_index.append(Ring_can_index)
+        master_Bulge_can.append(Bulge_can), 
+        master_Bulge_can_index.append(Bulge_can_index) 
+        master_CoreBulge_can.append(CoreBulge_can), 
+        master_CoreBulge_can_index.append(CoreBulge_can_index) 
+        master_Disk_can1.append(Disk_can1), 
+        master_Disk_can1_index.append(Disk_can1_index)
+        master_Disk_can2.append(Disk_can2), 
+        master_Disk_can2_index.append(Disk_can2_index)
+        master_Disk_can3.append(Disk_can3), 
+        master_Disk_can3_index.append(Disk_can3_index)
+        master_Bar_can.append(Bar_can), 
+        master_Bar_can_index.append(Bar_can_index)
+        master_Ring_can.append(Ring_can), 
+        master_Ring_can_index.append(Ring_can_index)
         
-        master_Total_mag_can.append(Total_mag_can), master_Total_mag_can_index.append(Total_mag_can_index)
+        master_Total_mag_can.append(Total_mag_can), 
+        master_Total_mag_can_index.append(Total_mag_can_index)
         
         master_Bulge_can_row.append(Bulge_can_row)
         master_CoreBulge_can_row.append(CoreBulge_can_row)
@@ -185,19 +267,100 @@ def cpt_seperator_demo(input_list_name):
         master_Ring_can_row.append(Ring_can_row)
         master_Total_mag_can_row.append(Total_mag_can_row)
 
-    return{"master_Bulge_can":master_Bulge_can, "master_Bulge_can_index":master_Bulge_can_index, "master_Bulge_can_row":master_Bulge_can_row,\
-           "master_CoreBulge_can":master_CoreBulge_can, "master_CoreBulge_can_index":master_CoreBulge_can_index, "master_CoreBulge_can_row":master_CoreBulge_can_row,\
-           "master_Disk_can1":master_Disk_can1, "master_Disk_can1_index":master_Disk_can1_index, "master_Disk_can1_row":master_Disk_can1_row,\
-           "master_Disk_can2":master_Disk_can2, "master_Disk_can2_index":master_Disk_can2_index,"master_Disk_can2_row":master_Disk_can2_row,\
-           "master_Disk_can3":master_Disk_can3, "master_Disk_can3_index":master_Disk_can3_index,"master_Disk_can3_row":master_Disk_can3_row,\
-           "master_Bar_can":master_Bar_can, "master_Bar_can_index":master_Bar_can_index,"master_Bar_can_row":master_Bar_can_row,\
-           "master_Ring_can":master_Ring_can, "master_Ring_can_index":master_Ring_can_index, "master_Ring_can_row":master_Ring_can_row,\
-           "master_Total_mag_can":master_Total_mag_can, "master_Total_mag_can_index":master_Total_mag_can_index, "master_Total_mag_can_row":master_Total_mag_can_row}            
+    return{"master_Bulge_can":master_Bulge_can, 
+           "master_Bulge_can_index":master_Bulge_can_index, 
+           "master_Bulge_can_row":master_Bulge_can_row,
+           "master_CoreBulge_can":master_CoreBulge_can, 
+           "master_CoreBulge_can_index":master_CoreBulge_can_index, 
+           "master_CoreBulge_can_row":master_CoreBulge_can_row,
+           "master_Disk_can1":master_Disk_can1, 
+           "master_Disk_can1_index":master_Disk_can1_index, 
+           "master_Disk_can1_row":master_Disk_can1_row,
+           "master_Disk_can2":master_Disk_can2, 
+           "master_Disk_can2_index":master_Disk_can2_index,
+           "master_Disk_can2_row":master_Disk_can2_row,
+           "master_Disk_can3":master_Disk_can3, 
+           "master_Disk_can3_index":master_Disk_can3_index,
+           "master_Disk_can3_row":master_Disk_can3_row,
+           "master_Bar_can":master_Bar_can, 
+           "master_Bar_can_index":master_Bar_can_index,
+           "master_Bar_can_row":master_Bar_can_row,
+           "master_Ring_can":master_Ring_can, 
+           "master_Ring_can_index":master_Ring_can_index, 
+           "master_Ring_can_row":master_Ring_can_row,
+           "master_Total_mag_can":master_Total_mag_can, 
+           "master_Total_mag_can_index":master_Total_mag_can_index, 
+           "master_Total_mag_can_row":master_Total_mag_can_row}            
                     
 #%% tested
 def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name, 
-                        override_instruction):
+                        override_instruction=[]):
+    """
+    A demo function for interpret the nature of the analytic function 
+    describing a galaxy.
     
+    ...
+    The scheme of interpretation is as following:
+        
+        "Bulge": 
+            The galactic spheroid.
+            Bulges are described by Sersic function.
+            In the presecne of more than one Sersic function in a galaxy,
+            The one with the largest sersic index is considered the bulge.
+            
+        "Lens":
+            Lens are described by Sersic function (usually n<1).
+            In the presecne of more than one Sersic function in a galaxy,
+            The one with the smallest sersic index is considered the lens.
+            
+        "CoreBulge":
+            The core-depleted galactic spheroid.
+            CoreBulge are desribed by core-Sersic function
+            
+        "Disk": 
+            The extended Disk
+        
+        "nucDisk": 
+            The nuclear Disk
+        
+        "PrimBar":
+            The primary bar
+        
+        "SecBar":
+            The secondary bar
+        
+        "Ring":
+            The ring, anse and spiral arms
+        
+        
+    
+    
+    This function replace the analytic functions label with the component name.
+    
+    The interpretation can be overrided in special case. 
+    
+    ...
+
+    Parameters
+    ----------
+    input_list_name : str
+        The file name of the galaxy bundle, from cpt_seperator_demo
+        
+    input_sep_dict: python dict
+        A dictionary seperation 
+    
+    output_list_name: str
+        The name of the output file. 
+    
+    Optional
+    --------
+    override_instruction: list
+        A list for user 
+    
+    Return
+    -------
+
+    """
     sample = read_list(input_list_name) #sample package
     sep_dict = input_sep_dict #the result of sperator, a dictionary of each cpt, with row and index
     #A = cpt_seperator_demo("Gal_bundle")
@@ -320,7 +483,7 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
             pass
         else:
             if len(Bar_can) > 1:
-                r_out_list = [Bar_can[i][2] for i in range(len(Bar_can))] # Sersic index n
+                r_out_list = [Bar_can[i][2] for i in range(len(Bar_can))]
                 
                 Bar1_index = Bar_can_index[r_out_list.index(max(r_out_list))]
                 Bar1_row = Bar_can_row[r_out_list.index(max(r_out_list))]
@@ -373,7 +536,8 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
                 if sample[i][0] == override_instruction[number]:
                     cpt_index = override_instruction[number+1]
                     sample[i][cpt_index] = override_instruction[number+2]
-                    print("replaced!", sample[i][cpt_index], override_instruction[number+2])
+                    print("replaced!", sample[i][cpt_index], 
+                          override_instruction[number+2])
                 else:
                     pass
     #############
@@ -381,6 +545,43 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
         pickle.dump(sample, f)
         
     return sample
+#%%
+def bundle_creation(obj_list,equvi=False,override_list=[]):
+    """
+    A method to create galaxy bundle, in an single execution.
+    If you want to save the in
+    ----------                        
+    obj_list : str
+        The name of ASCII file containing the file names of the profiler logs.
+        
+        e.g. 
+        ./my_directory/galaxy1/galaxy1_major.txt
+        ./my_directory/galaxy2/galaxy2_major.txt
+        ./my_directory/galaxy3/galaxy3_major.txt
+
+    equvi : bool         
+        The value indicating if the logs are in equvilant axis
+            
+    override_list : list
+        A list of overriding instruction.
+
+        e.g.
+        [name, index of element, replacement item,...]
+        ["NGC2862",2,"Disk","NGC2872",5,"Point Source" ]
+        
+    Return
+    ------
+    bundle: list
+        A galaxy bundle with the information of each structural components.       
+    """
+    run_list(obj_list,"temp",equvi)
+
+    C= cpt_seperator_demo('temp')
+    bundle = cpt_classifier_demo('Gal_bundle_equvi_bin2',C,
+                        'Gal_bundle_equvi_bin2_cpt',override_list)
+
+    return bundle    
+
 
 #%% tested
 def plus_minus_seperator(name,input_array,limit):
@@ -488,7 +689,6 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     
     sph_mag = np.array(sph_mag)
     sph_Re = np.array(sph_Re)
-        #input_list[][]
     
     output = {"name": name, 
               "vdis": vdis,
@@ -548,76 +748,8 @@ def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
         
     return output
     
-#%% tested
-def remove_item(input_list_name,keyword_list):
-    """
-    A method to remove lists base on specified keywords, from the galaxy bundle.
-    ----------                        
-    input_list_name: str
-        The galaxy bundle
-        
-    keyword_list: list
-        A list containing the names of the galaxy
-        
-    Return
-    ------
-    Galaxy Bundle
-    """    
-    sample = read_list(input_list_name)
-    row_list=[]
-    for item in keyword_list:
-        keyword = item
-
-        for row in range(len(sample)):
-
-            if sample[row][0] == keyword:
-                print("Bingo")
-                row_list.append(row)
-                pass
-            else:
-                pass
-        
-        for i in row_list:
-            sample.remove(sample[i])
-            
-            
-    with open(input_list_name, 'wb') as f:
-        pickle.dump(sample, f)
-    return sample
-
-#%% tested
-def add_item(parent_list_name, target_list_name, keyword_list):
-    """
-    A method to add lists into abundle based on specified keywords.
-    ----------                        
-    parent_list_name: str
-        The parent galaxy bundle
-        
-    target_list_name: str
-        The target bindle
+#%% Under Construction no one allow in
     
-    keyword_list: list
-        A list containing the names of the galaxy
-        
-    Return
-    ------
-    New target list
-    """    
-    parent_sample = read_list(parent_list_name)
-    target_sample = read_list(target_list_name)
-    
-    for item in keyword_list:
-       keyword = item
-       for row in range(len(parent_sample)):
-            if parent_sample[row][0] == keyword:
-                target_sample.append(parent_sample[row])
-            else:
-                pass
-            
-    with open(target_list_name, 'wb') as f:
-        pickle.dump(target_sample, f)
-    return target_sample
-#%%
     #select base on mass bin 
     #morph Bin
     #specific feature bin
