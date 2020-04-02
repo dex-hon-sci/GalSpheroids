@@ -998,33 +998,129 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      colour=colour,name=name)
         return plot
     
-#%%
+#%% Construction area
+## warning, no judgement
 from astropy.io import fits
+import cmasher as cmr
+
 
 class Plot2D(object):
     def __init__(file):
         self.file = file
     
-    
     #scaling function
     #minmax with a dial
     # log scale
     
-    def plot_galaxy(file):
-        
+    def read_fits_img(file):
+        """
+        """
         hdul = fits.open(file)
         hdul.info()
         data = np.array(hdul[0].data)
+        return data
+    
+    def trunk_window(array,centre, r_max):
+        """
+        """
+        x0,y0 = centre[0],centre[1]
+        #window = array
+        
+        print('edges', x0-r_max,x0+r_max,y0-r_max,y0+r_max)
+        
+        window = array[y0-r_max:y0+r_max,x0-r_max:x0+r_max]
+        return window
+        
+    
+    def plot_galaxy(data,val_min,val_max, centre):
+        # centering, triming and variance plots (histogram and variance
+        
+        
+        """
+        Plot galaxy image
+        
+        be careful, x y inversion
+
+        ----------
+        file : str
+                                    
+        
+        Optional
+        ---------
+        centre_x,centre_y:
+            
+        arcsec_scale:
+            
+        val_min, val_max:    
+        
+        Return
+        ------
+        plot
+        
+        """
+        print(np.amin(data),np.amax(data))
+        print(np.average(data),np.std(data))
+        print(data)
+        
+        avg_data, s_data = np.average(data),np.std(data)
         data_log = np.log(data)
-        plt.imshow(data_log)
+        #plt.imshow(data,cmap=cmr.heat)
+       # plt.show()
+        index = np.linspace(0,len(data[:,0]),len(data[:,0])/10)
+        new_scale = (index - np.full(index.shape, centre[1]))*0.4
+
+        #print(new_scale)
+#local_prob_point0 = np.array([(float(local_pop_hist0[0][x])/local_N0_total) for x in range(np.size(local_pop_hist0[0]))])
+
+        new_scale = np.array([format(new_scale[x], '.2f') for x in range(len(new_scale))])
+        #for i in index:
+        #    if i == centre[1]:
+                
+        plt.imshow(data,cmap=cmr.heat, vmin= val_min, vmax = val_max)
+
+        #plt.yticks(index, new_scale)
+        #plt.hlines(centre[1],0,centre[0],'green')
+        #plt.vlines(centre[0],0,centre[1],'green')
+
+        plt.ylabel("arcsec")
         plt.show()
         
         #print(data)
-        
-        
+    
+centre = (252, 432)
+r_max = 207
 
-Plot2D.plot_galaxy("NGC2872.fits")     
-Plot2D.plot_galaxy("res1_NGC2872.fits") 
+data1_0 = Plot2D.read_fits_img("NGC2872.fits")
+data2 = Plot2D.read_fits_img("md1_NGC2872.fits")
+data3 = Plot2D.read_fits_img("res1_NGC2872.fits")
+
+
+data1 = Plot2D.trunk_window(data1_0,centre,r_max)
+
+print(data1_0.shape)
+
+plt.imshow(data1,cmap=cmr.heat, vmin= np.amin(data1), vmax = np.average(data1)+np.std(data1))
+plt.show()
+
+data3_l = np.log(data3)
+avg_data3_l, s_data3_l = np.average(data3_l), np.std(data3_l)
+
+avg_data1, s_data1 = np.average(data1), np.std(data1)
+avg_data2, s_data2 = np.average(data2), np.std(data2)
+avg_data3, s_data3 = np.average(data3), np.std(data3)
+
+
+Plot2D.plot_galaxy(data1,avg_data1,avg_data1+1.5*s_data1,centre)
+
+
+
+print(type(centre),centre[0],centre[1])
+
+#Plot2D.plot_galaxy(data2,avg_data2,avg_data1+1.5*s_data2)   
+#Plot2D.plot_galaxy(data3,avg_data3,avg_data3+1.5*s_data3) 
+
+#Plot2D.plot_galaxy(np.log(data3),avg_data3_l,avg_data3_l+1.5*s_data3_l) 
+
 #%%
 
 
