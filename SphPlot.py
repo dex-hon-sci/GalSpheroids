@@ -26,7 +26,7 @@ import SphRead as SRead
 
 
 __all__=["MLRelationIband","MassCalculation","SelectionCut", "ShowcaseIndi",
-         "ShowcaseCompare2"]
+         "ShowcaseCompare2", "Plot2D"]
 
 #%% tested
 class MLRelationIband(object):
@@ -1004,13 +1004,11 @@ from astropy.io import fits
 import cmasher as cmr
 
 
+
 class Plot2D(object):
     def __init__(file):
-        self.file = file
+        self.file = file    
     
-    #scaling function
-    #minmax with a dial
-    # log scale
     
     def read_fits_img(file):
         """
@@ -1030,7 +1028,19 @@ class Plot2D(object):
         
         window = array[y0-r_max:y0+r_max,x0-r_max:x0+r_max]
         return window
+    
+    def x_average(matrix):
+        array = np.array([np.average(matrix[:,x]) for x in range(len(matrix[:,0]))])
+        #print("shape",array)
+        index = np.linspace(0,len(array),len(array))
+
+        plt.plot(index,array,'red')
+        plt.hlines(np.average(array),0,len(index))
+        plt.hlines(0,0,len(index),linestyle="dashed")
+        plt.ylim((0,13*np.average(array)))
         
+        plt.show()
+        return array
     
     def plot_galaxy(data,val_min,val_max, centre):
         # centering, triming and variance plots (histogram and variance
@@ -1058,12 +1068,12 @@ class Plot2D(object):
         plot
         
         """
-        print(np.amin(data),np.amax(data))
-        print(np.average(data),np.std(data))
-        print(data)
+        #print(np.amin(data),np.amax(data))
+        #print(np.average(data),np.std(data))
         
         avg_data, s_data = np.average(data),np.std(data)
-        data_log = np.log(data)
+        a =15
+        data_log = np.log(a*data+1) / np.log(a)
         #plt.imshow(data,cmap=cmr.heat)
        # plt.show()
         index = np.linspace(0,len(data[:,0]),len(data[:,0])/10)
@@ -1076,31 +1086,42 @@ class Plot2D(object):
         #for i in index:
         #    if i == centre[1]:
                 
-        plt.imshow(data,cmap=cmr.heat, vmin= val_min, vmax = val_max)
+        plt.imshow(data_log,cmap=cmr.heat, vmin= val_min, vmax = val_max)
+
 
         #plt.yticks(index, new_scale)
         #plt.hlines(centre[1],0,centre[0],'green')
         #plt.vlines(centre[0],0,centre[1],'green')
-
+        plt.xlabel("arcsec")
         plt.ylabel("arcsec")
         plt.show()
         
+        
+        
+    def plot_galaxy_proper(data,val_min,val_max, centre):
+        """
+        Plot original, model and residual
+        """
+        
+        return None
         #print(data)
     
+    
+    def plot_3plot():
+        return None
 centre = (252, 432)
 r_max = 207
 
 data1_0 = Plot2D.read_fits_img("NGC2872.fits")
-data2 = Plot2D.read_fits_img("md1_NGC2872.fits")
-data3 = Plot2D.read_fits_img("res1_NGC2872.fits")
+data2_0 = Plot2D.read_fits_img("md1_NGC2872.fits")
+data3_0 = Plot2D.read_fits_img("res1_NGC2872.fits")
+
 
 
 data1 = Plot2D.trunk_window(data1_0,centre,r_max)
+data2 = Plot2D.trunk_window(data2_0,centre,r_max)
+data3 = Plot2D.trunk_window(data3_0,centre,r_max)
 
-print(data1_0.shape)
-
-plt.imshow(data1,cmap=cmr.heat, vmin= np.amin(data1), vmax = np.average(data1)+np.std(data1))
-plt.show()
 
 data3_l = np.log(data3)
 avg_data3_l, s_data3_l = np.average(data3_l), np.std(data3_l)
@@ -1112,7 +1133,17 @@ avg_data3, s_data3 = np.average(data3), np.std(data3)
 
 Plot2D.plot_galaxy(data1,avg_data1,avg_data1+1.5*s_data1,centre)
 
+Plot2D.x_average(data1)
 
+print("Limit",avg_data2+0.1*s_data2)
+
+Plot2D.plot_galaxy(data2,avg_data1,avg_data1+1.5*s_data1,centre)
+
+Plot2D.x_average(data2)
+
+Plot2D.plot_galaxy(data3,avg_data1,avg_data1+1.5*s_data1,centre)
+
+Plot2D.x_average(data3)
 
 print(type(centre),centre[0],centre[1])
 
