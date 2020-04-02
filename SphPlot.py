@@ -1012,14 +1012,19 @@ class Plot2D(object):
     
     def read_fits_img(file):
         """
+        Read 2D image from Fits files
+        
         """
         hdul = fits.open(file)
         hdul.info()
         data = np.array(hdul[0].data)
         return data
     
-    def trunk_window(array,centre, r_max):
+    def trunk_window(array,centre,r_max):
         """
+        Resize the window of plots to focus on one specfic galaxy.
+        
+        
         """
         x0,y0 = centre[0],centre[1]
         #window = array
@@ -1030,16 +1035,33 @@ class Plot2D(object):
         return window
     
     def x_average(matrix):
+        
+        
         array = np.array([np.average(matrix[:,x]) for x in range(len(matrix[:,0]))])
         #print("shape",array)
-        index = np.linspace(0,len(array),len(array))
+        #index = np.linspace(0,len(array),len(array))
 
-        plt.plot(index,array,'red')
-        plt.hlines(np.average(array),0,len(index))
-        plt.hlines(0,0,len(index),linestyle="dashed")
-        plt.ylim((0,13*np.average(array)))
+        #plt.plot(index,array,'red')
+        #plt.hlines(np.average(array),0,len(index))
+        #plt.hlines(0,0,len(index),linestyle="dashed")
+        #plt.ylim((0,13*np.average(array)))
         
-        plt.show()
+        #plt.show()
+        return array
+    
+    def y_average(matrix):
+        
+        
+        array = np.array([np.average(matrix[x,:]) for x in range(len(matrix[0,:]))])
+        #print("shape",array)
+        #index = np.linspace(0,len(array),len(array))
+
+        #plt.plot(index,array,'red')
+        #plt.hlines(np.average(array),0,len(index))
+        #plt.hlines(0,0,len(index),linestyle="dashed")
+        #plt.ylim((0,13*np.average(array)))
+        
+        #plt.show()
         return array
     
     def plot_galaxy(data,val_min,val_max, centre):
@@ -1068,23 +1090,15 @@ class Plot2D(object):
         plot
         
         """
-        #print(np.amin(data),np.amax(data))
-        #print(np.average(data),np.std(data))
         
         avg_data, s_data = np.average(data),np.std(data)
         a =15
         data_log = np.log(a*data+1) / np.log(a)
         #plt.imshow(data,cmap=cmr.heat)
-       # plt.show()
         index = np.linspace(0,len(data[:,0]),len(data[:,0])/10)
         new_scale = (index - np.full(index.shape, centre[1]))*0.4
-
-        #print(new_scale)
-#local_prob_point0 = np.array([(float(local_pop_hist0[0][x])/local_N0_total) for x in range(np.size(local_pop_hist0[0]))])
-
         new_scale = np.array([format(new_scale[x], '.2f') for x in range(len(new_scale))])
-        #for i in index:
-        #    if i == centre[1]:
+
                 
         plt.imshow(data_log,cmap=cmr.heat, vmin= val_min, vmax = val_max)
 
@@ -1096,61 +1110,130 @@ class Plot2D(object):
         plt.ylabel("arcsec")
         plt.show()
         
-        
-        
-    def plot_galaxy_proper(data,val_min,val_max, centre):
+    def plot_galaxy_indi(file_name,md_file_name, res_file_name,
+                         centre,r_max=400, a=15):
         """
-        Plot original, model and residual
-        """
+        Plot individual galaxy 
         
-        return None
-        #print(data)
+        """
+        x0,y0 = centre[0],centre[1]
+
+        data0 = Plot2D.read_fits_img(file_name)   
+        data1 = Plot2D.read_fits_img(md_file_name)        
+        data2 = Plot2D.read_fits_img(res_file_name)    
+        
+        index = np.linspace(0,len(data0[:,0]),len(data0[:,0]))
+
+        
+        index_trunk0 = index[x0-r_max:x0+r_max]
+        
+        new_scale = (index_trunck0 - np.full(index_trunck0.shape, int(len(index_x0)/2)))*0.4
+
+        
+        l= len(index_trunk0)
+        #A = [0,0+len(data0)/2,0-len(data0)/2, 0+len(data0),0-len(data0)]
+        
+        a,b,c,d = 0, int(l/4),int(l/2),l
+        print(a,b,c,d)
+        B = [a,b,c,d]
+        A = [index_trunk0[a],index_trunk0[b],index_trunk0[c],index_trunk0[d]]
+        print('A',A,'B',B)
+        print("length",len(A),len(B))
+
+        data_trunk0 = Plot2D.trunk_window(data0,centre,r_max)
+        data_log0 = np.log(a*data_trunk0+1) / np.log(a)
+
+        data_trunk1 = Plot2D.trunk_window(data1,centre,r_max)
+        data_log1 = np.log(a*data_trunk1+1) / np.log(a)
+         
+        data_trunk2 = Plot2D.trunk_window(data2,centre,r_max)
+        data_log2 = np.log(a*data_trunk2+1) / np.log(a)
+
+        
+        
+        index_x0 = np.linspace(0,len(data_log0[:,0]),len(data_log0[:,0]))
+        index_y0 = np.linspace(0,len(data_log0[0,:]),len(data_log0[0,:]))
+        index_x1 = np.linspace(0,len(data_log1[:,0]),len(data_log1[:,0]))
+        index_y1 = np.linspace(0,len(data_log1[0,:]),len(data_log1[0,:]))
+        index_x2 = np.linspace(0,len(data_log2[:,0]),len(data_log2[:,0]))
+        index_y2 = np.linspace(0,len(data_log2[0,:]),len(data_log2[0,:]))  
+        
+        avg_data0, std_data0 = np.average(data_trunk0), np.std(data_trunk0)
+        avg_data1, std_data1 = np.average(data_trunk1), np.std(data_trunk1)
+        avg_data2, std_data2 = np.average(data_trunk2), np.std(data_trunk2)
+        
+        val_min0, val_max0 =  avg_data0 , avg_data0+1.5*std_data0
+        
+            
+        fig = plt.figure()
+
+        #gs = gridspec.GridSpec(ncols=2, nrows=2,height_ratios=[1,4],hspace=-0.1)
+        gs = gridspec.GridSpec(ncols=3, nrows=2,height_ratios=[1,3], hspace=0.1, wspace=0.05)
     
-    
-    def plot_3plot():
-        return None
+        ax_main0 = fig.add_subplot(gs[3])      
+        ax_xDist0 = fig.add_subplot(gs[0])
+
+        ax_main1 = fig.add_subplot(gs[4])      
+        ax_xDist1 = fig.add_subplot(gs[1])
+        
+        ax_main2 = fig.add_subplot(gs[5])      
+        ax_xDist2 = fig.add_subplot(gs[2])
+        #ax2 = fig.add_subplot(gs[1])
+        #ax_yDist = fig.add_subplot(gs[3])
+        
+        
+        
+        ax_main0.imshow(data_log0, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
+        #ax_main0.set_xlabel("arcsec",fontsize=16)
+        ax_main0.set_ylabel("arcsec",fontsize=16)
+        ax_main0.set_xticks([])
+        ax_main0.set_yticks(B)
+        ax_main0.set_yticklabels(A)
+        
+        ax_xDist0.plot(index_x0,Plot2D.x_average(data_trunk0))
+        ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed")        #,align='mid')
+        ax_xDist0.set_ylabel('count',fontsize=16)
+        ax_xDist0.set_xticks([])
+        ax_xDist0.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
+        
+
+        ax_main1.imshow(data_log1, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
+        ax_main1.set_yticks([])
+        ax_main1.set_xticks([])
+
+        ax_xDist1.plot(index_x1,Plot2D.x_average(data_trunk1))
+        ax_xDist1.hlines(avg_data1,0,len(index_x1),linestyle="dashed")        #,align='mid')
+        ax_xDist1.set_xticks([])
+        ax_xDist1.set_yticks([])
+        ax_xDist1.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
+
+        ax_main2.imshow(data_log2, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
+        ax_main2.set_yticks([])
+        ax_main2.set_xticks([])
+
+        ax_xDist2.plot(index_x2,Plot2D.x_average(data_trunk2))
+        ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")        #,align='mid')
+        ax_xDist2.set_xticks([])
+        ax_xDist2.set_yticks([])
+
+        ax_xDist2.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
+
+
+        return fig
+
+
 centre = (252, 432)
 r_max = 207
 
-data1_0 = Plot2D.read_fits_img("NGC2872.fits")
-data2_0 = Plot2D.read_fits_img("md1_NGC2872.fits")
-data3_0 = Plot2D.read_fits_img("res1_NGC2872.fits")
 
 
+Plot2D.plot_galaxy_indi("NGC2872.fits","md1_NGC2872.fits","res1_NGC2872.fits", (252, 432),r_max=207, a =15)
+plt.show()
 
-data1 = Plot2D.trunk_window(data1_0,centre,r_max)
-data2 = Plot2D.trunk_window(data2_0,centre,r_max)
-data3 = Plot2D.trunk_window(data3_0,centre,r_max)
-
-
-data3_l = np.log(data3)
-avg_data3_l, s_data3_l = np.average(data3_l), np.std(data3_l)
-
-avg_data1, s_data1 = np.average(data1), np.std(data1)
-avg_data2, s_data2 = np.average(data2), np.std(data2)
-avg_data3, s_data3 = np.average(data3), np.std(data3)
+Plot2D.plot_galaxy_indi("NGC4045.fits","md1_NGC4045.fits","res1_NGC4045.fits", (1088, 789),r_max=255, a =15)
+plt.show()
 
 
-Plot2D.plot_galaxy(data1,avg_data1,avg_data1+1.5*s_data1,centre)
-
-Plot2D.x_average(data1)
-
-print("Limit",avg_data2+0.1*s_data2)
-
-Plot2D.plot_galaxy(data2,avg_data1,avg_data1+1.5*s_data1,centre)
-
-Plot2D.x_average(data2)
-
-Plot2D.plot_galaxy(data3,avg_data1,avg_data1+1.5*s_data1,centre)
-
-Plot2D.x_average(data3)
-
-print(type(centre),centre[0],centre[1])
-
-#Plot2D.plot_galaxy(data2,avg_data2,avg_data1+1.5*s_data2)   
-#Plot2D.plot_galaxy(data3,avg_data3,avg_data3+1.5*s_data3) 
-
-#Plot2D.plot_galaxy(np.log(data3),avg_data3_l,avg_data3_l+1.5*s_data3_l) 
 
 #%%
 
