@@ -25,8 +25,20 @@ import matplotlib.patches as mpatches
 import SphRead as SRead
 
 
-__all__=["MLRelationIband","MassCalculation","SelectionCut", "ShowcaseIndi",
+__all__=["ImageProcessing","MLRelationIband","MassCalculation",
+         "SelectionCut", "ShowcaseIndi",
          "ShowcaseCompare2", "Plot2D"]
+
+__author__="Dexter S.H. Hon"
+
+
+## make histogram class inheriting Shocaseindi and 
+#%%
+class ImageProcessing():
+    
+    def __init__(self,a):
+        self._a = _a
+
 
 #%% tested
 class MLRelationIband(object):
@@ -94,15 +106,37 @@ class MassCalculation(MLRelationIband):
     
     def __init__(self, m_gal, dist, M_sun, *args, **kwargs):
         self._m_gal = m_gal
-        self.dist = dist
-        self.M_sun = M_sun
+        self._dist = dist
+        self._M_sun = M_sun
         super().__init__(*args, **kwargs)
              
     @property
     def m_gal(self):
         return(self._m_gal)
+        
+    @property
+    def dist(self):
+        return(self.dist)
+        
+    @property
+    def M_sun(self):
+        return(self.M_sun)
 
     def cal_Mass(self,ML_ratio):
+        """
+        A method to calculate the stellar mass of a galaxy
+        
+        Parameters
+        ----------
+        ML_ratio : float
+            The mass-light ratio of the galaxy given by the class
+            MLRelationIband.
+
+            
+        Return
+        ------
+        """
+        
         M_gal=self._m_gal-25-5*np.log10(self.dist)  
         #Absoulte Magnitude of the galaxy
         #print('M_gal',M_gal)
@@ -113,12 +147,6 @@ class MassCalculation(MLRelationIband):
 
 #%% tested
 class SelectionCut(object):
-    """
-    Class for selection cut 
-    
-    input by mass, generate and plot selection cut
-    
-    """
     """
     A class for selection cut. 
     
@@ -209,7 +237,7 @@ class SelectionCut(object):
 #%%  
 class ShowcaseIndi(SelectionCut, MassCalculation):
     """
-    Class for visualizing data, assuming a singular bundle input 
+    Class for visualizing data, assuming a singular bundle input.
     
     It contains plotting methods for a population of galaxies' properties.
     
@@ -259,6 +287,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         alpha0: float
             The opacity level for the highlight zone, from 0 to 1.0.
             
+        Return
         ------
 
             
@@ -461,7 +490,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 class ShowcaseCompare2(ShowcaseIndi):
 
     """
-    Class for visualizing data, assuming two bundle inputs
+    Class for visualizing data, assuming two bundle inputs.
     
     It contains plotting methods for a population of galaxies' properties,
     for the sake of comparing the two data sets.
@@ -499,10 +528,16 @@ class ShowcaseCompare2(ShowcaseIndi):
         A method to plot the difference in distance estimation 
         ----------                        
         DD : 1D numpy array
-            Distance by redshift independent measurement.
+            Comoving distance by redshift independent measurement.
                 
+        scale: 1D numpy array
+            The kpc/arcsec scale by redshift independent measurement.
+            
         dc : 1D numpy array         
             Distance by redshift dependent measurement.
+
+        sc: 1D numpy array
+            The kpc/arcsec scale by redshift dependent measurement.
 
             
         name : str
@@ -722,12 +757,103 @@ class ShowcaseCompare2(ShowcaseIndi):
             #ax.arrow(P2[2][i],P2[0][i], Q2[2][i]-P2[2][i],Q2[0][i]-P2[0][i],
             #head_width=1, head_length=1, fc='k', ec='k')
             arrow = mpatches.FancyArrowPatch((x1[i],y1[i]), ((x2[i]),(y2[i])),
-                                             mutation_scale=15)
+                                             mutation_scale=4)
             ax.add_patch(arrow)
             
+    def plot_seperation_generic(para1, para2, limit, para_name="", 
+                                colour1="blue", colour2="orange", name=[], 
+                                label=[1,2]):
+        """
+        A generic method to plot the seperation between 
+        the same parameter from different source.
+        ----------
+        para1: list, numpy array
+            parameter 1
+            
+        para2: list, numpy array
+            parameter 2
+            
+        limit:
+        
+        Optional
+        ---------
+        para_name: str
+        
+        colour: str
 
+        name: list
+            A list of galaxy names.
+            
+        colour: str
+            The colour of the lines.
+            
+        name: list
+
+        label: list
+        
+        Return
+        ------
+        delta: numpy array
+            parameter1 - parameter2
+            
+        """
+        fig, ax = plt.subplots()
+        
+        index = np.linspace(0,len(para1),len(para1))
+        
+
+        
+        min_index, max_index = min(index), max(index)
+        
+        avg_para1, std_para1 = np.average(para1), np.std(para1)
+        avg_para2, std_para2 = np.average(para2), np.std(para2)
+
+
+        range_can = [avg_para1+std_para1, avg_para1-std_para1, avg_para2+std_para2, avg_para2-std_para2]
+        para = np.concatenate([para1,para2])
+        #for i in range(len(index)):
+        #    ax.hlines(index, 2*min(para), 2*max(para), linestyle="dashed", linewidth = 0.2, color= 'k')
+        
+        
+        
+        ax.plot(para1,index,'o',color = colour1)
+        ax.plot(para2,index,'o',color = colour2)
+
+
+
+        ax.vlines(limit,min_index,max_index,linestyle="dashed",
+                  linewidth=3, color="black", label= "limit")
+        
+        ax.vlines(avg_para1,min_index,max_index,linestyle="solid",
+                  linewidth=3, color=colour1, label= "mean %s"%para_name)
+        ax.vlines(avg_para1+std_para1,min_index,max_index, 
+                  linestyle="dashed",linewidth=2, color=colour1)
+        ax.vlines(avg_para1-std_para1,min_index,max_index, 
+                  linestyle="dashed",linewidth=2, color=colour1)
+        
+        
+        ax.vlines(avg_para2,min_index,max_index,linestyle="solid",
+                  linewidth=3, color=colour2, label= "mean %s"%para_name)
+        ax.vlines(avg_para2+std_para2,min_index,max_index, 
+                  linestyle="dashed",linewidth=2, color=colour2)
+        ax.vlines(avg_para2-std_para2,min_index,max_index, 
+                  linestyle="dashed",linewidth=2, color=colour2)
+        
+        
+        
+        ax.invert_yaxis()
+        #ax.set_ytick(index,name)
+        
+        plt.yticks(index, name)
+        #ax2.yticks.set_visible(False)
+        plt.setp(ax.get_yticklabels(), visible=False)
+        ax.set_xlabel(para_name, fontsize=16)
+        plt.legend()
+        return fig, ax
+        
+        
     def plot_compare_generic(para1, para2, sub=True , div=False,
-                            para_name="", colour="blue",name=None): 
+                            para_name="", colour="blue",name=None, label=[1,2]): 
         #tested
         """
         A generic method to plot the difference between the same parameter from
@@ -768,8 +894,14 @@ class ShowcaseCompare2(ShowcaseIndi):
             raise Exception("Mode has to be either subtraction or division")
         elif sub == True:
             delta = delta_sub
+            xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , para_name, label[1])
+
+            
         elif div == True:
             delta = delta_div
+            xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , para_name, label[1])
+    
+        
         else: 
             raise Exception("Impossible, you will \
                             never reach this error message.")
@@ -778,7 +910,6 @@ class ShowcaseCompare2(ShowcaseIndi):
         min_index, max_index = min(index),max(index)
         
         
-        xlabel = "$ %s_{1} \,-\, %s_{2}$"  %(para_name, para_name)
         
         avg_delta = np.average(delta)
         std_delta = np.std(delta)
@@ -814,7 +945,8 @@ class ShowcaseCompare2(ShowcaseIndi):
     
     def plot_compare_index_para(list_input1, list_input2, 
                                   func_index, number, sub =True , div = False, 
-                                  para_name="para", colour="green", name=[]):
+                                  para_name="para", colour="green", name=[],
+                                  label=[1,2]):
         #tested
         """
         Compare the parameters of the fitting components base on indexing
@@ -869,12 +1001,14 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      sub=sub , div=div, 
                                                      para_name=para_name, 
                                                      colour=colour,
-                                                     name=gal_name)
+                                                     name=gal_name,
+                                                     label = label)
         return plot
 
     def plot_compare_feature_para(list_input1, list_input2, 
                                   keyword, number, sub =True , div = False, 
-                                  para_name="para", colour="green", name=[]):
+                                  para_name="para", colour="green", name=[], 
+                                  label=[1,2]):
         #tested
         """
         Compare the parameters of the fitting components, base on feature.
@@ -913,12 +1047,14 @@ class ShowcaseCompare2(ShowcaseIndi):
         plot = ShowcaseCompare2.plot_compare_generic(para1, para2, 
                                                      sub=sub , div=div, 
                                                      para_name=para_name, 
-                                                     colour=colour,name=name)
+                                                     colour=colour,name=name,
+                                                     label = label)
         return plot
 
     def plot_compare_feature_mag(list_input1, list_input2, 
                                   keyword, sub =True, div = False, 
-                                  para_name="mag", colour="green", name=[]):
+                                  para_name="mag", colour="green", name=[],
+                                  label = [1,2]):
         #tested
         """
         Compare the magnitude of the components, base on feature.
@@ -955,13 +1091,14 @@ class ShowcaseCompare2(ShowcaseIndi):
         plot = ShowcaseCompare2.plot_compare_generic(mag1, mag2, 
                                                      sub=sub , div=div, 
                                                      para_name=para_name, 
-                                                     colour=colour,name=name)
+                                                     colour=colour,name=name,
+                                                     label =label)
         return plot
     
     def plot_compare_total_mag(list_input1,list_input2, 
-                                       sub =True, div = False, 
-                                       para_name="Total mag", colour="green", 
-                                       name=[]):
+                               sub =True, div = False, 
+                               para_name="Total mag", colour="green", 
+                               name=[], label=[1,2]):
         #tested
         """
         Compare the total magnitude of the galaxy..
@@ -995,14 +1132,14 @@ class ShowcaseCompare2(ShowcaseIndi):
         plot = ShowcaseCompare2.plot_compare_generic(total_mag1, total_mag2, 
                                                      sub=sub , div=div, 
                                                      para_name=para_name, 
-                                                     colour=colour,name=name)
+                                                     colour=colour,name=name,
+                                                     label=label)
         return plot
     
 #%% Construction area
-## warning, no judgement
+## warning, no judgement, fuck off
 from astropy.io import fits
 import cmasher as cmr
-
 
 
 class Plot2D(object):
@@ -1020,6 +1157,9 @@ class Plot2D(object):
         data = np.array(hdul[0].data)
         return data
     
+    def edge_evaluation():
+        return None
+    
     def trunk_window(array,centre,r_max):
         """
         Resize the window of plots to focus on one specfic galaxy.
@@ -1030,6 +1170,20 @@ class Plot2D(object):
         #print('edges', x0-r_max,x0+r_max,y0-r_max,y0+r_max)       
         window = array[y0-r_max:y0+r_max,x0-r_max:x0+r_max]
         return window
+    
+    
+    def flatten2D(data,condition = 0):
+        """
+        """
+        for i in range(len(data)):
+            for j in range(len(data[i])):
+                if data[i][j] ==condition:
+                    pass
+                else:
+                    data[i][j] = 1
+        return data
+                    
+    
     
     def x_average(matrix):
         """
@@ -1050,27 +1204,26 @@ class Plot2D(object):
     
     def plot_galaxy(data,val_min,val_max, centre):    
         """
-        Plot galaxy image
+        Plot a single galaxy image
         
-        be careful, x y inversion
+        (x y inversion)
 
         ----------
         file : str
                                     
-        
-        Optional
-        ---------
-        centre_x,centre_y:
+        val_min, val_max: float
             
-        arcsec_scale:
             
-        val_min, val_max:    
+        centre: tuple
+           
         
         Return
         ------
         plot
         
         """
+        ## mode to centre on the average value
+        
         
         avg_data, s_data = np.average(data),np.std(data)
         a =15
@@ -1097,9 +1250,11 @@ class Plot2D(object):
         Plot individual galaxy 
         ----------
         file_name : str
-                                    
-        md_file_name: str
+            The fits file of the original galaxy image 
             
+        md_file_name: str
+            The fits file of the galaxy model image 
+
         res_file_name: str
         
         centre_x: tuple
@@ -1134,6 +1289,15 @@ class Plot2D(object):
         data_trunk2 = Plot2D.trunk_window(data2,centre,r_max)
         data_log2 = np.log(a*data_trunk2+1) / np.log(a)
 
+#############diagnoisis mode
+#        data_trunk1_mask = Plot2D.flatten2D(data_trunk1)
+#
+#        data_trunk0 = data_trunk0*data_trunk1_mask
+#        data_log0= np.log(a*data_trunk0+1) / np.log(a)
+#        
+#        data_trunk2 = data_trunk2*data_trunk1_mask
+#        data_log2 = np.log(a*data_trunk2+1) / np.log(a)
+################
         l= len(data_trunk0[:,0])
                 
         a,b,c,d,e = 0, int((l-1)/2)-int((l-1)/4),int((l-1)/2),\
@@ -1160,7 +1324,7 @@ class Plot2D(object):
         fig = plt.figure()
 
         gs = gridspec.GridSpec(ncols=3, nrows=2,height_ratios=[1,3], 
-                               hspace=0.1, wspace=0.05)
+                               hspace=0, wspace=0.05)
     
         ax_main0 = fig.add_subplot(gs[3])      
         ax_xDist0 = fig.add_subplot(gs[0])
@@ -1180,46 +1344,62 @@ class Plot2D(object):
         ax_main0.set_yticklabels(B)
         
         ax_xDist0.plot(index_x0,Plot2D.x_average(data_trunk0))
-        ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed")        
-        ax_xDist0.set_ylabel('count',fontsize=16)
+        ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed") 
+        ax_xDist0.hlines(0,0,len(index_x0),linestyle="dashed")        
+
+        ax_xDist0.set_ylabel('count',fontsize=12)
         ax_xDist0.set_xticks([])
-        ax_xDist0.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
-        
+        ax_xDist0.set_ylim(bottom=0, top=val_max0)       
+        #val_min0-0.3*std_data0
 
         ax_main1.imshow(data_log1, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
         ax_main1.set_yticks([])
         ax_main1.set_xticks([])
 
         ax_xDist1.plot(index_x1,Plot2D.x_average(data_trunk1))
-        ax_xDist1.hlines(avg_data1,0,len(index_x1),linestyle="dashed")        
+        ax_xDist1.hlines(avg_data1,0,len(index_x1),linestyle="dashed") 
+        ax_xDist1.hlines(0,0,len(index_x1),linestyle="dashed")        
+
         ax_xDist1.set_xticks([])
         ax_xDist1.set_yticks([])
-        ax_xDist1.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
-
+        ax_xDist1.set_ylim(bottom=0, top=val_max0)       
+#val_min0-0.3*std_data0
         ax_main2.imshow(data_log2, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
         ax_main2.set_yticks([])
         ax_main2.set_xticks([])
 
         ax_xDist2.plot(index_x2,Plot2D.x_average(data_trunk2))
-        ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")        
+        ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")   
+        ax_xDist2.hlines(0,0,len(index_x2),linestyle="dashed")        
+
         ax_xDist2.set_xticks([])
         ax_xDist2.set_yticks([])
 
-        ax_xDist2.set_ylim(bottom=val_min0-0.3*std_data0, top=val_max0)       
-
-
+        ax_xDist2.set_ylim(bottom=0, top=val_max0)       
+#
+#val_min0-0.3*std_data0
+        
+        plt.savefig("%s.pdf"%file_name, dpi=200)
         return fig
+    
+    def res_analysis():
+        return None
 
 
 
-Plot2D.plot_galaxy_3plot("NGC2872.fits","md1_NGC2872.fits","res1_NGC2872.fits", (252, 432),r_max=207, a =15)
-plt.show()
+#Plot2D.plot_galaxy_3plot("NGC2872.fits","md1_NGC2872.fits",
+#                         "res1_NGC2872.fits", (252, 432),r_max=207, a =15)
+#plt.show()
+#
+#Plot2D.plot_galaxy_3plot("NGC4045.fits","md1_NGC4045.fits",
+#                         "res1_NGC4045.fits", (1088, 789),r_max=255, a =15)
+#plt.show()
+#
+#Plot2D.plot_galaxy_3plot("NGC3675.fits","md1_NGC3675.fits",
+#                         "res1_NGC3675.fits", (271, 1080),r_max=250, a =15)
+#plt.show()
 
-Plot2D.plot_galaxy_3plot("NGC4045.fits","md1_NGC4045.fits","res1_NGC4045.fits", (1088, 789),r_max=255, a =15)
-plt.show()
-
-
-
+# need to fix the edge problem
 #%%
 
 

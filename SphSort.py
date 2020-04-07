@@ -11,6 +11,8 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
+import os
+
 
 from SphRead import *
 
@@ -574,12 +576,12 @@ def bundle_creation(obj_list,equvi=False,override_list=[]):
     bundle: list
         A galaxy bundle with the information of each structural components.       
     """
-    run_list(obj_list,"temp",equvi)
+    run_list(obj_list,"gal_temp",equvi)
 
-    C= cpt_seperator_demo('temp')
+    C= cpt_seperator_demo('gal_temp')
     bundle = cpt_classifier_demo('Gal_bundle_equvi_bin2',C,
                         'Gal_bundle_equvi_bin2_cpt',override_list)
-
+    os.remove("gal_temp")
     return bundle    
 
 
@@ -645,7 +647,7 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     V1= np.genfromtxt(vdis_list, dtype='str') 
     V2= np.genfromtxt(vdis_list, dtype='float') 
     
-    vdis_name_p, vdis_p, vdis_err_p = V1[:,0], V2[:,3], V2[:,4]
+    vdis_name_p, vdis_p, vdis_err_p = V1[:,0], V2[:,3], V2[:,4] #reading vdis file, specfic col numbers
     mag_g_p, mag_i_p = V2[:,10], V2[:,9]
     
     Dist_p = grab_dist(Dist_list[0],Dist_list[1])["Dist"]
@@ -708,7 +710,7 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
 #%% tested
 def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
                       output_list_name_ETG):    
-    
+    ## correction, LTG and ETG are selected by if there's a spiral arm
     """
     A method to seprate Early-Type and Late-Type Galaxy.
     The seperation condition is whether the galaxy contain a extended disk.

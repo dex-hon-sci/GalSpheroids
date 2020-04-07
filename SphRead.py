@@ -35,7 +35,7 @@ def read_list(input_file):
 def read_table(table):
     """
     Just a function using genfromtext to load objects
-    assuming the data is float
+    Assuming the data is float.
     """
     D=np.genfromtxt(table, dtype='float')
     return D
@@ -60,18 +60,19 @@ def match_list_dim(input1,input2):
 def lookup_bundle(gal_bundle,gal_name):
     
     """
-    Lookup individual galaxy by name in a galaxy bundle
+    Lookup individual galaxy by name in a galaxy bundle.
     
     Parameters
     ----------
-    gal_bundle: 
+    gal_bundle: list
+        The galaxy bundle.
         
-    gal_name:
+    gal_name: str
+        The name of the query 
         
     Return
     ----------
-    
-    Generates..functiona blah blah
+    Gal: list
     """
     GN= read_list(gal_bundle)
     for row in range(len(GN)):
@@ -81,6 +82,7 @@ def lookup_bundle(gal_bundle,gal_name):
         else:
             pass
     return Gal
+
 #%% tested
 def grab_parameter(filename, keyword, number):
     """
@@ -295,14 +297,15 @@ def pd_read(filename,check_equvi):
             
                 mu_p = float(A.iloc[i+1][0].split()[2])
                 r_e = float(A.iloc[i+2][0].split()[2])
-                r_b = float(A.iloc[i+3][0].split()[2])
                 n = float(A.iloc[i+4][0].split()[2])
+
+                r_b = float(A.iloc[i+3][0].split()[2])
                 alpha = float(A.iloc[i+5][0].split()[2])
                 gamma = float(A.iloc[i+6][0].split()[2])
                 CoreSersic_mag = float(A.iloc[i+7][0].split()[4]) if check_equvi else 0
 
                 Gal_list.append('CoreSersic')
-                Gal_list.append(np.array([mu_p,r_e,r_b,n,alpha,gamma]))
+                Gal_list.append(np.array([mu_p,r_e,n,r_b,alpha,gamma]))
                 Gal_list.append(CoreSersic_mag)
                 
         # record the fitting parameters for the Exponential function 
