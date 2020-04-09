@@ -21,6 +21,9 @@ __all__ = ["remove_item", "add_item", "outliers", "cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]
 
+__author__="Dexter S.H. Hon"
+
+
 #%% tested
 def remove_item(input_list_name,keyword_list):
     """

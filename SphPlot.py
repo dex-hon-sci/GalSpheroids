@@ -25,9 +25,8 @@ import matplotlib.patches as mpatches
 import SphRead as SRead
 
 
-__all__=["ImageProcessing","MLRelationIband","MassCalculation",
-         "SelectionCut", "ShowcaseIndi",
-         "ShowcaseCompare2", "Plot2D"]
+__all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
+         "ShowcaseIndi","ShowcaseCompare2", "PlotHist","Plot2D"]
 
 __author__="Dexter S.H. Hon"
 
@@ -263,9 +262,9 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         Plot size-mass relation of the spheroid.
     """
     
-    def __init__(self):
+    def __init__(self,d):
         #self.input_list = input_list
-        #self.dist = dist
+        self.d = d
         super().__init__(*args, **kwargs)
         
        
@@ -1141,6 +1140,13 @@ class ShowcaseCompare2(ShowcaseIndi):
 from astropy.io import fits
 import cmasher as cmr
 
+class PlotHist(ShowcaseCompare2, ShowcaseIndi):
+    
+    #def __init__(file):
+    #    self.file = file
+        
+    def A(mass, d, colour, legend):
+        vdis_mass_plot(mass, d, colour, legend)
 
 class Plot2D(object):
     def __init__(file):

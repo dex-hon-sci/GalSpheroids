@@ -18,6 +18,7 @@ __all__ = ["read_list", "read_table", "match_list_dim", "lookup_bundle",
            "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
            "grab_info_mag","pd_read","run_list"]
 
+__author__="Dexter S.H. Hon"
 
 ###########initial parameters###############
 c, H0=    299792.458, 68.0        #speed of light in km/s, Hubble constant in(km/s)/Mpc
