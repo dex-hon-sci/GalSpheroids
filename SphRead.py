@@ -14,7 +14,11 @@ import pickle
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
-__all__ = ["read_list", "read_table", "match_list_dim", "lookup_bundle",
+from astropy.table import Table
+from astropy.io import ascii
+
+__all__ = ["read_list", "read_table", "match_list_dim", "convert_list_to_ascii", 
+           "lookup_bundle",
            "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
            "grab_info_mag","pd_read","run_list"]
 
@@ -56,6 +60,33 @@ def match_list_dim(input1,input2):
     else:
         raise Exception("Dimension not matching, \
                         size of %s =\= %s" %((input1),(input2))) 
+#%%tested
+def convert_dict_ascii(input_name,output_name):
+    """
+    Convert python dictionary or list to a ASCII file.
+    
+    Parameters
+    ----------
+    Input_name: str
+        The name of the list/dict created by pickle.
+        
+    output_name: str
+        The name of the output ASCII file.
+    
+    """
+    input_file = read_list(input_name)
+    
+    with open(input_file, 'rb') as f:
+        mylist = pickle.load(f)
+
+    value = list(mylist.values())
+    key = list(mylist.keys())
+
+    #print(value)
+    #print(key)
+
+    data = Table(value, names=key)
+    ascii.write(data, output_name ,overwrite=True)
 
 #%% tested
 def lookup_bundle(gal_bundle,gal_name):
