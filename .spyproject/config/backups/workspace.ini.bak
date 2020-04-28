@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['SphSort.py', 'image_mani.py', 'Sph_vdis_plot.py', 'SphRead.py']
+recent_files = ['SphSort.py', 'image_mani.py', 'Sph_vdis_plot.py', 'SphRead.py', 'SphPlot.py', 'Sph_compare.py']
 

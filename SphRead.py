@@ -16,9 +16,10 @@ from astropy.table import Table
 from astropy.io import ascii
 
 __all__ = ["read_list", "read_table", "match_list_dim", "convert_dict_ascii", 
-           "convert_list_textable","lookup_bundle",
+           "convert_list_textable","lookup_bundle", "grab_name",
            "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
-           "grab_info_mag","pd_read","run_list"]
+           "grab_info_mag", "extract_match",
+           "pd_read","run_list"]
 
 __author__="Dexter S.H. Hon"
 
@@ -35,12 +36,12 @@ def read_list(input_file):
     return mylist
 
 #%% tested
-def read_table(table):
+def read_table(table,dtype='float'):
     """
     Just a function using genfromtext to load objects
     Assuming the data is float.
     """
-    D=np.genfromtxt(table, dtype='float')
+    D=np.genfromtxt(table, dtype=dtype)
     return D
 
 #%% tested # under construction
@@ -134,6 +135,34 @@ def lookup_bundle(gal_bundle,gal_name):
             pass
     return Gal
 
+#%%
+def grab_name(filename):
+    """
+    A function for grab the name of the galaxies from a galaxy bundle.
+
+    ...
+
+    Parameters
+    ----------
+    filename : str
+        The file name of the galaxy bundle.
+
+
+    Return
+    -------
+    storage
+        A 1D numpy array of the apparant magnitude of set component.
+
+    """
+    table = read_list(filename)
+    storage = []
+    for row in range(len(table)):
+                storage.append(table[row][0])
+                
+    storage = np.array(storage)       
+    return storage
+
+
 #%% tested
 def grab_parameter(filename, keyword, number):
     """
@@ -147,6 +176,8 @@ def grab_parameter(filename, keyword, number):
         The file name of the galaxy bundle.
     keyword: str, list
         The name of the componets, such as: "Bulge", "Disk", "PrimBar", etc.
+    number: float
+        The index of the function parameters
 
     Return
     -------
@@ -284,16 +315,42 @@ def grab_dist(dir_dist_list,dist_list):
         for row2 in range(len(dir_name)):
             if name[row] == dir_name[row2]:
                 dist[row] = dir_dist[row2]
+                dist_err[row] = dir_dist_err[row2]
                 scale[row] = dir_scale[row2]
             else:
                 pass
                 
-    return {"Gal_name": name, "Dist": dist, "Scale": scale}
+    return {"Gal_name": name, "Dist": dist,"Dist_err": dist_err, "Scale": scale}
 
 #%%
 
 def grab_info_mag():
     return None
+#%%
+def extract_match(keyword_list, match_list ,value_can):
+    """
+    
+
+    Parameters
+    ----------
+    keyword_list : TYPE
+        DESCRIPTION.
+    match_list : TYPE
+        DESCRIPTION.
+    value_can : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    value.
+
+    """
+    value = []
+    for i in range(len(keyword_list)):
+        for j in range(len(match_list)):
+            if keyword_list[i] == match_list[j]:
+                value.append(value_can[j])
+    return value
 #%% tested
 def pd_read(filename,check_equvi):
     """

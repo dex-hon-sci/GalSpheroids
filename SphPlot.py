@@ -20,7 +20,7 @@ from scipy import stats
 
 from astropy.table import Table, Column, MaskedColumn
 import matplotlib.patches as mpatches
-
+from scipy.signal import find_peaks
 
 import SphRead as SRead
 
@@ -231,8 +231,8 @@ class SelectionCut(object):
         plt.xscale( 'log' )
         plt.yscale( 'log' )
         plt.legend()
-        
-#%%  
+    
+#%%
 class ShowcaseIndi(SelectionCut, MassCalculation):
     """
     Class for visualizing data, assuming a singular bundle input.
@@ -250,15 +250,19 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
 
     Methods
-    -------
-    plot_hist_percentage()
+    -------        
+    show_name():
+    
+    Mass_Re_plot():
+        Plot size-mass relation of the spheroid.
+        
+    plot_hist_percentage():
         Plot a histogram of individual galaxies with their components 
         luminosity as the length of the bar.
         Each components are stacked on top of each other with designated 
         colour code.
         
-    Mass_Re_plot()
-        Plot size-mass relation of the spheroid.
+    vdis_mass_plot():
     """
     
     def __init__(self,d):
@@ -494,14 +498,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
     def z_Re_plot():
         return None
         
-#%%
-#Mass_Re_plot_hist
-
-#hist_4plot
-#hist_4plot_norm
-#hist_4plot_cum_KS
-#selection_distant_Mass
-
 #%% tested Structurally
 class ShowcaseCompare2(ShowcaseIndi):
 
@@ -827,6 +823,7 @@ class ShowcaseCompare2(ShowcaseIndi):
 
         range_can = [avg_para1+std_para1, avg_para1-std_para1, avg_para2+std_para2, avg_para2-std_para2]
         para = np.concatenate([para1,para2])
+        
         #for i in range(len(index)):
         #    ax.hlines(index, 2*min(para), 2*max(para), linestyle="dashed", linewidth = 0.2, color= 'k')
         
@@ -1151,6 +1148,15 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      colour=colour,name=name,
                                                      label=label)
         return plot
+
+#%%
+#Mass_Re_plot_hist
+
+#hist_4plot
+#hist_4plot_norm
+#hist_4plot_cum_KS
+#selection_distant_Mass
+    
     
 #%% Construction area
 ## warning, no judgement, fuck off
@@ -1165,8 +1171,11 @@ class PlotHist(ShowcaseCompare2, ShowcaseIndi):
     def A(mass, d, colour, legend):
         vdis_mass_plot(mass, d, colour, legend)
 
+#%%
 class Plot2D(object):
-    def __init__(file):
+    """
+    """
+    def __init__(self, file):
         self.file = file    
     
     
@@ -1186,30 +1195,77 @@ class Plot2D(object):
     def trunk_window(array,centre,r_max):
         """
         Resize the window of plots to focus on one specfic galaxy.
-        
-        
+
+        Parameters
+        ----------
+        array : TYPE
+            DESCRIPTION.
+        centre : TYPE
+            DESCRIPTION.
+        r_max : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        window : TYPE
+            DESCRIPTION.
+
         """
+
         x0,y0 = centre[0],centre[1]        
         #print('edges', x0-r_max,x0+r_max,y0-r_max,y0+r_max)       
         window = array[y0-r_max:y0+r_max,x0-r_max:x0+r_max]
         return window
     
     
-    def flatten2D(data,condition = 0):
+    def flatten2D(data,condition = 0, value = 1):
         """
+        Normalize the image base on some condition
+        
+    
+        Parameters
+        ----------
+        data : 2D list, 2D array
+            The input image.
+        
+        condition : float, optional
+            The condition to be evaluated. 
+            The default is 0.
+            
+        value : float, optional
+            The value to be replace if the condition is not met.
+            The default is 1.
+
+        Returns
+        -------
+        data : 2D list, 2D array
+            The new image.
+
         """
         for i in range(len(data)):
             for j in range(len(data[i])):
                 if data[i][j] ==condition:
                     pass
                 else:
-                    data[i][j] = 1
+                    data[i][j] = value
         return data
                     
     
     
     def x_average(matrix):
         """
+        
+
+        Parameters
+        ----------
+        matrix : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        array : TYPE
+            DESCRIPTION.
+
         """
         
         array = np.array([np.average(matrix[:,x]) for x in range(len(matrix[:,0]))])
@@ -1219,11 +1275,70 @@ class Plot2D(object):
     def y_average(matrix):
         """
         
+
+        Parameters
+        ----------
+        matrix : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        array : TYPE
+            DESCRIPTION.
+
         """
         
         array = np.array([np.average(matrix[x,:]) for x in range(len(matrix[0,:]))])
 
         return array
+    
+    def find_mode_sky(file_name,showplot=False, saveplot= True):
+        """
+        
+
+        Parameters
+        ----------
+        file_name : TYPE
+            DESCRIPTION.
+        showplot : TYPE, optional
+            DESCRIPTION. The default is False.
+        saveplot : TYPE, optional
+            DESCRIPTION. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
+        #N=np.loadtxt(file_name)
+        N = Plot2D.read_fits_img(file_name)
+        q=2000
+        n, bins, patches = plt.hist(N, q, facecolor='g', alpha=1.0)
+        w=0.5 #width
+        peaks, _ = find_peaks(n,height=max(n)/2)
+
+        xmin, xmax, ymin , ymax = abs(np.median(n))-w, abs(np.median(n))+w, \
+            0, max(n)+max(n)/8        
+        
+        plt.plot((bins[peaks]+bins[peaks+1])/2, (n[peaks]), "x")
+        plt.xlabel('Pixel Value')
+        plt.ylabel('Count')
+        plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
+                 (n[peaks]), r'%s' %(file_name))
+        plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
+                 (n[peaks]-1), r'peak value= %s' %(bins[peaks]))
+        plt.title('Histogram of image value')
+        plt.axis([xmin, xmax, ymin , ymax])
+        plt.grid(True)
+        plt.show()
+
+        #np.savefig('foo.png')
+        #np.savefig('foo.pdf')
+        K,KK=(n[peaks]+n[peaks+1])/2, np.argmax(n)
+        print(K, KK)
+        print(n[peaks], bins[peaks])
+        return None
+
     
     def plot_galaxy(data,val_min,val_max, centre):    
         """
