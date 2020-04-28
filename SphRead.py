@@ -11,14 +11,12 @@ Created on Wed Feb 19 15:42:10 2020
 import numpy as np
 import pandas as pd
 import pickle
-import matplotlib.pyplot as plt
-from numpy.linalg import inv
 
 from astropy.table import Table
 from astropy.io import ascii
 
-__all__ = ["read_list", "read_table", "match_list_dim", "convert_list_to_ascii", 
-           "lookup_bundle",
+__all__ = ["read_list", "read_table", "match_list_dim", "convert_dict_ascii", 
+           "convert_list_textable","lookup_bundle",
            "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
            "grab_info_mag","pd_read","run_list"]
 
@@ -44,6 +42,7 @@ def read_table(table):
     """
     D=np.genfromtxt(table, dtype='float')
     return D
+
 #%% tested # under construction
 def match_list_dim(input1,input2):
     """
@@ -76,17 +75,37 @@ def convert_dict_ascii(input_name,output_name):
     """
     input_file = read_list(input_name)
     
-    with open(input_file, 'rb') as f:
-        mylist = pickle.load(f)
+    #with open(input_file, 'rb') as f:
+    #    mylist = pickle.load(f)
 
-    value = list(mylist.values())
-    key = list(mylist.keys())
+    value = list(input_file.values())
+    key = list(input_file.keys())
 
     #print(value)
     #print(key)
 
     data = Table(value, names=key)
     ascii.write(data, output_name ,overwrite=True)
+    
+#%%
+def convert_list_textable(output_name):
+    """
+    Export tex format table from a python list to an ascii file
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    with open(input_file, 'wb') as f:
+        mylist = pickle.load(f)
+    data = Table(value, names=key)
+
+    ascii.write(data, output_name ,overwrite=True)
+
+        
+    return None
 
 #%% tested
 def lookup_bundle(gal_bundle,gal_name):

@@ -36,7 +36,7 @@ __author__="Dexter S.H. Hon"
 class ImageProcessing():
     
     def __init__(self,a):
-        self._a = _a
+        self._a = a
 
 
 #%% tested
@@ -105,21 +105,21 @@ class MassCalculation(MLRelationIband):
     
     def __init__(self, m_gal, dist, M_sun, *args, **kwargs):
         self._m_gal = m_gal
-        self._dist = dist
-        self._M_sun = M_sun
+        self.dist = dist
+        self.M_sun = M_sun
         super().__init__(*args, **kwargs)
              
     @property
     def m_gal(self):
         return(self._m_gal)
         
-    @property
-    def dist(self):
-        return(self.dist)
+    #@property
+    #def dist(self):
+    #    return(self.dist)
         
-    @property
-    def M_sun(self):
-        return(self.M_sun)
+    #@property
+    #def M_sun(self):
+    #    return(self.M_sun)
 
     def cal_Mass(self,ML_ratio):
         """
@@ -161,8 +161,7 @@ class SelectionCut(object):
 
     Methods
     -------
-    cal_mass(sound=None)
-        Calculate the mass with given distance and M/L ratio. 
+    Barro13_cut
     """
     
     def __init__(self, mass):
@@ -267,6 +266,25 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         self.d = d
         super().__init__(*args, **kwargs)
         
+    def show_name(x,y,name,size=12):
+        """
+        Show the name of a data in a plot
+
+        Parameters
+        ----------
+        x, y : list, array
+            The x,y coordinate of the point.
+
+        name : TYPE
+            The name of the data point.
+
+        Returns
+        -------
+        None.
+
+        """
+        for j in range(len(x)):
+            plt.text(x[j],y[j], name[j], fontsize=size)
        
     def Mass_Re_plot(x,y,name,colour,legend,alpha0): #tested
         """
@@ -449,7 +467,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             The histogram of the luminosity porportion of each galaxies.
         """
 
-            
         fig, ax = plt.subplots()        
 
         if type(colour) == list and type(legend) == list:

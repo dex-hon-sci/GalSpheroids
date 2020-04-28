@@ -7,8 +7,8 @@ Created on Wed Feb 19 15:46:49 2020
 """
 
 import numpy as np
-import pandas as pd
 import pickle
+
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 import os
@@ -42,25 +42,39 @@ def remove_item(input_list_name,keyword_list):
     """    
     sample = read_list(input_list_name)
     row_list=[]
+    row_example=[]
+
     for item in keyword_list:
         keyword = item
 
         for row in range(len(sample)):
 
             if sample[row][0] == keyword:
-                print("Bingo")
+                print("Bingo",row,keyword)
                 row_list.append(row)
+                row_example.append(sample[row])
                 pass
             else:
                 pass
-        
-        for i in row_list:
-            sample.remove(sample[i])
             
+    sample2 = sample  
+    
+    for i in range(len(row_example)):
+        sample2.remove(row_example[i])
+    
+    #print(row_list)
+    #for i in row_list:
+    ##    print(sample[i])
+    #    sample2.remove(sample[i])
+    ##    #(sample[i])
+    #    print(i)
+    #    print(len(sample2),len(sample))
+
             
     with open(input_list_name, 'wb') as f:
-        pickle.dump(sample, f)
-    return sample
+        pickle.dump(sample2, f)
+        
+    return sample2
 
 #%% tested
 def add_item(parent_list_name, target_list_name, keyword_list):
@@ -734,11 +748,11 @@ def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
     
     for row in range(len(input_list)):
         #for index in range(len(input_list[row])):
-        if "Disk" in input_list[row]:
+        if "Ring" in input_list[row]:
             #print("LTG",input_list[row][0])
 
             LTG.append(input_list[row])
-        elif "Disk" not in input_list[row]:
+        elif "Ring" not in input_list[row]:
             #print("ETG",input_list[row][0])
             ETG.append(input_list[row])
             
