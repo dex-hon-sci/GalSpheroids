@@ -526,7 +526,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         To plot the shift in the size-mass diagram 
     comapre_generic
     
-    
+    plot_seperation_generic
     """
     
     def __init__(self,input_list1,input_list2):
@@ -535,13 +535,14 @@ class ShowcaseCompare2(ShowcaseIndi):
         super().__init__(*args, **kwargs)
         
     
-    def plot_distdist(DD,scale,dc,sc,name,limit):
+    def plot_distdist(DD,scale,dc,sc,name,limit, DD_err=None,dc_err=None):
         """
         A method to plot the difference in distance estimation 
         ----------                        
         DD : 1D numpy array
             Comoving distance by redshift independent measurement.
-                
+        DD_err:
+            
         scale: 1D numpy array
             The kpc/arcsec scale by redshift independent measurement.
             
@@ -555,8 +556,6 @@ class ShowcaseCompare2(ShowcaseIndi):
         name : str
             The name of each galaxy. 
         
-        scale:
-    
         limit : float
             Marker of selection limit.
         
@@ -566,13 +565,14 @@ class ShowcaseCompare2(ShowcaseIndi):
     
         """
         dc, DD = np.array(dc), np.array(DD)
+        DD_err = np.array(DD_err)
         index = np.linspace(0.5,len(DD),len(DD))
         x_edge,y_edge= [limit,limit,120,120], \
             [min(index),max(index),max(index),min(index)]
     
         fig = plt.figure()
         gs = gridspec.GridSpec(1, 2, wspace=0.0,width_ratios=[3,1]) 
-    
+
         # fig, axs = plt.subplot(1,2, sharey= 'row', gridspec_kw={'hspace': 0,'wspace': 0})
     
         axs1 = plt.subplot(gs[1])
@@ -580,13 +580,18 @@ class ShowcaseCompare2(ShowcaseIndi):
     
         for i in DD:
             axs0.hlines(index,0, 120, linestyle="dashed", 
-                        linewidth = 1, color= 'k')
+                        linewidth = 0.5, color= 'k')
             axs1.hlines(index,0, 0.6, linestyle="dashed", 
-                        linewidth = 1, color= 'k')
+                        linewidth = 0.5, color= 'k')
 
         axs0.plot(DD,index, "bo",label="z-independent")
+        axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=1,
+                     ecolor='b',zorder=20,mew=1,capsize=3)
+        
         axs0.plot(dc,index, "go",label="z-dependent")
-    
+        #axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=1,
+        #             ecolor='g',zorder=20,mew=1,capsize=3)
+
         axs1.plot(scale,index, "bo",label="z-independent")
         axs1.plot(sc,index, "go",label="z-dependent")
 
@@ -621,7 +626,7 @@ class ShowcaseCompare2(ShowcaseIndi):
                                         color='blue', label = '1 $\sigma$')
         axs0.fill([np.average(dc)-np.std(dc),np.average(dc)-np.std(dc),
                np.average(dc)+np.std(dc),np.average(dc)+np.std(dc)],[min(index),
-                         max(index),max(index),min(index)],y_edge, alpha=0.15, 
+                         max(index),max(index),min(index)], alpha=0.15, 
                                         color='green',label = '1 $\sigma$')
 
 
@@ -632,8 +637,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         plt.setp(axs1.get_yticklabels(), visible=False)
         
         
-        axs0.set_xlabel("$Distance / Mpc$",fontsize=16)
-        axs1.set_xlabel("$Angular \n  scale$ \n  $kpc/arcsec$",fontsize=12)
+        axs0.set_xlabel("$Distance/ \, Mpc$",fontsize=12)
+        axs1.set_xlabel("Angular \n  scale \n $kpc/arcsec$",fontsize=12)
         axs0.legend(loc='center left', bbox_to_anchor=(1.4, 0.5))
 
 
@@ -829,8 +834,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         
         
-        ax.plot(para1,index,'o',color = colour1)
-        ax.plot(para2,index,'o',color = colour2)
+        ax.plot(para1,index,'o',color = colour1, label=label[0])
+        ax.plot(para2,index,'o',color = colour2, label=label[1])
 
 
 

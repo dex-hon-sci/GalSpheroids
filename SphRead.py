@@ -326,7 +326,7 @@ def grab_dist(dir_dist_list,dist_list):
 
 def grab_info_mag():
     return None
-#%%
+#%% tested
 def extract_match(keyword_list, match_list ,value_can):
     """
     

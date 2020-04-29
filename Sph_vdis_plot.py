@@ -71,11 +71,37 @@ B = SSort.LTG_ETG_seperator("./galaxy_bundle/Gal_bundle_equvi_cpt",
 #NGC5473 SAB0^-(s)
 #UGC8564 S0
 
-SSort.remove_item("./galaxy_bundle/Gal_bundle_equvi_cpt_ETG",["NGC3126","NGC4224","NGC4235","UGC8736"])
-SSort.add_item("./galaxy_bundle/Gal_bundle_equvi_cpt", "./galaxy_bundle/Gal_bundle_equvi_cpt_LTG", ["NGC3126","NGC4224","NGC4235","UGC8736"])
+SSort.remove_item("./galaxy_bundle/Gal_bundle_equvi_cpt_ETG",["NGC3126"
+                                                              ,"NGC4224",
+                                                              "NGC4235",
+                                                              "UGC8736"])
+SSort.add_item("./galaxy_bundle/Gal_bundle_equvi_cpt",
+               "./galaxy_bundle/Gal_bundle_equvi_cpt_LTG", ["NGC3126",
+                                                            "NGC4224",
+                                                            "NGC4235",
+                                                            "UGC8736"])
 
-SSort.remove_item("./galaxy_bundle/Gal_bundle_equvi_cpt_LTG",["IC00947","NGC2824","NGC2962","NGC3106", "NGC3189",  "NGC3658", "NGC4429", "NGC4461","NGC4477", "NGC4570", "NGC4578", "NGC4596","NGC4608","NGC4643", "NGC5473", "UGC8564"])
-SSort.add_item("./galaxy_bundle/Gal_bundle_equvi_cpt", "./galaxy_bundle/Gal_bundle_equvi_cpt_ETG", ["IC00947","NGC2824","NGC2962","NGC3106", "NGC3189",  "NGC3658", "NGC4429", "NGC4461","NGC4477", "NGC4570", "NGC4578", "NGC4596","NGC4608","NGC4643", "NGC5473", "UGC8564"])
+SSort.remove_item("./galaxy_bundle/Gal_bundle_equvi_cpt_LTG",["IC00947",
+                                                              "NGC2824",
+                                                              "NGC2962",
+                                                              "NGC3106", 
+                                                              "NGC3189",  
+                                                              "NGC3658", 
+                                                              "NGC4429", 
+                                                              "NGC4461","NGC4477", 
+                                                              "NGC4570", "NGC4578", 
+                                                              "NGC4596","NGC4608",
+                                                              "NGC4643", "NGC5473", 
+                                                              "UGC8564"])
+SSort.add_item("./galaxy_bundle/Gal_bundle_equvi_cpt", 
+               "./galaxy_bundle/Gal_bundle_equvi_cpt_ETG", ["IC00947","NGC2824",
+                                                            "NGC2962","NGC3106", 
+                                                            "NGC3189",  "NGC3658",
+                                                            "NGC4429", "NGC4461",
+                                                            "NGC4477", "NGC4570", 
+                                                            "NGC4578", "NGC4596",
+                                                            "NGC4608","NGC4643", 
+                                                            "NGC5473", "UGC8564"])
 
 
 BL = SSort.vdis_match("./galaxy_bundle/Gal_bundle_equvi_cpt_LTG", 
