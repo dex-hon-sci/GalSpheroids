@@ -53,6 +53,7 @@ def match_list_dim(input1,input2):
     ----------
     input1, input2: list
         
+        
 
     """
     if len(input1) == len(input2):
@@ -166,7 +167,7 @@ def grab_name(filename):
 #%% tested
 def grab_parameter(filename, keyword, number):
     """
-    A function for grab the magnitude of a component from a galaxy bundle.
+    A function to grab a parameter of a component from a galaxy bundle.
 
     ...
 
@@ -347,8 +348,10 @@ def extract_match(keyword_list, match_list ,value_can):
     """
     value = []
     for i in range(len(keyword_list)):
+        #print(keyword_list[i])
         for j in range(len(match_list)):
             if keyword_list[i] == match_list[j]:
+                #print(keyword_list[i],match_list[j])
                 value.append(value_can[j])
     return value
 #%% tested

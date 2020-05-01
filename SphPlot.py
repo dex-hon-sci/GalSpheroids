@@ -621,12 +621,12 @@ class ShowcaseCompare2(ShowcaseIndi):
     
     
         axs0.fill([np.average(DD)-np.std(DD),np.average(DD)-np.std(DD),
-               np.average(DD)+np.std(DD),np.average(DD)+np.std(DD)],[min(index),
-                         max(index),max(index),min(index)], alpha=0.15, 
+               np.average(DD)+np.std(DD),np.average(DD)+np.std(DD)],
+                  [min(index),max(index),max(index),min(index)], alpha=0.15, 
                                         color='blue', label = '1 $\sigma$')
         axs0.fill([np.average(dc)-np.std(dc),np.average(dc)-np.std(dc),
-               np.average(dc)+np.std(dc),np.average(dc)+np.std(dc)],[min(index),
-                         max(index),max(index),min(index)], alpha=0.15, 
+               np.average(dc)+np.std(dc),np.average(dc)+np.std(dc)],
+                  [min(index), max(index),max(index),min(index)], alpha=0.15, 
                                         color='green',label = '1 $\sigma$')
 
 
@@ -826,7 +826,9 @@ class ShowcaseCompare2(ShowcaseIndi):
         avg_para2, std_para2 = np.average(para2), np.std(para2)
 
 
-        range_can = [avg_para1+std_para1, avg_para1-std_para1, avg_para2+std_para2, avg_para2-std_para2]
+        range_can = [avg_para1+std_para1, avg_para1-std_para1, 
+                     avg_para2+std_para2, avg_para2-std_para2]
+        
         para = np.concatenate([para1,para2])
         
         #for i in range(len(index)):
@@ -871,7 +873,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         
     def plot_compare_generic(para1, para2, sub=True , div=False,
-                            para_name="", colour="blue",name=None, label=[1,2]): 
+                            para_name="", colour="blue", 
+                            name=None, label=[1,2]): 
         #tested
         """
         A generic method to plot the difference between the same parameter from
@@ -912,12 +915,14 @@ class ShowcaseCompare2(ShowcaseIndi):
             raise Exception("Mode has to be either subtraction or division")
         elif sub == True:
             delta = delta_sub
-            xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , para_name, label[1])
+            xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , 
+                                                   para_name, label[1])
 
             
         elif div == True:
             delta = delta_div
-            xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , para_name, label[1])
+            xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , 
+                                                   para_name, label[1])
     
         
         else: 
@@ -1179,6 +1184,7 @@ class PlotHist(ShowcaseCompare2, ShowcaseIndi):
 #%%
 class Plot2D(object):
     """
+    
     """
     def __init__(self, file):
         self.file = file    
@@ -1255,8 +1261,7 @@ class Plot2D(object):
                     data[i][j] = value
         return data
                     
-    
-    
+    # tested
     def x_average(matrix):
         """
         
@@ -1273,10 +1278,11 @@ class Plot2D(object):
 
         """
         
-        array = np.array([np.average(matrix[:,x]) for x in range(len(matrix[:,0]))])
+        array = np.array([np.average(matrix[:,x]) 
+                          for x in range(len(matrix[:,0]))])
 
         return array
-    
+    # tested
     def y_average(matrix):
         """
         
@@ -1293,10 +1299,12 @@ class Plot2D(object):
 
         """
         
-        array = np.array([np.average(matrix[x,:]) for x in range(len(matrix[0,:]))])
+        array = np.array([np.average(matrix[x,:]) 
+                          for x in range(len(matrix[0,:]))])
 
         return array
     
+    #
     def find_mode_sky(file_name,showplot=False, saveplot= True):
         """
         

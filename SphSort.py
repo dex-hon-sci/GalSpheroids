@@ -24,6 +24,43 @@ __all__ = ["remove_item", "add_item", "outliers", "cpt_seperator_demo",
 __author__="Dexter S.H. Hon"
 
 
+#%%
+def str_zipping(list1,list2,zip_symbol=""):
+    """
+    Convert the content of two lists into str and link them together.
+    e.g.: str_zipping([1,2,4],[4,5,3],zip_symbol = '+')
+        >>> ['1+4','2+5','4+3']
+
+    Parameters
+    ----------
+    list1, list2 : list
+        The lists to be conjoin. They must have the same dimensions
+
+    zip_symbol : str
+        The symbol in which you want to add in between the elements.
+        The default is "".
+        
+    Returns
+    -------
+    A list of conjoined elements.
+
+    """
+    
+    list1, list2 = list(list1), list(list2)
+    
+    if len(list1) == len(list2): # matching list dimension
+        pass
+    else:
+        ValueError
+    
+    list_product = []
+    
+    for i in range(len(list1)):
+        list_product.append(str(list1[i])+zip_symbol+str(list2[i]))
+        
+    
+    return list_product
+
 #%% tested
 def remove_item(input_list_name,keyword_list):
     """
