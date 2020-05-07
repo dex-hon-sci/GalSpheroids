@@ -132,9 +132,18 @@ mag_i = np.array(SRead.extract_match(name, vdis_file2[:,0] ,vdis_file[:,9]))
 
 
 Dist = distance_file["Dist"]
+Dist_err = distance_file["Dist_err"]
 
 Mag_sph=mag_sph-25-5*np.log10(Dist)  
 
+Mag_sph_plus = (mag_sph-25-5*np.log10(Dist+Dist_err))-Mag_sph
+Mag_sph_minus = (mag_sph-25-5*np.log10(Dist-Dist_err))-Mag_sph
+
+print(Dist_err)
+
+print(Dist+Dist_err, Dist-Dist_err)
+
+print(Mag_sph_plus-Mag_sph_minus)
 
 ML_select_T = SPlot.MLRelationIband(mag_g,mag_i).Taylor11_MassRatio
 ML_select_Z = SPlot.MLRelationIband(mag_g,mag_i).Zibetti09_MassRatio
@@ -159,7 +168,6 @@ table = {"Name": name,
          "Roediger_mass": np.around(np.log10(Roediger_mass), decimals=2),
          "Into_mass": np.around(np.log10(Into_mass), decimals=2)} 
 
-print(table)
 value = list(table.values())
 key = list(table.keys())
 

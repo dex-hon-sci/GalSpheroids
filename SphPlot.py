@@ -1538,17 +1538,23 @@ class Plot2D(object):
 
 
 
-#Plot2D.plot_galaxy_3plot("NGC2872.fits","md1_NGC2872.fits",
-#                         "res1_NGC2872.fits", (252, 432),r_max=207, a =15)
-#plt.show()
+
+img ="/home/dexter/result/image_plot/fit_example/NGC2872.fits"
+md = "/home/dexter/result/image_plot/fit_example/md1_NGC2872.fits"
+res= "/home/dexter/result/image_plot/fit_example/res1_NGC2872.fits"
+
+Plot2D.plot_galaxy_3plot(img,md,
+                         res, (252, 432),r_max=207, a =15)
+plt.show() #2872
+
+
+#Plot2D.plot_galaxy_3plot(img,md,
+  #                       res, (1088, 789),r_max=255, a =15)
+#plt.show()4045
 #
-#Plot2D.plot_galaxy_3plot("NGC4045.fits","md1_NGC4045.fits",
-#                         "res1_NGC4045.fits", (1088, 789),r_max=255, a =15)
-#plt.show()
-#
-#Plot2D.plot_galaxy_3plot("NGC3675.fits","md1_NGC3675.fits",
-#                         "res1_NGC3675.fits", (271, 1080),r_max=250, a =15)
-#plt.show()
+#Plot2D.plot_galaxy_3plot(img,md,
+#                         res, (271, 1080),r_max=250, a =15)
+#plt.show() #3675
 
 # need to fix the edge problem
 #%%
