@@ -98,9 +98,6 @@ M4_o1 = SPlot.MassCalculation(mag_i4, DD4, 4.53,mag_g4,mag_i4)
 E4_o1 = M4_o1.cal_Mass(ML_select4)
 
 
-
-
-
 ############# old distance, old i-band magnitude
 
 M2_o = SPlot.MassCalculation(mag_i2, dc2, 4.53,mag_g2,mag_i2)
@@ -153,14 +150,32 @@ plt.plot(DD2,E2_o1,'ro',label='new Dist, SDSS mag-bin1', ms=12,alpha=0.2)
 plt.plot(DD3,E3_o1,'bo',label='new Dist, SDSS mag-bin2', ms=12,alpha=0.2)
 plt.plot(DD4,E4_o1,'ko',label='new Dist, SDSS mag-bin3', ms=12,alpha=0.2)
 
-plt.hlines(np.average(E2_o1),0,120,linestyle="dashed",color="red")
-plt.hlines(np.average(E3_o1),0,120,linestyle="dashed",color="blue")
-plt.hlines(np.average(E4_o1),0,120,linestyle="dashed",color="black")
-
 
 plt.plot(DD2,E2,'r^',label='new Dist, profiler mag-bin1', ms=12,alpha=0.5)
 plt.plot(DD3,E3,'b^',label='new Dist, profiler mag-bin2', ms=12,alpha=0.5)
 plt.plot(DD4,E4,'k^',label='new Dist, profiler mag-bin3', ms=12,alpha=0.5)
+
+from scipy import stats
+import statistics
+print(np.median(mag_i2))
+print(np.median(total_mag2))
+print(np.median(dc2))
+print(np.median(DD2))
+print(np.median(E2_o))
+print(np.median(E2_o1))
+print(np.median(E2))
+print(np.median(ML_select2))
+
+print(np.median(E2-E2_o1))
+
+print(np.median(total_mag2-mag_i2))
+print(np.median(DD2-dc2))
+
+print(DD2-dc2)
+
+plt.hlines(np.average(E2_o1),0,120,linestyle="dashed",color="red")
+plt.hlines(np.average(E3_o1),0,120,linestyle="dashed",color="blue")
+plt.hlines(np.average(E4_o1),0,120,linestyle="dashed",color="black")
 
 #plt.plot(dist_all,Into_mass_all,'x',color='grey' , alpha=0.9, label='All')
 

@@ -21,6 +21,7 @@ from scipy import stats
 from astropy.table import Table, Column, MaskedColumn
 import matplotlib.patches as mpatches
 from scipy.signal import find_peaks
+import matplotlib.image as mpimg
 
 import SphRead as SRead
 
@@ -289,7 +290,73 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         """
         for j in range(len(x)):
             plt.text(x[j],y[j], name[j], fontsize=size)
-       
+            
+    def err_I_ratio_plot(list1):
+        """
+        Plot the ratio of error to pixel value as a function of radius.
+        It reads a list of output file from ISOFIT.
+        The function extract the SMA, NPIX_DATA, VAR and I2 from the dat file.
+        
+        error = sigma/sqrt(N)
+        
+
+        Parameters
+        ----------
+        list1 : str
+            ASCII filname for a list of ISOFIT output file.
+
+        Returns
+        -------
+        plot.
+
+        """
+        #data extraction part
+        o_list = SRead.read_table(list1,dtype="str")
+                
+        m_SMA, m_error_I = [], []    
+        
+        for row in range(len(o_list)):
+            isofit_output = SRead.read_table(o_list[row])
+            
+            sigma = np.array(isofit_output[:,3])
+            N = np.array(isofit_output[:,34])
+            I = np.array(isofit_output[:,1])
+            
+            SMA = np.array(isofit_output[:,0])*0.4
+            
+            #print((sigma/np.sqrt(N))/I)  
+            #error_I = I
+            
+            error_I = (sigma/np.sqrt(N))/I
+            
+            
+            m_SMA.append(SMA)
+            m_error_I.append(error_I)
+            
+        final_storage = {"SMA": m_SMA,
+                         "error_I": m_error_I}    
+        #print(final_storage["SMA"][0],final_storage["error_I"][0])
+        
+        #plotting part
+        
+        for i in range(len(m_SMA)):
+            #print((m_SMA[i]), (m_error_I[i]))
+
+            #print(np.size(m_SMA[i]), np.size(m_error_I[i]))
+            plt.plot(m_SMA[i], m_error_I[i],color='blue', linestyle="solid",linewidth=0.4)
+            #plt.plot(m_SMA[i], -1.0*m_error_I[i],'b-')
+            #plt.fill(m_SMA[i], x_edge, alpha=0.1, color='#ade0b9')
+ 
+        plt.xlabel("$R/\,arcsec$",fontsize=16)
+        plt.ylabel("$I_{err}(R)/I$",fontsize=16)
+        #plt.yscale( 'log' )
+        #plt.xscale( 'log' )
+
+
+        plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
+        plt.legend()
+        return None
+    
     def Mass_Re_plot(x,y,name,colour,legend,alpha0): #tested
         """
         Plot the size-mass diagram given the input x (radius) and y (Mass).
@@ -1533,6 +1600,10 @@ class Plot2D(object):
         plt.savefig("%s.pdf"%file_name, dpi=200)
         return fig
     
+    def plot2_import_profiler(image1,image2):
+        
+        return None
+    
     def res_analysis():
         return None
 
@@ -1543,9 +1614,9 @@ img ="/home/dexter/result/image_plot/fit_example/NGC2872.fits"
 md = "/home/dexter/result/image_plot/fit_example/md1_NGC2872.fits"
 res= "/home/dexter/result/image_plot/fit_example/res1_NGC2872.fits"
 
-Plot2D.plot_galaxy_3plot(img,md,
-                         res, (252, 432),r_max=207, a =15)
-plt.show() #2872
+#Plot2D.plot_galaxy_3plot(img,md,
+#                         res, (252, 432),r_max=207, a =15)
+#plt.show() #2872
 
 
 #Plot2D.plot_galaxy_3plot(img,md,
