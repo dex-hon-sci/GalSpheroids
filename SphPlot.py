@@ -31,7 +31,7 @@ __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut",
 
 __author__="Dexter S.H. Hon"
 
-
+fontname_choice = "Times New Roman"
 ## make histogram class inheriting Shocaseindi and 
 #%%
 class ImageProcessing():
@@ -291,7 +291,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         for j in range(len(x)):
             plt.text(x[j],y[j], name[j], fontsize=size)
             
-    def err_I_ratio_plot(list1):
+    def err_I_ratio_plot(list1, cutlist=None):
         """
         Plot the ratio of error to pixel value as a function of radius.
         It reads a list of output file from ISOFIT.
@@ -324,37 +324,83 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             
             SMA = np.array(isofit_output[:,0])*0.4
             
+            SMA = SMA/max(SMA)
+            
             #print((sigma/np.sqrt(N))/I)  
-            #error_I = I
-            
-            error_I = (sigma/np.sqrt(N))/I
-            
-            
+            Ierr = np.array(isofit_output[:,2])
+            error_I = Ierr/ I          
+            #error_I = np.sqrt(sigma/N)
+                    
             m_SMA.append(SMA)
             m_error_I.append(error_I)
             
         final_storage = {"SMA": m_SMA,
                          "error_I": m_error_I}    
-        #print(final_storage["SMA"][0],final_storage["error_I"][0])
+        # loop through, cut base if SMA> cut value
         
-        #plotting part
+        if cutlist == None:
+            cutlist=np.zeros(np.size(final_storage['SMA']))
+        else:
+            pass
+            
+        cut_list = SRead.read_table(cutlist)
+        cut_value = cut_list[:,12]
         
-        for i in range(len(m_SMA)):
+        m_SMA2, m_error_I_2 = [],[]
+        for row in range(len(m_SMA)):
+            
+            m_index = []
+            for index in range(len(m_SMA)):
+                #print(m_SMA[index],cut_value[row])
+                if m_SMA[row][index] > cut_value[row]:
+                    m_index.append(index)
+                else:
+                    pass
+                SMA_2 = np.delete(m_SMA[row],m_index)
+                error_I_2 = np.delete(m_error_I[row],m_index)
+                
+            #print(SMA_2[0], m_SMA[row][0])
+                
+            m_SMA2.append(SMA_2)
+            m_error_I_2.append(error_I_2)
+        
+        for i in range(len(m_SMA2)):
             #print((m_SMA[i]), (m_error_I[i]))
 
             #print(np.size(m_SMA[i]), np.size(m_error_I[i]))
-            plt.plot(m_SMA[i], m_error_I[i],color='blue', linestyle="solid",linewidth=0.4)
+            #plt.plot(m_SMA2[i], m_error_I_2[i], color='blue', linestyle="solid",
+            #         linewidth=0.4)
+            plt.plot(m_SMA2[i], m_error_I_2[i], 'bo', ms= 0.5, alpha=0.3)
+            plt.plot(m_SMA2[i], m_error_I_2[i]*-1.0, 'bo', ms= 0.5, alpha=0.3)
+
+            file_name =i
+
+        plt.xlabel("$R/ R_{max}$",fontsize=20,fontname = fontname_choice)
+        plt.ylabel("$I_{err}(R)/I$",fontsize=20, fontname = fontname_choice)
+            #plt.yscale( 'log' )
+            #plt.xscale( 'log' )
+        plt.xlim(0,1)
+        plt.ylim(-0.05,0.05)
+
+        plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
+        #plt.legend()
+        plt.savefig("./indi_err_img2/overall_err.png", dpi=300)
+        plt.show()
+#            plt.savefig("./indi_err_img2/%s.png"%file_name, dpi=200)
+#            plt.close()
             #plt.plot(m_SMA[i], -1.0*m_error_I[i],'b-')
             #plt.fill(m_SMA[i], x_edge, alpha=0.1, color='#ade0b9')
  
-        plt.xlabel("$R/\,arcsec$",fontsize=16)
-        plt.ylabel("$I_{err}(R)/I$",fontsize=16)
-        #plt.yscale( 'log' )
-        #plt.xscale( 'log' )
+        #plt.xlabel("$R/\,arcsec$",fontsize=16)
+        #plt.ylabel("$I_{err}(R)/I$",fontsize=16)
+        ##plt.yscale( 'log' )
+        ##plt.xscale( 'log' )
 
 
-        plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
-        plt.legend()
+        #plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
+        ##plt.legend()
+
+        
         return None
     
     def Mass_Re_plot(x,y,name,colour,legend,alpha0): #tested
