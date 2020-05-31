@@ -254,6 +254,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
     -------        
     show_name():
     
+    err_I_ratio_plot:    
+    
     Mass_Re_plot():
         Plot size-mass relation of the spheroid.
         
@@ -370,8 +372,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             #print(np.size(m_SMA[i]), np.size(m_error_I[i]))
             #plt.plot(m_SMA2[i], m_error_I_2[i], color='blue', linestyle="solid",
             #         linewidth=0.4)
-            plt.plot(m_SMA2[i], m_error_I_2[i], 'bo', ms= 0.5, alpha=0.3)
-            plt.plot(m_SMA2[i], m_error_I_2[i]*-1.0, 'bo', ms= 0.5, alpha=0.3)
+            plt.plot(m_SMA2[i], m_error_I_2[i], '-bo', ms= 0.5, alpha=0.3)
+            plt.plot(m_SMA2[i], m_error_I_2[i]*-1.0, '-bo', ms= 0.5, alpha=0.3)
 
             file_name =i
 
@@ -380,7 +382,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             #plt.yscale( 'log' )
             #plt.xscale( 'log' )
         plt.xlim(0,1)
-        plt.ylim(-0.05,0.05)
+        plt.ylim(-2.0,2.0)
 
         plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
         #plt.legend()
@@ -604,6 +606,69 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.legend()
         return fig, ax
 
+    def mass_function_plot(mass,box,bg=None, volume=None):
+        """
+        Plot the mass function 
+
+        Parameters
+        ----------
+        mass : 1-D numpy array
+            DESCRIPTION.
+        box : list
+            Box parameters. It contains the boundaries of the bin.
+            e.g. [[0,10],[10,100],[100,200]]
+                3 bins, from 0-10, 10-100 and 100-200
+        bg : TYPE, optional
+            Background image. 
+            Insert a picture to plot on 
+            The default is None.
+        volume: list
+            A list of volume to each bin
+        Returns
+        -------
+        None.
+
+        """
+        # Grouping
+        master_bin= []
+        n=0
+        while n < len(box):
+            box_bin=[]
+            for i in range(np.size(mass)):
+                if mass[i] > box[n][0] and mass[i] < box[n][1]:
+                    box_bin.append(mass[i])
+                else:
+                    pass
+            box_bin = np.array(box_bin)
+        master_bin.append(box_bin)
+        
+        # calculating
+        if volume == None:
+            vol = [1 for j in range(len(box))]
+        else:
+            vol = volume
+        
+        # the number density, default volume to be 1 Mpc^{-3} dex^{-1}
+        nu_dens = [(np.size(master_bin[j])/vol[j])/10 for j in range(len(master_bin))]
+        
+        # the mid point for each x-axis bin
+        mid_pt =  [sum(box[j])/2 for j in range(len(box))]
+        #plotting 
+
+            
+        fig, ax = plt.subplots()  
+        
+        ax.plot(mid_pt, nu_dens, color= 'red')
+        
+        plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
+        plt.ylabel("$\phi(Mpc^{-3}dex^{-1})",fontsize=16)
+            
+        plt.xscale( 'log' )
+        plt.yscale( 'log' )
+        
+        return fig, ax
+
+        
     def n_Re_plot():
         return None
     def mu0_Re_plot():

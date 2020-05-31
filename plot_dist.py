@@ -177,7 +177,7 @@ plt.hlines(np.average(E2_o1),0,120,linestyle="dashed",color="red")
 plt.hlines(np.average(E3_o1),0,120,linestyle="dashed",color="blue")
 plt.hlines(np.average(E4_o1),0,120,linestyle="dashed",color="black")
 
-#plt.plot(dist_all,Into_mass_all,'x',color='grey' , alpha=0.9, label='All')
+plt.plot(dist_all,Into_mass_all,'x',color='grey' , alpha=0.9, label='All')
 
 
 plt.hlines(4e11,0,100,linestyle="solid")
