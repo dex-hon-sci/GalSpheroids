@@ -606,7 +606,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.legend()
         return fig, ax
 
-    def mass_function_plot(mass,box,bg=None, volume=None):
+    def mass_function_plot(mass,box, volume=None, bg=None):
         """
         Plot the mass function 
 
@@ -618,12 +618,12 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             Box parameters. It contains the boundaries of the bin.
             e.g. [[0,10],[10,100],[100,200]]
                 3 bins, from 0-10, 10-100 and 100-200
-        bg : TYPE, optional
-            Background image. 
-            Insert a picture to plot on 
+        bg : list, optional
+            Background curve. 
+            
             The default is None.
-        volume: list
-            A list of volume to each bin
+        volume: float
+            The volume to a bin, in Mpc^{3}
         Returns
         -------
         None.
@@ -661,7 +661,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         ax.plot(mid_pt, nu_dens, color= 'red')
         
         plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
-        plt.ylabel("$\phi(Mpc^{-3}dex^{-1})",fontsize=16)
+        plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})",fontsize=16)
             
         plt.xscale( 'log' )
         plt.yscale( 'log' )
@@ -1618,15 +1618,16 @@ class Plot2D(object):
         data_trunk2 = Plot2D.trunk_window(data2,centre,r_max)
         data_log2 = np.log(a*data_trunk2+1) / np.log(a)
 
-#############diagnoisis mode
-#        data_trunk1_mask = Plot2D.flatten2D(data_trunk1)
-#
-#        data_trunk0 = data_trunk0*data_trunk1_mask
-#        data_log0= np.log(a*data_trunk0+1) / np.log(a)
-#        
-#        data_trunk2 = data_trunk2*data_trunk1_mask
-#        data_log2 = np.log(a*data_trunk2+1) / np.log(a)
-################
+        #############diagnoisis mode
+        #data_trunk1_mask = Plot2D.flatten2D(data_trunk1)
+        #
+        #data_trunk0 = data_trunk0*data_trunk1_mask
+        #data_log0= np.log(a*data_trunk0+1) / np.log(a)
+        #
+        #data_trunk2 = data_trunk2*data_trunk1_mask
+        #data_log2 = np.log(a*data_trunk2+1) / np.log(a)
+        ################
+
         l= len(data_trunk0[:,0])
                 
         a,b,c,d,e = 0, int((l-1)/2)-int((l-1)/4),int((l-1)/2),\
