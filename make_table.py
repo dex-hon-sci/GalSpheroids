@@ -28,10 +28,10 @@ M_sun = 4.53
 
     
 #Bin4cpt = SRead.read_list("/home/dexter/result/Gal_bundle_equvi_bin4_cpt")
-name = SRead.grab_name("/home/dexter/result/Gal_bundle_equvi_bin3_cpt")
+name = SRead.grab_name("/home/dexter/result/Gal_bundle_equvi_bin4_cpt")
 distance_file = SRead.grab_dist(
     "/home/dexter/result/distance/dir_dist_list.txt",
-    "/home/dexter/result/distance/dist_list_bin3.txt")
+    "/home/dexter/result/distance/dist_list_bin4.txt")
 
 vdis_file = SRead.read_table(
     "/home/dexter/result/velocity_disp/vel_disp_list_all_mag.txt")
@@ -65,7 +65,7 @@ morph = SRead.extract_match(name, vdis_file2[:,0] ,vdis_file2[:,8])
 
 Mag_i = np.array(SRead.extract_match(name, vdis_file2[:,0] ,vdis_file[:,12]))
 
-ML_select = SPlot.MLRelationIband(mag_g,mag_i).Into13_MassRatio
+ML_select = SPlot.MLRelationIband(mag_g,mag_i).Taylor11_MassRatio
 #M_4 = SPlot.MassCalculation(mag_i, Dist, M_sun,mag_g,mag_i)
 
 
@@ -101,10 +101,10 @@ key = list(table.keys())
 for i in range(len(list(table.keys()))):
     print(key[i],len(value[i]))
     
-with open("Gal_table1_bin3", 'wb') as f:
+with open("Gal_table1_bin4_Tmass", 'wb') as f:
     pickle.dump(table, f)
 
-SRead.convert_dict_ascii("Gal_table1_bin3","Gal_table1_bin3.txt")
+#SRead.convert_dict_ascii("Gal_table1_bin3","Gal_table1_bin3.txt")
 
 ##################################
 Bundle = "/home/dexter/result/Gal_bundle_equvi_bin4_cpt"
@@ -177,7 +177,7 @@ for i in range(len(list(table.keys()))):
 with open("Gal_table2_bin4", 'wb') as f:
     pickle.dump(table, f)
 
-SRead.convert_dict_ascii("Gal_table2_bin4","Gal_table2_bin4.txt")
+#SRead.convert_dict_ascii("Gal_table2_bin2","Gal_table2_bin4.txt")
 #Mag_i = SRead.grab_total_mag("/home/dexter/result/Gal_bundle_equvi_bin4_cpt")
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/envhon3
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr 30 01:30:40 2020
@@ -177,7 +177,7 @@ plt.hlines(np.average(E2_o1),0,120,linestyle="dashed",color="red")
 plt.hlines(np.average(E3_o1),0,120,linestyle="dashed",color="blue")
 plt.hlines(np.average(E4_o1),0,120,linestyle="dashed",color="black")
 
-plt.plot(dist_all,Into_mass_all,'x',color='grey' , alpha=0.9, label='All')
+plt.plot(dist_all,Into_mass_all,'x',color='grey' , alpha=0.3, label='All')
 
 
 plt.hlines(4e11,0,100,linestyle="solid")
@@ -212,3 +212,12 @@ plt.yscale( 'log' )
 plt.legend()
 plt.show()
 
+
+fig, ax = plt.subplots()
+
+plt.plot(E2,mag_g2-mag_i2,'ro')
+plt.plot(E3,mag_g3-mag_i3,'bo')
+plt.plot(E4,mag_g4-mag_i4,'ko')
+plt.xscale( 'log' )
+
+plt.show()

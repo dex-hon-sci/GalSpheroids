@@ -606,7 +606,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.legend()
         return fig, ax
 
-    def mass_function_plot(mass,box, volume=None, bg=None):
+    def mass_function_plot(mass,box, volume=None, colour=None, label=None):
         """
         Plot the mass function 
 
@@ -632,41 +632,45 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         # Grouping
         master_bin= []
         n=0
-        while n < len(box):
+        for n in range(len(box)):
             box_bin=[]
             for i in range(np.size(mass)):
                 if mass[i] > box[n][0] and mass[i] < box[n][1]:
-                    box_bin.append(mass[i])
+                    box_bin.append(mass[i])                    
                 else:
                     pass
             box_bin = np.array(box_bin)
-        master_bin.append(box_bin)
+            print(n,np.size(box_bin))
+            master_bin.append(box_bin)
         
         # calculating
         if volume == None:
-            vol = [1 for j in range(len(box))]
+            vol = 1
         else:
             vol = volume
         
         # the number density, default volume to be 1 Mpc^{-3} dex^{-1}
-        nu_dens = [(np.size(master_bin[j])/vol[j])/10 for j in range(len(master_bin))]
+        
+        dex_factor = np.array([(box[j][1]-box[j][0]) for j in range(len(box))])
+        dex_factor=np.average(dex_factor)
+        
+        nu_dens = [(np.size(master_bin[j])/vol)/dex_factor for j in range(len(master_bin))]
         
         # the mid point for each x-axis bin
-        mid_pt =  [sum(box[j])/2 for j in range(len(box))]
-        #plotting 
-
-            
-        fig, ax = plt.subplots()  
+        mid_pt =  [10**(sum(box[j])/2) for j in range(len(box))]
+#        #plotting 
+        print(dex_factor)
+        print(nu_dens,mid_pt)
         
-        ax.plot(mid_pt, nu_dens, color= 'red')
+        plt.plot(mid_pt, nu_dens, 'o', color = colour,label=label)
         
         plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
-        plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})",fontsize=16)
+        plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)
             
         plt.xscale( 'log' )
         plt.yscale( 'log' )
         
-        return fig, ax
+        return nu_dens, mid_pt
 
         
     def n_Re_plot():
