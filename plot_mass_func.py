@@ -50,12 +50,13 @@ import numpy as np
 
 
 
-#box=[[8.0,8.3],[8.3,8.6],[8.6,8.9],
-#     [8.9,9.2],[9.2,9.5],[9.5,9.8],
-#     [9.8,10.1],[10.1,10.4],[10.4,10.7],
-#     [10.7,11.0],[11.0,11.3],[11.3,11.6],[11.6,11.9]]
+box=[[8.0,8.3],[8.3,8.6],[8.6,8.9],
+     [8.9,9.2],[9.2,9.5],[9.5,9.8],
+     [9.8,10.1],[10.1,10.4],[10.4,10.7],
+     [10.7,11.0],[11.0,11.3],[11.3,11.6],
+     [11.6,11.9],[11.9,12.0]]
 
-box=[[8,9],[9,10],[10,11],[11,12]]
+#box=[[7,8],[8,9],[9,10],[10,11],[11,12]]
 #box =[[9.9,10.5],[10.5,11.0],[11.0,11.6]]
 volume = [29526.108,97704.819,357422.506]
 
@@ -128,7 +129,7 @@ line_style = Kalvin14_morph['line_style']
 fig, ax = plt.subplots()
 
 
-plt.plot(M,Phi,color="black",linestyle="solid")
+plt.plot(M,Phi,color="black", linestyle="solid")
 
 for i in range(len(M_star)):
     Phi = func.Schechter_func(M, alpha[i], M_star[i], phi_0[i])
@@ -143,18 +144,89 @@ plt.xlim(10**7.9,10**11.6)
 plt.ylim(3*10**-5,8*10**-2 )
 
 
-mass1 = SRead.read_list("Gal_table2_bin2")["Taylor_mass"]
-mass2 = SRead.read_list("Gal_table2_bin3")["Taylor_mass"]
-mass3 = SRead.read_list("Gal_table2_bin4")["Taylor_mass"]
+##########################################
+
+D0_Bin1_table = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt")
+D0_Bin2_table = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt")
+D0_Bin3_table = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt")
+
+
+mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
+mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
+mag_g3, mag_i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
+
+D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:,31]
+D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
+D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
+
+
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
+
+
+ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
+ML_select1_R15BC = SPlot.MLRelationIband(mag_g1,mag_i1).Roediger15BC03_MassRatio
+ML_select1_Z09 = SPlot.MLRelationIband(mag_g1,mag_i1).Zibetti09_MassRatio
+ML_select1_T11 = SPlot.MLRelationIband(mag_g1,mag_i1).Taylor11_MassRatio
+
+M1 = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1,mag_i1)
+
+E1_IP13 = M1.cal_Mass(ML_select1_IP13)
+E1_R15BC = M1.cal_Mass(ML_select1_R15BC)
+E1_Z09 = M1.cal_Mass(ML_select1_Z09)
+E1_T11 = M1.cal_Mass(ML_select1_T11)
+
+
+ML_select2_IP13 = SPlot.MLRelationIband(mag_g2,mag_i2).Into13_MassRatio
+ML_select2_R15BC = SPlot.MLRelationIband(mag_g2,mag_i2).Roediger15BC03_MassRatio
+ML_select2_Z09 = SPlot.MLRelationIband(mag_g2,mag_i2).Zibetti09_MassRatio
+ML_select2_T11 = SPlot.MLRelationIband(mag_g2,mag_i2).Taylor11_MassRatio
+
+M2 = SPlot.MassCalculation(sph_mag2, D2, 4.53,mag_g2,mag_i2)
+
+E2_IP13 = M2.cal_Mass(ML_select2_IP13)
+E2_R15BC = M2.cal_Mass(ML_select2_R15BC)
+E2_Z09 = M2.cal_Mass(ML_select2_Z09)
+E2_T11 = M2.cal_Mass(ML_select2_T11)
+
+
+ML_select3_IP13 = SPlot.MLRelationIband(mag_g3,mag_i3).Into13_MassRatio
+ML_select3_R15BC = SPlot.MLRelationIband(mag_g3,mag_i3).Roediger15BC03_MassRatio
+ML_select3_Z09 = SPlot.MLRelationIband(mag_g3,mag_i3).Zibetti09_MassRatio
+ML_select3_T11 = SPlot.MLRelationIband(mag_g3,mag_i3).Taylor11_MassRatio
+
+M3 = SPlot.MassCalculation(sph_mag3, D3, 4.53,mag_g3,mag_i3)
+
+E3_IP13 = M3.cal_Mass(ML_select3_IP13)
+E3_R15BC = M3.cal_Mass(ML_select3_R15BC)
+E3_Z09 = M3.cal_Mass(ML_select3_Z09)
+E3_T11 = M3.cal_Mass(ML_select3_T11)
+
+
+mass1 = np.log10(E1_T11)
+mass2 = np.log10(E2_T11)
+mass3 = np.log10(E3_T11)
+
+###########################################
 
 #mass1 = np.log10(SRead.read_list("Gal_table1_bin2_Tmass")["mass"]*1e10)
 #mass2 = np.log10(SRead.read_list("Gal_table1_bin3_Tmass")["mass"]*1e10)
 #mass3 = np.log10(SRead.read_list("Gal_table1_bin4_Tmass")["mass"]*1e10)
 
-print(np.log10(SRead.read_list("Gal_table1_bin2_Tmass")["mass"]*1e10))
-
-print(np.log10(SRead.read_list("Gal_table2_bin2")["Taylor_mass"]*1e10))
-
+#print(np.log10(SRead.read_list("Gal_table1_bin2_Tmass")["mass"]*1e10))
+#print(np.log10(SRead.read_list("Gal_table1_bin3_Tmass")["mass"]*1e10))
+#print(np.log10(SRead.read_list("Gal_table1_bin4_Tmass")["mass"]*1e10))
+print('----------------------------------------------------------------')
+#print(np.log10(SRead.read_list("Gal_table2_bin2")["Taylor_mass"]*1e10))
+print('----------------------------------------------------------------')
 SPlot.ShowcaseIndi.mass_function_plot(mass3, box, volume[0], colour="black",label="mass_bin3")
 SPlot.ShowcaseIndi.mass_function_plot(mass2, box, volume[1], colour="blue",label="mass_bin2")
 SPlot.ShowcaseIndi.mass_function_plot(mass1, box, volume[2], colour="red",label="mass_bin1")

@@ -43,7 +43,28 @@ def read_table(table,dtype='float'):
     """
     D=np.genfromtxt(table, dtype=dtype)
     return D
+#%%
+def pickle_save(input_list,output_name):
+    """
+    Simple save function via pickle.
 
+    Parameters
+    ----------
+    input_list: list
+        A python list
+        
+    output_name: str
+        The filename for the dictionary to be saved via pickle
+    
+    Returns
+    -------
+    None.
+
+    """
+    with open(output_name, 'wb') as f: # saving the list 
+        pickle.dump(input_list, f)
+        
+    return None
 #%% tested # under construction
 def match_list_dim(input1,input2):
     """
@@ -62,6 +83,32 @@ def match_list_dim(input1,input2):
         raise Exception("Dimension not matching, \
                         size of %s =\= %s" %((input1),(input2))) 
 #%%tested
+def convert_list_ascii(input_name,output_name):
+    """
+    Convert python dictionary or list to a ASCII file.
+    
+    Parameters
+    ----------
+    Input_name: list
+        The name of the list created by pickle.
+        
+    output_name: str
+        The name of the output ASCII file.
+    
+    """    
+    #with open(input_file, 'rb') as f:
+    #    mylist = pickle.load(f)
+
+    #print(value)
+    #print(key)
+    my_list = input_name
+    with open(output_name, 'w') as f:
+        for item in my_list:
+            f.write("%s\n" % item)
+    
+
+
+
 def convert_dict_ascii(input_name,output_name):
     """
     Convert python dictionary or list to a ASCII file.
@@ -69,7 +116,7 @@ def convert_dict_ascii(input_name,output_name):
     Parameters
     ----------
     Input_name: str
-        The name of the list/dict created by pickle.
+        The name of the dict created by pickle.
         
     output_name: str
         The name of the output ASCII file.
@@ -89,8 +136,8 @@ def convert_dict_ascii(input_name,output_name):
     data = Table(value, names=key)
     ascii.write(data, output_name ,overwrite=True)
     
-#%%
-def convert_list_textable(output_name):
+#%%WIP
+def convert_list_textable(input_file, output_name):
     """
     Export tex format table from a python list to an ascii file
 
@@ -136,7 +183,7 @@ def lookup_bundle(gal_bundle,gal_name):
             pass
     return Gal
 
-#%%
+#%% tested
 def grab_name(filename):
     """
     A function for grab the name of the galaxies from a galaxy bundle.
@@ -196,7 +243,7 @@ def grab_parameter(filename, keyword, number):
                 
     storage = np.array(storage)       
     return storage
-#%%
+#%% tested
 def grab_mag(filename, keyword):
     """
     A function for grab the magnitude of a component from a galaxy bundle.
@@ -255,8 +302,11 @@ def grab_total_mag(filename):
     storage = np.array(storage)       
     return storage
 
-#%%
-def grab_dist(dir_dist_list,dist_list):
+#%% tested
+def grab_dist(dir_dist_list,dist_list,
+              name_index = 0, vel_index =3, vel_err_index = 4, scale_index = 5,
+              dir_name_index = 0, dir_dist_index = 1, dir_dist_err_index =2,
+              dir_method_index = 5, dir_method_flag_index = 7):
     """
     A function for grabing the distance of galaxy base on two lists.
     
@@ -296,18 +346,20 @@ def grab_dist(dir_dist_list,dist_list):
     ## replace dir_dist and calculate scale
     ## store in numpy array
     
-    name = dist_list1[:,0]
-    vel , vel_err= dist_list2[:,3], dist_list2[:,4]
-    scale = dist_list2[:,5]
+    name = dist_list1[:,name_index]
+    vel , vel_err= dist_list2[:,vel_index], dist_list2[:,vel_err_index]
+    scale = dist_list2[:,scale_index]
     
     dist = vel / H0 
     dist_err = vel_err / H0
     
     #####
-    dir_name = dir_dist_list1[:,0]
-    dir_dist, dir_dist_err = dir_dist_list2[:,1], dir_dist_list2[:,2]
-    dir_method = dir_dist_list1[:,5]
-    dir_method_flag = dir_dist_list2[:,7]
+    dir_name = dir_dist_list1[:,dir_name_index]
+    dir_dist =  dir_dist_list2[:,dir_dist_index]
+    dir_dist_err =  dir_dist_list2[:, dir_dist_err_index]
+    dir_method = dir_dist_list1[:,dir_method_index]
+    dir_method_flag = dir_dist_list2[:,dir_method_flag_index]
+    
     #####
     dir_scale = dir_dist* ((1e3) / 206264.806) #turn Mpc/rad to kpc/arcsec 
     
@@ -380,7 +432,7 @@ def pd_read(filename,check_equvi):
     A = pd.read_table(filename,sep='\n')  #seperating the string by \n
     #print(filename)
     Gal_list=[]
-    Gal_list.append(filename[2:9])  #recording the name of the galaxy
+    Gal_list.append(filename[20:27])  #recording the name of the galaxy
     #equvi = str(check_equvi)
     i=0 
     for i in range(A.shape[0]):
@@ -413,8 +465,8 @@ def pd_read(filename,check_equvi):
                 r_b = float(A.iloc[i+3][0].split()[2])
                 alpha = float(A.iloc[i+5][0].split()[2])
                 gamma = float(A.iloc[i+6][0].split()[2])
+                
                 CoreSersic_mag = float(A.iloc[i+7][0].split()[4]) if check_equvi else 0
-
                 Gal_list.append('CoreSersic')
                 Gal_list.append(np.array([mu_p,r_e,n,r_b,alpha,gamma]))
                 Gal_list.append(CoreSersic_mag)
@@ -449,9 +501,7 @@ def pd_read(filename,check_equvi):
         # record the fitting parameters for the Ferrer function 
         # ['Ferrer', np.array([mu_0,r_0,alpha,beta])], np.array([Ferrer_mag]])
         elif A.iloc[i][0][0:17] == "Ferrer component:":
-                
-
-                           
+            
                 mu_0 = float(A.iloc[i+1][0].split()[2])
                 r_0 = float(A.iloc[i+2][0].split()[2])
                 alpha = float(A.iloc[i+3][0].split()[2])
@@ -540,6 +590,8 @@ def run_list(input_list,output_name,check_equvi):
     Gal_bundle = []
     j=0 
     for j in range(input_gal.shape[0]): #read individual galaxy
+    
+        print(input_gal.iloc[j][0])
         Gal_list = pd_read(input_gal.iloc[j][0],check_equvi) 
         Gal_bundle.append(Gal_list)
         #print(Gal_list)
@@ -551,60 +603,4 @@ def run_list(input_list,output_name,check_equvi):
 #%%
 
 #%%
-#%% require heavy modification or deletion, haven't decided yet
-def create_table(Dtable,Ctable,M_sun,N):
-    D1 = np.genfromtxt(Dtable , dtype='str')
-    D2 = np.genfromtxt(Dtable , dtype='float')
-
-    C1 = np.genfromtxt(Ctable , dtype='str')
-    C2 = np.genfromtxt(Ctable , dtype='float')
-
-    name = D1[:,0]
-    n_maj = D2[:,1]
-    Re_maj = D2[:,2]
-    h_maj = D2[:,3]
-    n_equ = D2[:,4]
-    Re_equ = D2[:,5]
-    h_equ = D2[:,6]
-    mag_bulge = D2[:,7]
-    mag_total = D2[:,8]
-
-    zdist = C2[:,1]
-    zdist_err = C2[:,2]
-    AbsMag_F = C2[:,3]
-    AbsMag_N = C2[:,4]
-    AbsMag_u = C2[:,5]
-    AbsMag_g = C2[:,6]
-    AbsMag_r = C2[:,7]
-    AbsMag_i = C2[:,8]
-    AbsMag_z = C2[:,9]
-    morph = C1[:,10]
-    
-    print(C2[:,12])
-    maj_max = C2[:,12]
-    equ_max = C2[:,13]
-
-    scale, Re_kpc_maj, Re_kpc_equ, Dist = [], [], [], []
-
-    for i in range(N):
-        #print Re_maj[i]
-        NWS=ned_wright_CosCal(zdist[i],0.3,0.7)
-        scale = NWS.kpc_DA
-        #print(scale)
-        #print scale*Re_maj[i]
-        #print Re_kpc_maj
-        Re_kpc_maj.append(scale* Re_maj[i])    #effective radius
-        Re_kpc_equ.append(scale* Re_equ[i])
-        Dist.append(NWS.DCMR_Mpc)
-
-    scale, Re_kpc_maj, Re_kpc_equ, Dist = np.array(scale), np.array(Re_kpc_maj), np.array(Re_kpc_equ), np.array(Dist)
-    #print(name)
-    #print(Dist)
-
-    Mass_bulge_Into = cal_Mass(mag_bulge,Dist,ML_relation_Iband(AbsMag_g,AbsMag_i).Into13_MassRatio,M_sun)
-    Mass_total_Into = cal_Mass(mag_total,Dist,ML_relation_Iband(AbsMag_g,AbsMag_i).Into13_MassRatio,M_sun)
-
-    Mass_bulge_Taylor = cal_Mass(mag_bulge,Dist,ML_relation_Iband(AbsMag_g,AbsMag_i).Taylor11_MassRatio,M_sun)
-    Mass_total_Taylor = cal_Mass(mag_total,Dist,ML_relation_Iband(AbsMag_g,AbsMag_i).Taylor11_MassRatio,M_sun)
-    return tuple([Re_kpc_maj, Re_kpc_equ, Mass_bulge_Into, Mass_total_Into, Mass_bulge_Taylor, Mass_total_Taylor, name, n_equ, zdist, maj_max, equ_max,Dist])
-
+#%% 

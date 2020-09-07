@@ -24,6 +24,7 @@ from scipy.signal import find_peaks
 import matplotlib.image as mpimg
 
 import SphRead as SRead
+import SphSort as SSort
 
 
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
@@ -158,15 +159,27 @@ class SelectionCut(object):
     ----------
     mass : float
         The stellar mass of the galaxy 
-
+    Dist: float
 
     Methods
     -------
     Barro13_cut
     """
     
-    def __init__(self, mass):
+    def __init__(self, mass, Dist):
         self.mass = mass
+        self.Dist = Dist
+        
+    def parent_sample_cut(self):
+        cut=np.zeros(np.size(self.Dist))
+        i=0
+        for i in range(np.size(self.Dist)):
+            if ((self.Dist[i])<=115.0):
+                cut[i] = 10**((0.01414*self.Dist[i])+10)
+            elif ((self.Dist[i])>115.0):
+                cut[i] = np.nan
+        return cut
+
         
     def Barro13_cut(self):
         cut=np.zeros(np.size(self.mass))
@@ -207,21 +220,22 @@ class SelectionCut(object):
             elif (np.log10(self.mass[i])<10.845):
                 cut[i] = np.nan
         return cut
+    
 
     def plot_cut(self):
 
         plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
-                 label="Barro et al.2013" )
+                 label="Barro et al. 2013" )
         plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
                    linestyle="dashed", linewidth=3, color='g' )
 
         plt.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
-                 label="van Dokkum et al.2015" )
+                 label="van Dokkum et al. 2015" )
         plt.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
                    linestyle="dashed", linewidth=3, color='y' )
 
         plt.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
-                 label="van der Wel et al.2014" )
+                 label="van der Wel et al. 2014" )
         plt.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
                    linestyle="dashed",linewidth=3, color='b' )
 
@@ -232,6 +246,42 @@ class SelectionCut(object):
         plt.xscale( 'log' )
         plt.yscale( 'log' )
         plt.legend()
+        
+    def selection_subsample(self, input_list, direction="up"):
+        """
+        A generic method to select a set of sample base on a cut.
+        
+        Parameters
+        ----------
+        input_list: list
+        
+        
+        Returns
+        -------
+        Bag: Dict
+            {index:[1,4,5],
+             bag:[[],[]...]}
+
+        """
+        index_list, bag_list=[],[]
+        func = self.parent_sample_cut()
+        
+        if direction == "up":
+            for i in range(len(input_list)):
+                if self.mass[i] > func[i]:
+                    index_list.append(i)
+                    bag_list.append(input_list[i])
+                    
+        elif direction == "down":
+            for i in range(len(input_list)):
+                if self.mass[i] < func[i]:
+                    index_list.append(i)
+                    bag_list.append(input_list[i])
+        
+        Bag = {'index':index_list,
+               'bag':bag_list}
+        return Bag  
+    
     
 #%%
 class ShowcaseIndi(SelectionCut, MassCalculation):
@@ -268,9 +318,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
     vdis_mass_plot():
     """
     
-    def __init__(self,d):
+    def __init__(self):
         #self.input_list = input_list
-        self.d = d
         super().__init__(*args, **kwargs)
         
     def show_name(x,y,name,size=12):
@@ -405,7 +454,10 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         
         return None
     
-    def Mass_Re_plot(x,y,name,colour,legend,alpha0): #tested
+    def Mass_Re_plot(x,y,xerr=None,yerr=None,name=None,
+                     ms= 4 , colour='#e6a31e',
+                     legend=None,alpha0=None,
+                     marker ='o',lw= 12): #tested
         """
         Plot the size-mass diagram given the input x (radius) and y (Mass).
         
@@ -428,23 +480,35 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
             
         """
-        ###on off switch for names, colour
-        x_edge,y_edge= [0,0,2,2], [7e10,90e11,90e11,7e10]
-
-        plt.plot(x,y,"%s"%colour,label="%s"%legend, markersize=10, 
+        
+        
+        #x_edge,y_edge= [0,0,2,2], [7e10,90e11,90e11,7e10]
+        #plt.plot(x,y,fmt='o')
+        plt.plot(x,y, marker, color=colour,label=legend,markersize=ms, 
                  alpha=alpha0)
+        plt.errorbar(x,y,xerr=xerr,yerr=yerr,ls='none',linewidth=lw,
+                  ecolor=colour,capsize=0,
+                  alpha=alpha0
+                  )
+        #ShowcaseIndi.show_name(x, y, name)
 
-        #for i in range(np.size(name)):
-        #    plt.text(x[i],y[i], name[i],fontsize=12)
 
-        plt.xlabel("$Mass$ / $Mass_{sun}$",fontsize=16)
+
+        plt.xlabel("$M_{*}$ / $M_{\odot}$",fontsize=16)
         plt.ylabel("$R_e$ (kpc)",fontsize=16)
-        plt.vlines(7e10,0,2,color='k', linestyle="dashed", linewidth=3)
-        plt.hlines(2,7e10,90e11, color='k', linestyle="dashed", linewidth=3)
-        plt.fill(y_edge,x_edge, alpha=0.1, color='#ade0b9')
+        
+        #plt.vlines(7e10,0,2,color='k', linestyle="dashed", linewidth=3)
+        #plt.hlines(2,7e10,90e11, color='k', linestyle="dashed", linewidth=3)
+       #plt.fill(y_edge,x_edge, alpha=0.1, color='#ade0b9')
+        plt.xlim(1.87e9,5e12)
+        plt.ylim(0,300)
+
 
         plt.xscale( 'log' )
         plt.yscale( 'log' )
+        
+        
+
         plt.legend()
         #return fig, ax
 
@@ -606,6 +670,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.legend()
         return fig, ax
 
+    #
     def mass_function_plot(mass,box, volume=None, colour=None, label=None):
         """
         Plot the mass function 
@@ -640,8 +705,13 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 else:
                     pass
             box_bin = np.array(box_bin)
-            print(n,np.size(box_bin))
-            master_bin.append(box_bin)
+            print(n,'number of sampe in the box', np.size(box_bin))
+
+            #if box_bin.size == 0:
+            #    master_bin.append(np.array([np.nan]))
+            #else:
+            master_bin.append(box_bin) #output an 
+        #print('master_bin', master_bin)
         
         # calculating
         if volume == None:
@@ -654,15 +724,32 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         dex_factor = np.array([(box[j][1]-box[j][0]) for j in range(len(box))])
         dex_factor=np.average(dex_factor)
         
-        nu_dens = [(np.size(master_bin[j])/vol)/dex_factor for j in range(len(master_bin))]
-        
+        nu_dens = [(np.size(master_bin[j])/vol)/dex_factor for j in 
+                   range(len(master_bin))]
+        nu_dens = np.array(nu_dens)
+                
+        nu_dens_err = np.std(nu_dens)/np.sqrt(np.size(nu_dens))
+            
+        N =  [np.sqrt(np.size(master_bin[j])/vol/dex_factor) for j in 
+                   range(len(master_bin))]
+        N = np.array(N)
         # the mid point for each x-axis bin
         mid_pt =  [10**(sum(box[j])/2) for j in range(len(box))]
-#        #plotting 
-        print(dex_factor)
-        print(nu_dens,mid_pt)
+        mid_pt = np.array(mid_pt)
         
-        plt.plot(mid_pt, nu_dens, 'o', color = colour,label=label)
+        #trim down the array, remove the zeros
+        
+        
+        
+        #plotting 
+        print('dex_factor', dex_factor)
+        print('nudens',nu_dens, 'nudens_err',nu_dens_err, 'mid_pt',mid_pt)
+        
+        plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, label=label)
+        plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
+                     linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)
+        #errorbar by standard error
+        
         
         plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
         plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)
@@ -748,7 +835,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         """
         dc, DD = np.array(dc), np.array(DD)
         DD_err = np.array(DD_err)
-        index = np.linspace(0.5,len(DD),len(DD))
+        index = np.linspace(0,len(DD),num=len(DD),dtype=int)
         x_edge,y_edge= [limit,limit,120,120], \
             [min(index),max(index),max(index),min(index)]
     
@@ -825,6 +912,216 @@ class ShowcaseCompare2(ShowcaseIndi):
 
 
         return fig, axs0, axs1
+    
+    
+    def plot_distdist_3points(DD,dc,d, name, limit, 
+                              DD_err=None,dc_err=None, d_err=None, 
+                               d_spec = None, d_spec_name = None , d_spec_err =None,
+                               decision=[]):
+        """
+        A method to plot the difference in distance estimation 
+        ----------                        
+        DD : 1D numpy array
+            Comoving distance by redshift dependent measurement. Usually 
+            reserved for Mould 2000 distance
+            
+            
+        dc : 1D numpy array         
+            Distance by redshift dependent measurement. Usually reserved for 
+            Willick 1997 distance
+
+        d: 1D numpy array
+            Distance by redshift dependent measurement. Usually reserved for 
+            Cosmicflow-3 distance
+
+        name : str
+            The name of each galaxy. 
+        
+        limit : float
+            Marker of selection limit.
+        
+        
+        Optional
+        --------
+        DD_err: 1D numpy array
+            default: None
+        
+        dc_err: 1D numpy array
+            default: None
+
+        d_err: 1D numpy array
+            default: None
+            
+        d_spec: 1D numpy array
+            Special distance. Usually reserved for the z-independent distance.
+            default: None
+            
+        d_spec_name: 1D numpy array
+            The name of the galaxy with assigned special distance. 
+            Usually reserved for the z-independent distance.
+            default: None
+            
+        d_spec_err: 1D numpy array
+            The error for the special distance. 
+            Usually reserved for the z-independent distance.
+            default: None
+            
+        decision: list
+            A list of str containing the decision for the chosen distance 
+            source.
+            default: []
+
+        Return
+        ------
+        Plot    
+    
+        """    
+        d, dc, DD = np.array(d), np.array(dc), np.array(DD)
+        d_err, dc_err, DD_err = np.array(d_err), np.array(dc_err), np.array(DD_err)
+        
+        decision_color = {"Cosmicflow-3":"#ab005a" ,
+                          "Mould2000": "blue",
+                          "Willick1997": "green",
+                          "z-independent":"#d79734",
+                          "out_of_bound":"black",
+                          "out_of_bound(1)":"black",
+                          "out_of_bound(2)":"black",
+                          "o":"black"}
+        ############################create d_spec####
+        #lookup name -> make index table - > plot on the right index
+        d_spec_index = []
+        d_spec_d = []
+        d_spec_d_err = []
+        
+        for i in range(len(d_spec_name)):
+            for j in range(len(name)):
+                if d_spec_name[i] == name[j]: 
+                    print(name[j])
+                    d_spec_index.append(float(j))
+                    d_spec_d.append(d_spec[i])
+                    d_spec_d_err.append(d_spec_err[i])
+                    
+        print(d_spec_index, d_spec_d, d_spec_d_err)       
+        #############################################
+        index = np.linspace(0,len(DD),len(DD),dtype=int)
+        x_edge,y_edge= [limit,limit,160,160], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]
+    
+        fig = plt.figure()
+        gs = gridspec.GridSpec(1, 1) 
+
+        # fig, axs = plt.subplot(1,2, sharey= 'row', gridspec_kw={'hspace': 0,'wspace': 0})
+    
+        axs0 = plt.subplot(gs[0])
+    
+        #for i in DD:
+        #    axs0.hlines(index,0, 120, linestyle="dashed", 
+        #                linewidth = 0.5, color= 'k')
+
+        ms0, lw = 12, 4        
+        
+        axs0.plot(dc,index, "o", ms = ms0, color="green",
+                  label="Willick et al. 1997")
+        axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='g',zorder=20,mew=1,capsize=ms0)
+
+        axs0.plot(DD,index, "o", ms = ms0, color="blue",
+                  label="Mould et al. 2000")
+        axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='b',zorder=20,mew=1,capsize=ms0)
+
+
+
+        axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
+                  label="Cosmicflow-3")
+        axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
+        
+        
+        axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734" ,
+                  label="z-independent")
+        axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
+                      ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
+                      mew=1,capsize=ms0)
+        
+        
+        axs0.vlines(limit, 0 -10, len(DD)+10, linestyle="dashed",
+                    linewidth=5, color='black')
+        
+#        axs0.vlines(np.average(d), 0, len(d), linestyle="solid",
+#                    linewidth=1, color='#ab005a', 
+#                    label=' ')
+#        axs0.vlines(np.average(d)+np.std(d), 0, len(d), 
+#                    linestyle="dashed",linewidth=1, color='#ab005a')
+#        axs0.vlines(np.average(d)-np.std(d), 0, len(d), 
+#                    linestyle="dashed",linewidth=1, color='#ab005a')    
+#
+#        axs0.vlines(np.average(DD), 0, len(DD), linestyle="solid",
+#                    linewidth=1, color='blue', 
+#                    label='mean Dist(z-dependent)')
+#        axs0.vlines(np.average(DD)+np.std(DD), 0, len(DD), 
+#                   linestyle="dashed",linewidth=1, color='blue')
+#        axs0.vlines(np.average(DD)-np.std(DD), 0, len(DD), 
+#                    linestyle="dashed",linewidth=1, color='blue')
+#
+#           
+#        axs0.vlines(np.average(dc), 0, len(dc), linestyle="solid",
+#                    linewidth=1, color='green', 
+#                    label='mean Dist(z-independent)')
+#        axs0.vlines(np.average(dc)+np.std(dc), 0, len(dc), 
+#                    linestyle="dashed",linewidth=1, color='green')
+#        axs0.vlines(np.average(dc)-np.std(dc), 0, len(dc), 
+#                    linestyle="dashed",linewidth=1, color='green')
+#
+#    
+        axs0.fill(x_edge,y_edge, alpha=0.3, color='red',
+                  label='selection limit')
+#    
+#        axs0.fill([np.average(d)-np.std(d),np.average(d)-np.std(d),
+#               np.average(d)+np.std(d),np.average(d)+np.std(d)],
+#                  [min(index),max(index),max(index),min(index)], alpha=0.05, 
+#                                        color='#ab005a')
+#        
+#        axs0.fill([np.average(DD)-np.std(DD),np.average(DD)-np.std(DD),
+#               np.average(DD)+np.std(DD),np.average(DD)+np.std(DD)],
+#                  [min(index),max(index),max(index),min(index)], alpha=0.05, 
+#                                        color='blue')
+#        
+#        axs0.fill([np.average(dc)-np.std(dc),np.average(dc)-np.std(dc),
+#               np.average(dc)+np.std(dc),np.average(dc)+np.std(dc)],
+#                  [min(index), max(index),max(index),min(index)], alpha=0.05, 
+#                                        color='green')
+        
+
+
+        ## Write the name of the distance source
+        #for i in range(len(decision)):
+        #    for j in  decision_color.keys():
+        #        if decision[i] == j:
+        #            color_choice = decision_color[j]
+        #            axs0.text(limit+10, index[i], decision[i], fontsize=12, 
+        #                      color = color_choice)                       
+            
+          #      else: 
+           #         color_choice = "black"
+          #          axs0.text(limit+10, index[i], decision[i], fontsize=12, 
+          #                    color = color_choice)
+
+
+        axs0.invert_yaxis()
+        plt.subplots_adjust(wspace = 0)
+        plt.yticks(index, name)
+        #ax2.yticks.set_visible(False)
+        
+        ##################
+        #make the decision making on the right
+        ##################
+        axs0.set_xlabel("$Distance/ \, Mpc$",fontsize=12)
+        axs0.legend(loc='upper left')
+
+
+        return fig, axs0
+    
     
     
     def plot_compare_rms(input_list1,input_list2): #tested
@@ -1507,31 +1804,42 @@ class Plot2D(object):
         """
         #N=np.loadtxt(file_name)
         N = Plot2D.read_fits_img(file_name)
-        q=2000
+        q=10000
+        N = N.flatten() # turn 2D image into 1D array
+                
+        fig , ax = plt.subplots()
         n, bins, patches = plt.hist(N, q, facecolor='g', alpha=1.0)
         w=0.5 #width
-        peaks, _ = find_peaks(n,height=max(n)/2)
-
+        peaks, _ = find_peaks(n,height=max(n))
+        
+        #check for peaks array size, pick the middle
+        if len(peaks) == 1:
+            pass
+        #elif (len(peaks) % 2 ) == 0:
+        #    peaks = peaks[(len(peaks)/2)+1]
+        else:
+            peaks = int(np.median(peaks))
+        
         xmin, xmax, ymin , ymax = abs(np.median(n))-w, abs(np.median(n))+w, \
             0, max(n)+max(n)/8        
         
         plt.plot((bins[peaks]+bins[peaks+1])/2, (n[peaks]), "x")
         plt.xlabel('Pixel Value')
         plt.ylabel('Count')
+        #plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
+        #         (n[peaks]), r'%s' %(file_name))
         plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
-                 (n[peaks]), r'%s' %(file_name))
-        plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
-                 (n[peaks]-1), r'peak value= %s' %(bins[peaks]))
-        plt.title('Histogram of image value')
+                 (n[peaks]-1), r'peak value= {:.3f}'.format(float(bins[peaks])))
+        plt.title('Histogram of {}'.format(file_name))
         plt.axis([xmin, xmax, ymin , ymax])
         plt.grid(True)
-        plt.show()
+        #plt.show()
 
-        #np.savefig('foo.png')
+        plt.savefig('{}_sky.png'.format(file_name))
         #np.savefig('foo.pdf')
         K,KK=(n[peaks]+n[peaks+1])/2, np.argmax(n)
-        print(K, KK)
-        print(n[peaks], bins[peaks])
+        #print(K, KK)
+        print(file_name, n[peaks], bins[peaks])
         return None
 
     
@@ -1564,7 +1872,8 @@ class Plot2D(object):
         #plt.imshow(data,cmap=cmr.heat)
         index = np.linspace(0,len(data[:,0]),len(data[:,0])/10)
         new_scale = (index - np.full(index.shape, centre[1]))*0.4
-        new_scale = np.array([format(new_scale[x], '.2f') for x in range(len(new_scale))])
+        new_scale = np.array([format(new_scale[x], '.2f') for x in range(
+            len(new_scale))])
 
                 
         plt.imshow(data_log,cmap=cmr.heat, vmin= val_min, vmax = val_max)

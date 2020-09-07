@@ -17,12 +17,39 @@ import os
 from SphRead import *
 
 
-__all__ = ["remove_item", "add_item", "outliers", "cpt_seperator_demo",
+__all__ = ["str_zipping","remove_item", "add_item", "outliers", "cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]
 
 __author__="Dexter S.H. Hon"
+#%%
+def trim_value(input_array,value):
+    """
+    Remove the sepcfied value in an numpy array.
 
+    Parameters
+    ----------
+    input_array : 1D numpy array
+        The input.
+    value : str, float
+        The value to be removed.
+
+    Returns
+    -------
+    An resized numpy array without the value inside.
+
+    """
+    temp = []
+    
+    for i in range(np.size(input_array)):
+        
+        if input_array[i] == value:
+            pass
+        else:
+            temp.append(input_array[i])
+    temp=np.array(temp)        
+    
+    return temp
 
 #%%
 def str_zipping(list1,list2,zip_symbol=""):
@@ -803,6 +830,8 @@ def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
         pickle.dump(output["ETG"], f)
         
     return output
+#%%
+ 
     
 #%% Under Construction no one allow in
     
