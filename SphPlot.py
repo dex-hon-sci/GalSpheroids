@@ -210,7 +210,27 @@ class SelectionCut(object):
             elif (np.log10(self.mass[i])<10.7):
                 cut[i] = np.nan
         return cut
-
+    
+    def Cassata11_cut(self):
+        cut=np.zeros(np.size(self.mass))
+        i=0
+        for i in range(np.size(self.mass)):
+            if (np.log10(self.mass[i])>=10.0):
+                cut[i] = 10**((np.log10(self.mass[i])*0.4)-5.5)
+            elif (np.log10(self.mass[i])<10.0):
+                cut[i] = np.nan
+        return cut
+    
+    def Damjanov14_cut(self):
+        cut=np.zeros(np.size(self.mass))
+        i=0
+        for i in range(np.size(self.mass)):
+            if (np.log10(self.mass[i])>=10.0):
+                cut[i] = 10**((np.log10(self.mass[i])*0.568)-5.74)
+            elif (np.log10(self.mass[i])<10.0):
+                cut[i] = np.nan
+        return cut
+    
     def Graham15_broad_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
@@ -223,7 +243,22 @@ class SelectionCut(object):
     
 
     def plot_cut(self):
+        """
+        Plot all th cut avaliable in this class.
 
+        Returns
+        -------
+        None.
+
+        """
+        
+        plt.plot(self.mass,self.Cassata11_cut(),
+                 ls = "dashed", color="cyan", linewidth=3,
+                 label="Cassata et al. 2011" )
+        plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
+                 label="Damjanov et al. 2014" )
+
+        
         plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
                  label="Barro et al. 2013" )
         plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
@@ -247,7 +282,126 @@ class SelectionCut(object):
         plt.yscale( 'log' )
         plt.legend()
         
-    def selection_subsample(self, input_list, direction="up"):
+    
+    def plot_cut_specific(self,input_cut,label,alpha0= 0.2):
+        """
+        Plot a specific cut in this class.
+
+        Parameters
+        ----------
+        input_cut : str
+            The keyword for the selection cut. The options are:
+            "Barro": Barro
+
+        Returns
+        -------
+        None.
+
+        """
+        a = 1e10 # initial guess of the left edge
+        
+        
+        
+        if input_cut == "Barro":
+            plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
+                 label= label )
+            plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
+                   linestyle="dashed", linewidth=3, color='g' )
+            
+            # define the left edge
+            a = 1e10
+            xedge, yedge = [5e12,a], [1e-3,1e-3]
+            #define the upper edge
+            xedge.append(a)
+            yedge.append(10**((np.log10(a)-10.3)/1.5))
+                         
+            xedge.append(xedge[0])
+            yedge.append(10**((np.log10(xedge[0])-10.3)/1.5))
+            
+            plt.fill(xedge, yedge, alpha=0.1, color='g')
+
+            
+        elif input_cut == "vDokkum":
+            plt.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
+                 label=label )
+            plt.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
+                   linestyle="dashed", linewidth=3, color='y' )
+            
+            # define the left edge
+            a = 10**10.6
+            xedge, yedge = [5e12,a], [1e-3,1e-3]
+            #define the upper edge
+            xedge.append(a)
+            yedge.append(10**(np.log10(a)-10.7))
+                         
+            xedge.append(xedge[0])
+            yedge.append(10**(np.log10(xedge[0])-10.7))
+                         
+            plt.fill(xedge, yedge, alpha=0.1, color='y')
+
+            
+        elif input_cut == "vdWel":
+            plt.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
+                 label=label )
+            plt.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
+                   linestyle="dashed",linewidth=3, color='b' )
+            
+            # define the left edge
+            a = 10**10.7
+            xedge, yedge = [5e12,a], [1e-3,1e-3]
+            #define the upper edge
+          
+            xedge.append(a)
+            yedge.append(2.5*(((a)/1e11)**0.75))
+                         
+            xedge.append(xedge[0])
+            yedge.append(2.5*(((xedge[0])/1e11)**0.75))
+                         
+            plt.fill(xedge, yedge, alpha=0.1, color='b')
+
+            
+        elif input_cut == "Damjanov":
+            plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
+                 label=label )
+            
+            # define the left edge
+            a = 1e10
+            xedge, yedge = [5e12,a], [1e-3,1e-3]
+            xedge.append(a)
+            yedge.append(10**((np.log10(a)*0.568)-5.74))
+                         
+            xedge.append(xedge[0])
+            yedge.append(10**((np.log10(xedge[0])*0.568)-5.74))
+                         
+            plt.fill(xedge, yedge, alpha=0.1, color='r')
+
+        elif input_cut == "Graham":
+            plt.plot(self.mass,self.Graham15_broad_cut(),"k--" , linewidth=3,
+                     label=label  )
+            plt.vlines(7e10, 0, 2, linestyle="dashed",linewidth=3, color='k' )
+            
+            # define the left edge
+            a = 7e10
+            xedge, yedge = [5e12,a], [1e-3,1e-3]       
+            xedge.append(a)
+            yedge.append(2)
+                         
+            xedge.append(xedge[0])
+            yedge.append(2)
+            
+            plt.fill(xedge, yedge, alpha=0.1, color='k')
+
+            
+        else:
+            raise KeyboardInterrupt 
+        
+        plt.xscale( 'log' )
+        plt.yscale( 'log' )
+        plt.legend()
+        
+        
+    def selection_subsample(self, input_list, 
+                            direction="down"):
         """
         A generic method to select a set of sample base on a cut.
         
@@ -264,7 +418,7 @@ class SelectionCut(object):
 
         """
         index_list, bag_list=[],[]
-        func = self.parent_sample_cut()
+        func = self.parent_sample_cut
         
         if direction == "up":
             for i in range(len(input_list)):
@@ -477,15 +631,13 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             
         Return
         ------
-
+        The size-mass plot.
             
         """
-        
-        
         #x_edge,y_edge= [0,0,2,2], [7e10,90e11,90e11,7e10]
         #plt.plot(x,y,fmt='o')
         plt.plot(x,y, marker, color=colour,label=legend,markersize=ms, 
-                 alpha=alpha0)
+                 alpha=alpha0+0.35)
         plt.errorbar(x,y,xerr=xerr,yerr=yerr,ls='none',linewidth=lw,
                   ecolor=colour,capsize=0,
                   alpha=alpha0
@@ -512,7 +664,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.legend()
         #return fig, ax
 
-    def plot_hist_percentage(input_list, dist): #tested
+    def plot_hist_percentage(input_list, dist, norm=False,scale='log'): #tested
         
         """
         Plot indiividual galaxies components in histogram form.
@@ -605,7 +757,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             for j in range(len(gal_data[i])): 
                 # loop through the property & cpt list
             
-                widths = gal_data[i][j]                
+                widths = gal_data[i][j]     
                 starts = gal_data_cum[j] - widths
             
                 #print(gal_cpt[gal_name][j], category[gal_cpt[gal_name][j]],widths,starts)
@@ -613,16 +765,16 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                         label='',#gal_cpt[gal_name][j], 
                         color=category[gal_cpt[gal_name][j]])
     
-        #ax.legend(ncol=len(category_names), bbox_to_anchor=(0, 1),
-        #loc='lower left', fontsize='small')
+
         plt.xlabel( '$L_*/L_{\odot}$' ,fontsize=16)
-        #plt.xscale( 'log' )
+        plt.xscale( scale )
         
         for dict_row in category:
             plt.plot([],[], color = category[dict_row], linestyle='-', 
                      linewidth=13, label = dict_row)
-
-            plt.legend(loc=1, fontsize = 13)
+            ax.legend(ncol=len(category_names), bbox_to_anchor=(0, 1),
+                  loc='lower left', fontsize='small')
+            #plt.legend(loc=1, fontsize = 13)
         return fig, ax
 
     def vdis_mass_plot(mass, vdis, colour, legend): #tested
@@ -718,38 +870,55 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             vol = 1
         else:
             vol = volume
-        
+            
+
         # the number density, default volume to be 1 Mpc^{-3} dex^{-1}
         
         dex_factor = np.array([(box[j][1]-box[j][0]) for j in range(len(box))])
         dex_factor=np.average(dex_factor)
         
-        nu_dens = [(np.size(master_bin[j])/vol)/dex_factor for j in 
-                   range(len(master_bin))]
+        
+        # The number of sample within each bin
+        N = [np.size(master_bin[j]) for j in range(len(master_bin))]
+        N_err = [(np.sqrt(np.size(master_bin[j]))/vol)/dex_factor 
+                   for j in range(len(master_bin))]
+        
+        # The number density of each bin
+        nu_dens = [(np.size(master_bin[j])/vol)/dex_factor 
+                   for j in range(len(master_bin))]
         nu_dens = np.array(nu_dens)
-                
-        nu_dens_err = np.std(nu_dens)/np.sqrt(np.size(nu_dens))
-            
-        N =  [np.sqrt(np.size(master_bin[j])/vol/dex_factor) for j in 
-                   range(len(master_bin))]
-        N = np.array(N)
+        
         # the mid point for each x-axis bin
         mid_pt =  [10**(sum(box[j])/2) for j in range(len(box))]
         mid_pt = np.array(mid_pt)
         
-        #trim down the array, remove the zeros
+        #Trim away the zeros, and the corresponding mid_pt
+
+        zero_i = [i for i in range(len(list(nu_dens))) if nu_dens[i] == 0]
+
+        nu_dens = SSort.trim_value(nu_dens, 0)
+        N = SSort.trim_value(N, 0)
+        N_err = SSort.trim_value(np.array(N_err), 0)
+
+        mid_pt = SSort.remove_value(mid_pt, zero_i)
         
+        # Assume Poisson error sqrt(N)/vol/dex_factor
+        nu_dens_err = N_err
+            
         
-        
+        N =  [np.sqrt(np.size(master_bin[j])/vol/dex_factor) for j in 
+                   range(len(master_bin))]
+        N = np.array(N)
+
         #plotting 
         print('dex_factor', dex_factor)
-        print('nudens',nu_dens, 'nudens_err',nu_dens_err, 'mid_pt',mid_pt)
+        print('nudens',nu_dens)
+        print('nudens_err',nu_dens_err)
+        print('mid_pt',mid_pt)
         
         plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, label=label)
         plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
-                     linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)
-        #errorbar by standard error
-        
+                     linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)        
         
         plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
         plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)

@@ -17,12 +17,45 @@ import os
 from SphRead import *
 
 
-__all__ = ["str_zipping","remove_item", "add_item", "outliers", "cpt_seperator_demo",
+__all__ = ["trim_value","replace_value","str_zipping","remove_item", 
+           "add_item", "outliers", "cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]
 
 __author__="Dexter S.H. Hon"
-#%%
+
+#%% tested
+def remove_value(input_array,value_list):
+    """
+    
+
+    Parameters
+    ----------
+    input_array : 1D numpy array
+        The input.
+    value_list : list
+        The indices of value to be removed .
+
+    Returns
+    -------
+    An resized numpy array without the value inside.
+
+
+    """
+    value = []
+    input_array = list(input_array)
+    
+    for j in range(len(value_list)):
+        value.append(input_array[value_list[j]])
+        
+    for i in range(len(value)):  
+        input_array.remove(value[i])
+
+    temp=np.array(input_array)        
+    
+    return temp
+
+#%% tested
 def trim_value(input_array,value):
     """
     Remove the sepcfied value in an numpy array.
@@ -50,6 +83,37 @@ def trim_value(input_array,value):
     temp=np.array(temp)        
     
     return temp
+#%% tested
+def replace_value(input_array,value1,value2):
+    """
+    Replace the sepcfied value in an numpy array.
+
+    Parameters
+    ----------
+    input_array : 1D numpy array
+        The input.
+    value1 : str, float
+        The value to be replaced.
+    value2 : str, float
+        The value to substitue.
+
+    Returns
+    -------
+    An new numpy array with the replaced value inside.
+
+    """
+    temp = []
+    
+    for i in range(np.size(input_array)):
+        
+        if input_array[i] == value1:
+            temp.append(value2)
+        else:
+            temp.append(input_array[i])
+    temp=np.array(temp)        
+    
+    return temp
+
 
 #%%
 def str_zipping(list1,list2,zip_symbol=""):
@@ -204,6 +268,49 @@ def outliers(name,input_array,limit):
         else: 
             pass
     return {"name":outliers_name, "Dist":outliers}
+#%%
+def selection_generic(input_list_x, input_list_y, func, direction="down"):
+    """
+    A generic method to select a set of sample base on a cut.
+        
+    Parameters
+    ----------
+    input_list: 1D numpy array
+        The quantity to compare the cut with.
+        
+    func: 1D numpy array
+        An function with the same dimension as the input list.
+        
+    Returns
+    -------
+    Bag: Dict
+    {index:[1,4,5],
+             bag:[[],[]...]}
+
+    """
+    index_list,bag_list_y, bag_list_x=[],[],[]
+    
+        
+    if direction == "up":
+        for i in range(len(input_list_y)):
+            if input_list_y[i] > func[i]:
+                index_list.append(i)
+                bag_list_x.append(input_list_x[i])
+                bag_list_y.append(input_list_y[i])
+                    
+    elif direction == "down":
+        for i in range(len(input_list_y)):
+            if input_list_y[i] < func[i]:
+                index_list.append(i)
+                bag_list_x.append(input_list_x[i])
+                bag_list_y.append(input_list_y[i])
+        
+    Bag = {'index':index_list,
+           'bag_x':bag_list_x,
+           'bag_y':bag_list_y,
+               }
+    return Bag 
+
 
 #%% tested
 def cpt_seperator_demo(input_list_name): 
