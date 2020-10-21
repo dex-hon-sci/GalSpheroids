@@ -17,7 +17,7 @@ import os
 from SphRead import *
 
 
-__all__ = ["trim_value","replace_value","str_zipping","remove_item", 
+__all__ = ["remove_value","trim_value","replace_value","str_zipping","remove_item", 
            "add_item", "outliers", "cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]

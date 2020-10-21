@@ -14,6 +14,12 @@ import astro_func_list as func
 
 import numpy as np
 
+import matplotlib.style
+import matplotlib as mpl
+mpl.style.use('classic')
+
+mpl.rcParams['grid.linewidth'] = 1.0
+
 #box=[[8.1,8.2],
 #     [8.2,8.3],
 #     [8.3,8.4],
@@ -143,7 +149,6 @@ mass1 = np.log10(E1_T11)
 mass2 = np.log10(E2_T11)
 mass3 = np.log10(E3_T11)
 
-
 ##### calculate the mass function (GAMA)
 Kalvin14_all1 ={'M_star':[],
                  'M_star_lerr':[],
@@ -228,8 +233,6 @@ for i in range(len(M_star)):
 plt.xlim(10**7.9,10**11.9)
 plt.ylim(2*10**-6,10**-2 )
 
-
-
 #mass1 = np.log10(SRead.read_list("Gal_table1_bin2_Tmass")["mass"]*1e10)
 #mass2 = np.log10(SRead.read_list("Gal_table1_bin3_Tmass")["mass"]*1e10)
 #mass3 = np.log10(SRead.read_list("Gal_table1_bin4_Tmass")["mass"]*1e10)
@@ -242,6 +245,6 @@ SPlot.ShowcaseIndi.mass_function_plot(mass3, box, volume[0], colour='#2a3236',la
 SPlot.ShowcaseIndi.mass_function_plot(mass2, box, volume[1], colour='#0b5786',label="Bin2")
 SPlot.ShowcaseIndi.mass_function_plot(mass1, box, volume[2], colour='#a5200b',label="Bin1")
 
-
+plt.grid(True)
 plt.legend()
 plt.show()

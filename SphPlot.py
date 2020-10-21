@@ -283,7 +283,7 @@ class SelectionCut(object):
         plt.legend()
         
     
-    def plot_cut_specific(self,input_cut,label,alpha0= 0.2):
+    def plot_cut_specific(self,input_cut,label,alpha0= 0.2, AX=plt):
         """
         Plot a specific cut in this class.
 
@@ -292,7 +292,9 @@ class SelectionCut(object):
         input_cut : str
             The keyword for the selection cut. The options are:
             "Barro": Barro
-
+        AX:
+            
+            
         Returns
         -------
         None.
@@ -303,9 +305,9 @@ class SelectionCut(object):
         
         
         if input_cut == "Barro":
-            plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
+            AX.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
                  label= label )
-            plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
+            AX.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
                    linestyle="dashed", linewidth=3, color='g' )
             
             # define the left edge
@@ -318,13 +320,13 @@ class SelectionCut(object):
             xedge.append(xedge[0])
             yedge.append(10**((np.log10(xedge[0])-10.3)/1.5))
             
-            plt.fill(xedge, yedge, alpha=0.1, color='g')
+            AX.fill(xedge, yedge, alpha=0.1, color='g')
 
             
         elif input_cut == "vDokkum":
-            plt.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
+            AX.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
                  label=label )
-            plt.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
+            AX.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
                    linestyle="dashed", linewidth=3, color='y' )
             
             # define the left edge
@@ -337,13 +339,13 @@ class SelectionCut(object):
             xedge.append(xedge[0])
             yedge.append(10**(np.log10(xedge[0])-10.7))
                          
-            plt.fill(xedge, yedge, alpha=0.1, color='y')
+            AX.fill(xedge, yedge, alpha=0.1, color='y')
 
             
         elif input_cut == "vdWel":
-            plt.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
+            AX.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
                  label=label )
-            plt.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
+            AX.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
                    linestyle="dashed",linewidth=3, color='b' )
             
             # define the left edge
@@ -357,11 +359,11 @@ class SelectionCut(object):
             xedge.append(xedge[0])
             yedge.append(2.5*(((xedge[0])/1e11)**0.75))
                          
-            plt.fill(xedge, yedge, alpha=0.1, color='b')
+            AX.fill(xedge, yedge, alpha=0.1, color='b')
 
             
         elif input_cut == "Damjanov":
-            plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
+            AX.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
                  label=label )
             
             # define the left edge
@@ -373,12 +375,12 @@ class SelectionCut(object):
             xedge.append(xedge[0])
             yedge.append(10**((np.log10(xedge[0])*0.568)-5.74))
                          
-            plt.fill(xedge, yedge, alpha=0.1, color='r')
+            AX.fill(xedge, yedge, alpha=0.1, color='r')
 
         elif input_cut == "Graham":
-            plt.plot(self.mass,self.Graham15_broad_cut(),"k--" , linewidth=3,
+            AX.plot(self.mass,self.Graham15_broad_cut(),"k--" , linewidth=3,
                      label=label  )
-            plt.vlines(7e10, 0, 2, linestyle="dashed",linewidth=3, color='k' )
+            AX.vlines(7e10, 0, 2, linestyle="dashed",linewidth=3, color='k' )
             
             # define the left edge
             a = 7e10
@@ -389,15 +391,15 @@ class SelectionCut(object):
             xedge.append(xedge[0])
             yedge.append(2)
             
-            plt.fill(xedge, yedge, alpha=0.1, color='k')
+            AX.fill(xedge, yedge, alpha=0.1, color='k')
 
             
         else:
             raise KeyboardInterrupt 
         
-        plt.xscale( 'log' )
-        plt.yscale( 'log' )
-        plt.legend()
+        AX.set_xscale( 'log' )
+        AX.set_yscale( 'log' )
+        AX.legend()
         
         
     def selection_subsample(self, input_list, 
@@ -636,6 +638,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         """
         #x_edge,y_edge= [0,0,2,2], [7e10,90e11,90e11,7e10]
         #plt.plot(x,y,fmt='o')
+        
         plt.plot(x,y, marker, color=colour,label=legend,markersize=ms, 
                  alpha=alpha0+0.35)
         plt.errorbar(x,y,xerr=xerr,yerr=yerr,ls='none',linewidth=lw,
@@ -1285,7 +1288,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         ##################
         #make the decision making on the right
         ##################
-        axs0.set_xlabel("$Distance/ \, Mpc$",fontsize=12)
+        axs0.set_xlabel(r"\rm $Distance/ \, M p c$",fontsize=12)
         axs0.legend(loc='upper left')
 
 
@@ -1368,7 +1371,7 @@ class ShowcaseCompare2(ShowcaseIndi):
                 color="black")    
 
         #plt.xticks(index,gal_name,rotation='vertical', fontsize)
-        plt.ylabel("$\Delta$ rms", fontsize=16)
+        plt.ylabel(r"$\rm \Delta$ rms", fontsize=16)
         plt.legend()   
         plt.xticks([1,50,100], [])
         return fig, ax
@@ -1563,12 +1566,14 @@ class ShowcaseCompare2(ShowcaseIndi):
             raise Exception("Mode has to be either subtraction or division")
         elif sub == True:
             delta = delta_sub
+            mid_line = 0
             xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , 
                                                    para_name, label[1])
 
             
         elif div == True:
             delta = delta_div
+            mid_line = 1.0
             xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , 
                                                    para_name, label[1])
     
@@ -1587,7 +1592,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         ax.plot(delta, index, 'o')
         
-        ax.vlines(0,min_index,max_index, linestyle="dashed",
+        ax.vlines(mid_line,min_index,max_index, linestyle="dashed",
                   linewidth=5, color='black')
         ax.vlines(avg_delta,min_index,max_index,linestyle="solid",
                   linewidth=3, color=colour, label= "mean %s"%para_name)
@@ -1993,8 +1998,8 @@ class Plot2D(object):
             0, max(n)+max(n)/8        
         
         plt.plot((bins[peaks]+bins[peaks+1])/2, (n[peaks]), "x")
-        plt.xlabel('Pixel Value')
-        plt.ylabel('Count')
+        plt.xlabel(r'$\rm Pixel Value$')
+        plt.ylabel(r'$\rm Count$')
         #plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
         #         (n[peaks]), r'%s' %(file_name))
         plt.text((bins[peaks]+bins[peaks+1])/2+(bins[peaks]+bins[peaks+1])*3, 
@@ -2051,8 +2056,8 @@ class Plot2D(object):
         #plt.yticks(index, new_scale)
         #plt.hlines(centre[1],0,centre[0],'green')
         #plt.vlines(centre[0],0,centre[1],'green')
-        plt.xlabel("arcsec")
-        plt.ylabel("arcsec")
+        plt.xlabel(r"$\rm arcsec$")
+        plt.ylabel(r"$\rm arcsec$")
         plt.show()
         
     def plot_galaxy_3plot(file_name,md_file_name, res_file_name,
@@ -2150,18 +2155,20 @@ class Plot2D(object):
 
         ax_main0.imshow(data_log0, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
         #ax_main0.set_xlabel("arcsec",fontsize=16)
-        ax_main0.set_ylabel("arcsec",fontsize=16)
+        ax_main0.set_ylabel(r"$\rm arcsec$",fontsize=24)
         ax_main0.set_xticks([])
         ax_main0.set_yticks(C)
-        ax_main0.set_yticklabels(B)
+        ax_main0.set_yticklabels(B,fontsize=12)
         
         ax_xDist0.plot(index_x0,Plot2D.x_average(data_trunk0))
-        ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed") 
-        ax_xDist0.hlines(0,0,len(index_x0),linestyle="dashed")        
+        #ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed") 
+        #ax_xDist0.hlines(0,0,len(index_x0),linestyle="dashed")        
 
-        ax_xDist0.set_ylabel('count',fontsize=12)
+        ax_xDist0.set_ylabel(r'$\rm count$',fontsize=24)
         ax_xDist0.set_xticks([])
-        ax_xDist0.set_ylim(bottom=0, top=val_max0)       
+        ax_xDist0.set_ylim(bottom=0, top=val_max0)    
+        #ax_xDist0.set_yticklabels(,fontsize=18)
+
         #val_min0-0.3*std_data0
 
         ax_main1.imshow(data_log1, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
@@ -2169,8 +2176,8 @@ class Plot2D(object):
         ax_main1.set_xticks([])
 
         ax_xDist1.plot(index_x1,Plot2D.x_average(data_trunk1))
-        ax_xDist1.hlines(avg_data1,0,len(index_x1),linestyle="dashed") 
-        ax_xDist1.hlines(0,0,len(index_x1),linestyle="dashed")        
+        #ax_xDist1.hlines(avg_data1,0,len(index_x1),linestyle="dashed") 
+        #ax_xDist1.hlines(0,0,len(index_x1),linestyle="dashed")        
 
         ax_xDist1.set_xticks([])
         ax_xDist1.set_yticks([])
@@ -2181,8 +2188,8 @@ class Plot2D(object):
         ax_main2.set_xticks([])
 
         ax_xDist2.plot(index_x2,Plot2D.x_average(data_trunk2))
-        ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")   
-        ax_xDist2.hlines(0,0,len(index_x2),linestyle="dashed")        
+        #ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")   
+        #ax_xDist2.hlines(0,0,len(index_x2),linestyle="dashed")        
 
         ax_xDist2.set_xticks([])
         ax_xDist2.set_yticks([])
