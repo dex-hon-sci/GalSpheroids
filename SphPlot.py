@@ -459,7 +459,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
     Methods
     -------        
     show_name():
-    
+        Show the name of the data point in the plot.
+        
     err_I_ratio_plot:    
     
     Mass_Re_plot():
@@ -658,12 +659,9 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         plt.xlim(1.87e9,5e12)
         plt.ylim(0,300)
 
-
         plt.xscale( 'log' )
         plt.yscale( 'log' )
         
-        
-
         plt.legend()
         #return fig, ax
 
@@ -1569,22 +1567,19 @@ class ShowcaseCompare2(ShowcaseIndi):
             mid_line = 0
             xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , 
                                                    para_name, label[1])
-
             
         elif div == True:
             delta = delta_div
             mid_line = 1.0
             xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , 
                                                    para_name, label[1])
-    
-        
+            
         else: 
             raise Exception("Impossible, you will \
                             never reach this error message.")
 
         index = np.linspace(0,len(para1),len(para1))
         min_index, max_index = min(index),max(index)
-        
         
         
         avg_delta = np.average(delta)

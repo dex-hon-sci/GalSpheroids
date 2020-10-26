@@ -14,6 +14,15 @@ import SphPlot as SPlot
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+import matplotlib.style
+import matplotlib as mpl
+mpl.style.use('classic')
+
+mpl.rcParams['grid.linewidth'] = 1.0
+
+#####
+
 D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180)-np.cos(np.pi/2)))
@@ -60,8 +69,8 @@ my_nd_Graham = np.array([1.05e-5,1.33e-5,0])
 ms0 = 12
 
 
-xlim = [-0.2,2.9]
-ylim = [8e-6,6e-4]
+xlim = [-0.35,3.2]
+ylim = [1e-6,1e-3]
 
 def plot_nd_3bins(nd,marker,AX=plt):
     n_err_bin1 = np.sqrt(nd[0]*V1)/V1
@@ -118,8 +127,8 @@ def plot_nd_Barro(AX):
     yedge.append(0)
 
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
-    AX.set_xlabel("z",fontsize=18)
-    AX.set_ylabel("n ($Mpc^{-3}$)",fontsize= 18)
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 18)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -146,8 +155,8 @@ def plot_nd_vDokkum(AX):
     yedge.append(0)
 
     #AX.fill(xedge, yedge, alpha=0.1, color='y')
-    AX.set_xlabel("z",fontsize=18)
-    AX.set_ylabel("n ($Mpc^{-3}$)",fontsize= 18)
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 18)
     AX.set_yscale( 'log' )
     #AX.legend()
         
@@ -170,8 +179,8 @@ def plot_nd_vdWel(AX):
     yedge.append(0)
 
     #AX.fill(xedge, yedge, alpha=0.1, color='b')
-    AX.set_xlabel(r"$\rm z$",fontsize=18)
-    AX.set_ylabel(r"$\rm n (Mpc^{-3})$",fontsize= 18)
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 18)
     AX.set_yscale( 'log' )
     #AX.legend()
     
@@ -185,22 +194,27 @@ def plot_nd_3plot():
     
     fig = plt.figure()
     gs = gridspec.GridSpec(ncols=1, nrows=3,
-                               hspace=0, wspace=0.0) 
+                               hspace=0.1, wspace=0.0) 
 
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])  
     plot_nd_Barro(axs0)
+    plt.setp(axs0.get_xticklabels(), visible=False)
+    axs0.grid(True)
+
     
     #plot Panel (2)
-    axs1 = plt.subplot(gs[1])  
+    axs1 = plt.subplot(gs[1],sharex=axs0)  
     plot_nd_vDokkum(axs1)
-    
+    plt.setp(axs1.get_xticklabels(), visible=False)
+    axs1.grid(True)
+
     
     #plot Panel (3)
-    axs2 = plt.subplot(gs[2])      
+    axs2 = plt.subplot(gs[2],sharex=axs0)      
     plot_nd_vdWel(axs2)
-    
-    
+    axs2.set_xlabel(r"$ z$",fontsize=18)
+    axs2.grid(True)
     plt.show()
     
 plot_nd_3plot()

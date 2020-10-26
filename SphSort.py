@@ -17,8 +17,9 @@ import os
 from SphRead import *
 
 
-__all__ = ["remove_value","trim_value","replace_value","str_zipping","remove_item", 
-           "add_item", "outliers", "cpt_seperator_demo",
+__all__ = ["remove_value","trim_value","replace_value",
+           "str_zipping","remove_item", "add_item", "outliers",
+           "selection_generic","cherry_pick" ,"cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]
 
@@ -114,7 +115,6 @@ def replace_value(input_array,value1,value2):
     
     return temp
 
-
 #%%
 def str_zipping(list1,list2,zip_symbol=""):
     """
@@ -149,7 +149,6 @@ def str_zipping(list1,list2,zip_symbol=""):
     for i in range(len(list1)):
         list_product.append(str(list1[i])+zip_symbol+str(list2[i]))
         
-    
     return list_product
 
 #%% tested
@@ -207,7 +206,7 @@ def remove_item(input_list_name,keyword_list):
 #%% tested
 def add_item(parent_list_name, target_list_name, keyword_list):
     """
-    A method to add lists into abundle based on specified keywords.
+    A method to add lists into a bundle based on specified keywords.
     ----------                        
     parent_list_name: str
         The parent galaxy bundle.
@@ -311,7 +310,62 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
                }
     return Bag 
 
+#%% tested
+def cherry_pick(index_list,parent_list):
+    """
+    A generic method to cherry pick a set of subsample, given a list of indices 
+    to select from.
 
+    Parameters
+    ----------
+    index_list : 1D list
+        The indices of the subsample.
+    parent_list : 1D list
+        The material of which one select from.
+
+    Returns
+    -------
+    subsample : 1D list
+        The result subsample.
+
+    """
+    subsample = []
+    
+    for i in range(len(index_list)):
+        subsample.append(parent_list[i])
+    return subsample
+
+#%% tested
+def morph_str_selection(index_list,morph_list):
+    """
+    Seperate an index list by the morphology type E, S0 or S string indicator.
+
+    Parameters
+    ----------
+    index_list : 1d list
+        The target index list.
+    morph_list : 1D list
+        The corresponding morphology list to the index list.
+    Returns
+    -------
+    morph_dict: dict
+
+    """
+    morph_dict = {}
+    E_list,S0_list,S_list = [], [], []
+    for i in range(len(index_list)):
+        if "E" in morph_list[i]:
+            E_list.append(index_list[i])
+        elif "0" in morph_list[i]:
+            S0_list.append(index_list[i])
+        else:
+            S_list.append(index_list[i])
+
+    morph_dict["E"] = E_list
+    morph_dict["S0"] = S0_list
+    morph_dict["S"] = S_list
+
+    return morph_dict
 #%% tested
 def cpt_seperator_demo(input_list_name): 
     """
@@ -943,7 +997,6 @@ def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
 #%% Under Construction no one allow in
     
     #select base on mass bin 
-    #morph Bin
     #specific feature bin
 def prop_seperation():
     return None
