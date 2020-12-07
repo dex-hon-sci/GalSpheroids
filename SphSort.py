@@ -150,6 +150,57 @@ def str_zipping(list1,list2,zip_symbol=""):
         list_product.append(str(list1[i])+zip_symbol+str(list2[i]))
         
     return list_product
+#%%tested
+def str_zipping_generic(*args):
+    """
+    Convert the content of multiple lists into str and link them together.
+    e.g.: str_zipping('(',[1,2,4], '+', [4,5,3],')')
+        >>> ['(1+4)','(2+5)','(4+3)']
+
+    Parameters
+    ----------
+    *args: list or str or int
+        The objects to be conjoin. The lists must have the same dimensions. 
+        Otherwise, any str or int should be one per entry.
+
+
+    Returns
+    -------
+    A list that looks like:
+        ['(1+4)','(2+5)','(4+3)']
+    """
+    len_doc, master_list = [], []
+    list_product = []
+
+    for i in args:
+        if type(i) == list:
+            len_doc.append(len(i))
+    #check input length consistency           
+    for i in len_doc:
+        if len_doc == i:
+            pass
+        else:
+            ValueError
+   #multiply singular element into list
+    for i in args:
+        if type(i) == list:
+            master_list.append(i)
+        elif type(i) == str: 
+            A = []
+            for j in range(len_doc[0]):
+                A.append(i)
+            master_list.append(A)
+    #zipping    
+    for i in range(len_doc[0]):
+        
+        string = ''
+        for j in range(len(master_list)):
+            string = string + str(master_list[j][i])            
+            
+        list_product.append(string)
+        
+    return list_product
+
 
 #%% tested
 def remove_item(input_list_name,keyword_list):
@@ -330,9 +381,9 @@ def cherry_pick(index_list,parent_list):
 
     """
     subsample = []
-    
+    i=0
     for i in range(len(index_list)):
-        subsample.append(parent_list[i])
+        subsample.append(parent_list[index_list[i]])
     return subsample
 
 #%% tested

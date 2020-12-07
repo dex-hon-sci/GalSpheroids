@@ -365,7 +365,8 @@ class SelectionCut(object):
         elif input_cut == "Damjanov":
             AX.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
                  label=label )
-            
+            AX.vlines(1e10, 0, 10**((np.log10(1e10)*0.568)-5.74), 
+                   linestyle="dashed",linewidth=3, color='r' )         
             # define the left edge
             a = 1e10
             xedge, yedge = [5e12,a], [1e-3,1e-3]
@@ -479,7 +480,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         #self.input_list = input_list
         super().__init__(*args, **kwargs)
         
-    def show_name(x,y,name,size=12):
+    def show_name(x,y,name,size=12,A=plt):
         """
         Show the name of a data in a plot
 
@@ -497,7 +498,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
         """
         for j in range(len(x)):
-            plt.text(x[j],y[j], name[j], fontsize=size)
+            A.text(x[j],y[j], name[j], fontsize=size)
             
     def err_I_ratio_plot(list1, cutlist=None):
         """
@@ -1286,7 +1287,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         ##################
         #make the decision making on the right
         ##################
-        axs0.set_xlabel(r"\rm $Distance/ \, M p c$",fontsize=12)
+        axs0.set_xlabel(r"$Distance/ \, M p c$",fontsize=22)
         axs0.legend(loc='upper left')
 
 

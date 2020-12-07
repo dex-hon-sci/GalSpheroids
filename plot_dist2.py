@@ -15,9 +15,14 @@ import SphPlot as SPlot
 import matplotlib.pyplot as plt
 import numpy as np
 
+import matplotlib.style
+import matplotlib as mpl
+
 cosmo = FlatLambdaCDM(H0=68.0, Om0=0.3)
 
+plt.style.use('classic')
 
+mpl.rcParams['grid.linewidth'] = 1.0
 
 
 #######################################################
@@ -232,7 +237,7 @@ x_edge1,y_edge1= [0,0,110,110], [5e11,2e12,2e12,5e11]
 x_edge2,y_edge2= [0,0,75,75], [2e11,5e11,5e11,2e11]
 x_edge3,y_edge3= [0,0,45,45], [1e11,2e11,2e11,1e11]
 
-axs0.plot(dc,initial_mass,'x',color='grey', alpha=0.7, label='All')
+axs0.plot(dc,initial_mass,'x',color='grey', alpha=0.8, label='All')
 
 axs0.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
@@ -241,14 +246,14 @@ axs0.plot(dc, SPlot.SelectionCut(initial_mass, dc).
 axs0.vlines(115,4.17e11,1e15,linestyle="solid", color="blue",
            linewidth=2)
 #axs0.plot(dc,E,'x',color='green', alpha=0.4, label='New Distance')
-axs0.plot(dc_b,initial_mass_b,'x',color='green', alpha=0.4, label='Broad Selection')
+axs0.plot(dc_b,initial_mass_b,'x',color='green', alpha=0.8, label='Broad Selection')
 
 
-axs1.plot(DD1,E,'x',color='#a51a74', alpha=0.4, label='New Distance')
+axs1.plot(DD1,E,'x',color='#a51a74', alpha=0.8, label='New Distance')
 
-axs1.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.5)
-axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.5)
-axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.5)
+axs1.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
 
 axs1.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
@@ -259,21 +264,22 @@ axs1.vlines(115,4.17e11,1e15,linestyle="solid", color="blue",
 axs1.fill(x_edge1,y_edge1, alpha=0.3, color='green')
 axs1.fill(x_edge2,y_edge2, alpha=0.2, color='green')
 axs1.fill(x_edge3,y_edge3, alpha=0.1, color='green')
+
+
 axs0.set_ylim(top =5e12 , bottom = 1e9)
 axs0.set_xlim(left=0, right = 120)
 
-
-axs0.set_ylabel("$M_*/M_\odot(Into Mass)$",fontsize=24)
-axs0.set_xlabel("$Distance(H_0 = 68, \Omega_m =0.3)/Mpc$",fontsize=24)
+axs0.set_ylabel("$ M_*/M_\odot(IP13)$",fontsize=22)
+axs0.set_xlabel("$Distance(H_0 = 68, \Omega_m =0.3)/Mpc$",fontsize=22)
 axs0.set_yscale( 'log' )
 
-axs1.set_ylabel("$M_*/M_\odot(Into Mass)$",fontsize=24)
-axs1.set_xlabel("$Distance(H_0 = 68, \Omega_m =0.3)/Mpc$",fontsize=24)
+axs1.set_ylabel("$ M_*/M_\odot(IIP13)$",fontsize=22)
+axs1.set_xlabel("$Distance(H_0 = 68, \Omega_m =0.3)/Mpc$",fontsize=22)
 axs1.set_yscale( 'log' )
 
 axs1.set_ylim(top =5e13 , bottom = 1e10)
 axs1.set_xlim(left=0, right = 120)
 
-axs0.legend()
-axs1.legend()
+axs0.legend(loc=4)
+axs1.legend(loc=4)
 plt.show()

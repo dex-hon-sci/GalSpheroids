@@ -58,12 +58,12 @@ my_z = np.array([0.0127,0.0085,0.005])
 #my_nd_Graham = np.array([1.54e-4,1.33e-5,0])
 #
 ####
-my_nd_Barro = np.array([4.62e-5,1.19e-4,4.3e-4])
-my_nd_Dam = np.array([5.26e-5,1.39e-4,4.3e-4])
-my_nd_vDokkum = np.array([1.47e-5, 1.99e-5, 9.21e-5])
+my_nd_Barro = np.array([4.41e-5,1.19e-4,4.3e-4])
+my_nd_Dam = np.array([4.83e-5,1.33e-4,4.3e-4])
+my_nd_vDokkum = np.array([8.41e-6, 1.33e-5, 9.21e-5])
 my_nd_vdWel = np.array([1.89e-5,2.65e-5,9.21e-5])
 
-my_nd_Graham = np.array([1.05e-5,1.33e-5,0])
+my_nd_Graham = np.array([8.41e-6,6.63e-6,0])
 
 
 ms0 = 12
@@ -95,6 +95,8 @@ def plot_nd_3bins(nd,marker,AX=plt):
     AX.axhline(nd[1],xlim[0],xlim[1],linestyle="dashed",color='#0b5786')
     AX.axhline(nd[2],xlim[0],xlim[1],linestyle="dashed",color='#2a3236')
 
+    AX.axhline((nd[0]+nd[1]+nd[2]),xlim[0],xlim[1],linestyle="dashed", linewidth = 6,
+               color='black')
 
 
     AX.errorbar(my_z[0],nd[0],yerr=n_err_bin1,ls='none',
