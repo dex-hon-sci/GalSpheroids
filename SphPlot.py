@@ -122,6 +122,18 @@ class MassCalculation(MLRelationIband):
     #@property
     #def M_sun(self):
     #    return(self.M_sun)
+    def cal_abs_mag(self):
+        """
+        Calculate the absoulte magntiude of a galaxy
+
+        Returns
+        -------
+        None.
+
+        """
+        M_gal=self._m_gal-25-5*np.log10(self.dist)  
+        
+        return M_gal
 
     def cal_Mass(self,ML_ratio):
         """
@@ -184,60 +196,66 @@ class SelectionCut(object):
     def Barro13_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.0 #mass limit
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.0):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 10**((np.log10(self.mass[i])-10.3)/1.5)
-            elif (np.log10(self.mass[i])<10.0):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
     
     def vDokkum15_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.6 # mass limit
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.6):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 10**(np.log10(self.mass[i])-10.7)
-            elif (np.log10(self.mass[i])<10.6):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
 
     def vdWel14_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.7 #mass limit
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.7):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 2.5*((self.mass[i]/1e11)**0.75)
-            elif (np.log10(self.mass[i])<10.7):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
     
     def Cassata11_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.0 #mass limit
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.0):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 10**((np.log10(self.mass[i])*0.4)-5.5)
-            elif (np.log10(self.mass[i])<10.0):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
     
     def Damjanov14_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.0 # mass limit
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.0):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 10**((np.log10(self.mass[i])*0.568)-5.74)
-            elif (np.log10(self.mass[i])<10.0):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
     
     def Graham15_broad_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
+        a = 10.845
         for i in range(np.size(self.mass)):
-            if (np.log10(self.mass[i])>=10.845):
+            if (np.log10(self.mass[i])>=a):
                 cut[i] = 2
-            elif (np.log10(self.mass[i])<10.845):
+            elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
     
@@ -310,7 +328,7 @@ class SelectionCut(object):
             AX.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
                    linestyle="dashed", linewidth=3, color='g' )
             
-            # define the left edge
+            # define the left edge (mass limit)
             a = 1e10
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             #define the upper edge
@@ -329,8 +347,8 @@ class SelectionCut(object):
             AX.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
                    linestyle="dashed", linewidth=3, color='y' )
             
-            # define the left edge
-            a = 10**10.6
+            # define the left edge (mass limit)
+            a = 1e10 #10**10.6
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             #define the upper edge
             xedge.append(a)
@@ -348,8 +366,8 @@ class SelectionCut(object):
             AX.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
                    linestyle="dashed",linewidth=3, color='b' )
             
-            # define the left edge
-            a = 10**10.7
+            # define the left edge (mass limit)
+            a = 1e10 #10**10.7
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             #define the upper edge
           
@@ -367,7 +385,7 @@ class SelectionCut(object):
                  label=label )
             AX.vlines(1e10, 0, 10**((np.log10(1e10)*0.568)-5.74), 
                    linestyle="dashed",linewidth=3, color='r' )         
-            # define the left edge
+            # define the left edge (mass limit)
             a = 1e10
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             xedge.append(a)
@@ -383,7 +401,7 @@ class SelectionCut(object):
                      label=label  )
             AX.vlines(7e10, 0, 2, linestyle="dashed",linewidth=3, color='k' )
             
-            # define the left edge
+            # define the left edge (mass limit)
             a = 7e10
             xedge, yedge = [5e12,a], [1e-3,1e-3]       
             xedge.append(a)
@@ -651,8 +669,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
 
 
-        plt.xlabel("$M_{*}$ / $M_{\odot}$",fontsize=16)
-        plt.ylabel("$R_e$ (kpc)",fontsize=16)
+        #plt.xlabel("$M_{*}$ / $M_{\odot}$",fontsize=16)
+        #plt.ylabel("$R_e$ (kpc)",fontsize=16)
         
         #plt.vlines(7e10,0,2,color='k', linestyle="dashed", linewidth=3)
         #plt.hlines(2,7e10,90e11, color='k', linestyle="dashed", linewidth=3)

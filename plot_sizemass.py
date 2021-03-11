@@ -94,7 +94,7 @@ morph1_new = D0_Bin1_table_n[:,-1]
 morph2_new = D0_Bin2_table_n[:,-1]
 morph3_new = D0_Bin3_table_n[:,-1]
 
-print(morph1_new)
+
 
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
@@ -115,6 +115,22 @@ sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 1) #get Re
+
+Sersic_n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 2) #get n
+Sersic_n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 2) #get n
+Sersic_n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 2) #get n
+
+mu_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 0) #get n
+mu_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 0) #get n
+mu_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 0) #get n
+
+core_sersic_mu_p1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["CoreBulge"], 0)
+
+print("core_sersic_mu_p1",core_sersic_mu_p1)
+print("core_sersic_mu_p2",core_sersic_mu_p2)
+print("core_sersic_mu_p3",core_sersic_mu_p3)
 
 ars = (4.84814e-6)*1e3 # 1arcsec = (4.84814e-6) rad ars:arcsec to rad scale
 
@@ -150,7 +166,7 @@ for i in range(len(name1)):
     
 for i in range(len(name1)):
     print(name1[i],Sersic2D_50rad_1_kpc[i],Sersic2D_50rad_1[i],scale1[i])
-          
+
 
 
 ############# calculating spheroid mass
@@ -192,6 +208,13 @@ E3_IP13 = M3.cal_Mass(ML_select3_IP13)
 E3_R15BC = M3.cal_Mass(ML_select3_R15BC)
 E3_Z09 = M3.cal_Mass(ML_select3_Z09)
 E3_T11 = M3.cal_Mass(ML_select3_T11)
+
+############# calculating spheroid absoulte magnitude
+Abs_sph_mag1 = M1.cal_abs_mag()
+Abs_sph_mag2 = M2.cal_abs_mag()
+Abs_sph_mag3 = M3.cal_abs_mag()
+
+print("Abs_sph_mag1",Abs_sph_mag1)
 
 ################################
 #Calculate mass with K-correction
@@ -331,7 +354,8 @@ E3_Z09_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_Z09_K)
 E3_T11_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_T11_K)
 
 
-
+print ("T11 average M/L ratio", np.average(ML_select1_T11_K),
+       np.average(ML_select2_T11_K),np.average(ML_select3_T11_K))
 ################################
 #calculate the mass error
 
@@ -369,8 +393,6 @@ nsa_mass_T11 = nsa[:,2]
 nsa_mass_Z09 = nsa[:,3]
 nsa_mass_R15BC = nsa[:,4]
 nsa_mass_IP13 = nsa[:,5]
-
-
 
 
 # read Benzanson catalog
@@ -859,7 +881,200 @@ Sahu_mass_36 = Sahu_data[:,10]
 
 Sahu_mass_T11 = 10**(0.88 * Sahu_mass_36+1.02)
 
+import SphAnalysis as SAnalysis
+#Shen 2003 size-mass relation
 
+# Lange 2016 size-mass relation
+Lange2016_E = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,2.114,0.329)
+Lange2016_E_M1e10 = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.382,0.643)
+Lange2016_ETG_bulge = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.836,0.267)
+
+s = SAnalysis.AnalyticFunctions.size_mass_powerlaw
+
+
+E_T11 = np.concatenate((E1_T11, E2_T11, E3_T11,Savorgnan_mass_T11,Davis_mass_T11,Sahu_mass_T11))
+Re_kpc = np.concatenate((Re_1_kpc, Re_2_kpc, Re_3_kpc,Savorgnan_size_eq_kpc,Davis_size_eq_kpc,Sahu_size_eq_kpc))
+
+E_T11_mine = np.concatenate((E1_T11, E2_T11, E3_T11))
+Re_kpc_mine = np.concatenate((Re_1_kpc, Re_2_kpc, Re_3_kpc))
+
+Sersic_n_mine = np.concatenate((Sersic_n1, Sersic_n2, Sersic_n3))
+Abs_sph_mag_mine = np.concatenate((Abs_sph_mag1, Abs_sph_mag2, Abs_sph_mag3))
+mu_mine = np.concatenate((mu_1, mu_2, mu_3))
+
+########################
+#Curve fit for our sample
+from scipy.optimize import curve_fit
+
+# Before graham equation size mass fit
+# plot Mag_i-n graph to find the linear relatio 
+
+def linear_func_1D(x,A,B):
+    
+    return A*x+B
+
+from scipy.special import gamma
+from scipy.special import gammainc
+
+def b_value(n,x):
+   bn=[]
+   diff=[]
+   b= np.linspace(0.1, 50.0, 50000) # works for most z
+#   x=1/z=10 # 10, 2, 10/9    
+#   b= np.linspace(0.1, 25.0, 2500)  #Re  2
+#   b= np.linspace(0.1, 50.0, 25000)  #R10  10
+#   b= np.linspace(0.1, 100.0, 50000)  #R90  10/9
+   for j in b:        
+        g2= x*gammainc(2*n,j)
+        g22=np.round(g2,2)
+        if g22==1.00: ## gammainc(2*n,j) is normalized by dividing with gamma(2*n)
+            k=np.round(j,4)
+            bn.append(k)
+            dif=abs(1-g2)
+            diff.append(dif)
+   
+   diff_min= min(diff)
+   for s, d in zip(bn, diff):
+       if d==diff_min:
+           b_final=s
+       else:
+           continue     
+   
+   return b_final
+
+def plot_Magi_to_n(Sersic_n,Abs_mag):
+    fig, ax = plt.subplots()
+
+    n_line = np.linspace(-5, 20, 30)
+    
+    ax.plot(Sersic_n,Abs_mag, 'o', label=r"This work")
+    
+    popt_lin,pcov_lin = curve_fit(linear_func_1D, np.log10(Sersic_n_mine), Abs_sph_mag_mine)
+    print("Linear fit",*popt_lin)
+    ax.plot(n_line, linear_func_1D(np.log10(n_line),*popt_lin), label=r"linear fit")
+    
+    #ax.text(10,-16, "$\rm Mag = {:.2e}+ {:.2e}log_{10}(n)$".format(popt_lin[0], popt_lin[1]))
+    
+    ax.legend(loc=2)
+    #plt.grid(True)
+    plt.ylabel(r"$\rm Mag_{sph,i-band}$",fontsize=16)
+    plt.xlabel(r"$\rm n$",fontsize=16)
+    plt.gca().invert_yaxis()
+    ax.set_xscale( 'log' )
+   
+    
+    plt.show()
+    
+def plot_Magi_to_mu0(mu,Abs_mag,Sersic_n):
+    fig, ax = plt.subplots()
+
+    mu_line = np.linspace(5, 30, 30)
+    
+    #calculate the corresponding b_n from sersic indices 
+    bn=[]
+    for i in range(len(mu)):
+        n = Sersic_n[i]
+        b = SAnalysis.b_value(n, 1.0/0.5)
+        bn.append(b)
+        
+    bn = np.array(bn)
+    
+    mu0 = mu-2.5*(bn/np.log(10))
+    
+    ax.plot(mu0,Abs_mag, 'o', label=r"This work")
+    
+    popt_mu,pcov_mu = curve_fit(linear_func_1D, mu0, Abs_sph_mag_mine)
+    print("Linear fit",*popt_mu)
+    ax.plot(mu_line, linear_func_1D(mu_line,*popt_mu), label=r"linear fit")
+    
+    #ax.text(10,-16, "$\rm Mag = {:.2e}+ {:.2e}log_{10}(n)$".format(popt_lin[0], popt_lin[1]))
+    
+    ax.legend(loc=2)
+    #plt.grid(True)
+    plt.ylabel(r"$\rm Mag_{sph,i-band}$",fontsize=16)
+    plt.xlabel(r"$\rm \mu_{0,sph,i-band}$",fontsize=16)
+    plt.gca().invert_yaxis()
+    plt.gca().invert_xaxis()
+
+    #ax.set_xscale( 'log' )
+   
+    
+    plt.show()
+
+plot_Magi_to_n(Sersic_n_mine,Abs_sph_mag_mine)
+plot_Magi_to_mu0(mu_mine,Abs_sph_mag_mine,Sersic_n_mine)
+
+## Nandini's script insert(temp) #####################
+
+
+#l=55
+z=0.5 #z=0.1 for 10% radius, z=0.5 for half-light radius, z=0.9 for 90% radius
+Rz=[]  # radius
+#mag=[] # galaxy absolute mag
+Mass_gal=[] #galaxy mass
+for i in range(70):
+    mag1= 0.0-10-0.1*i   #range of magnitude -11.9 to -22.9 (better take -12 to -23)
+    #mag.append(mag1)
+    mass=(1.6*10**(0.4*(4.65-mag1))) #1.6 is a typical T11 M/L ratio, 4.65 is M_sun
+    Mass_gal.append(mass)
+    n1=10**(0.0 - (mag1 +14.3)/9.4)   #equation 16 from Graham(2019)
+    bz=b_value(n1,1/z)  #1/0.9        #exact value of bn, defined on the top
+    fnz= (z*2*n1*np.exp(bz)*gamma(2*n1))/(bz**(2*n1)) #equation 20 from Graham(2019)
+    #equation 25 (combines eq.17 and eq.24) from Graham(2019) 
+    R_z= (mag1/10) + 0.5*(np.log10(z)-np.log10(fnz))+0.217*bz+1.2874 #in log10 #  
+    Rz.append(R_z)
+    
+xdata4=np.array(Mass_gal)
+ydata4=10**np.array(Rz)
+
+
+def graham_equ(mass, B):
+    """
+    Graham 2019  Equation 25
+    
+    R_e = (mag/10) + 0.5*(np.log10(0.5)-np.log10(fnz))+0.217*bz+1.2874
+    
+    """
+    mag = 4.65 - (2.5)*np.log10(mass/1.6)
+
+    n1=10**(0.0 - (mag -19.6)/-3.8)   #equation 16 from Graham(2019)
+    
+    
+    bn=[]
+    for i in range(len(Sersic_n_mine)):
+        n = Sersic_n_mine[i]
+        b = SAnalysis.b_value(n, 1.0/0.5)
+        bn.append(b)
+        
+    #bz=b_value(n1,1.0/0.5)  #1/0.9   #exact value of bn, defined on the top
+    fnz= (0.5*2*n1*np.exp(bz)*gamma(2*n1))/(bn**(2*n1)) #equation 20 from Graham(2019)
+    #fnzz.append(fnz)    
+    
+    R_e = (mag/10) + 0.5*(np.log10(0.5) - np.log10(fnz)) +  bz/(2*np.log(10)) + B
+
+
+    return R_e
+   
+## End Nadini'script  ################################
+
+
+
+
+
+ss = graham_equ
+
+print(len(E_T11),len(Re_kpc))
+
+##fitting
+popt,pcov = curve_fit(s, E_T11, Re_kpc)
+popt2,pcov2 = curve_fit(s,E_T11_mine, Re_kpc_mine)
+popt3,pcov3 = curve_fit(s,Savorgnan_mass_T11, Savorgnan_size_eq_kpc)
+popt4,pcov4 = curve_fit(s,Davis_mass_T11, Davis_size_eq_kpc)
+popt5,pcov5 = curve_fit(s,Sahu_mass_T11, Sahu_size_eq_kpc)
+
+popt_g,pcov_g = curve_fit(ss, E_T11, Re_kpc)
+
+print("graham_equ_para", *popt_g )
 #plotting
 
 def plot_sizemass_z0comparison():
@@ -867,6 +1082,18 @@ def plot_sizemass_z0comparison():
     
     plot_dexter_sample_all2_T11(ax,alpha = 0.2)
 
+    ax.plot(mass0,Lange2016_E, '--', label=r"E in Lange et al. 2016")
+    ax.plot(mass0,Lange2016_ETG_bulge, '--', label=r"early-type bulge in Lange et al. 2016")
+    ax.plot(mass0,Lange2016_E_M1e10, '--', label=r"E ($M_*<10^{10}$)in Lange et al. 2016")
+  
+    ax.plot(mass0,s(mass0, *popt), "-",linewidth=6, label=r"our fit")
+    ax.plot(mass0,s(mass0, *popt2), "-",linewidth=6, label=r"my fit", color='#a5200b')
+    ax.plot(mass0,ss(mass0, *popt_g),"--",linewidth=10, label=r"Graham equ.")
+
+   # ax.plot(mass0,s(mass0, *popt3), "-", linewidth=6, label=r"Savorgnan et al. 2016 fit", color='#b940c8')
+   # ax.plot(mass0,s(mass0, *popt4), "-", linewidth=6, label=r"Davis et al. 2019 fit", color='#2e417b')
+   # ax.plot(mass0,s(mass0, *popt5), "-", linewidth=6, label=r"Sahu et al. 2019 fit", color='#e1a000')
+    
     
     SPlot.ShowcaseIndi.Mass_Re_plot(Savorgnan_mass_T11, Savorgnan_size_eq_kpc, 
                                     yerr = None,
@@ -874,8 +1101,7 @@ def plot_sizemass_z0comparison():
                                 colour='#b940c8',
                                 name=None,legend='Savorgnan et al. 2016',
                                 ms=10,alpha0 = 0.4,lw=3)
-    
-    
+        
     SPlot.ShowcaseIndi.Mass_Re_plot(Davis_mass_T11, Davis_size_eq_kpc, 
                                     yerr = None,
                                 xerr = None,
@@ -896,8 +1122,16 @@ def plot_sizemass_z0comparison():
 
     ax.legend(loc=2)
     #plt.grid(True)
+    
+    plt.xlabel(r"$\rm M_{*,sph}$ / $M_{\odot}$",fontsize=16)
+    plt.ylabel("$R_{e,sph}$ (kpc)",fontsize=16)
+    
     plt.show()
+    
+    
 plot_sizemass_z0comparison()
+
+
 ########################
 
 
@@ -948,11 +1182,16 @@ def add_morph_marker(A,x,y):
 
         A.add_artist(ab)
 
+
+#########plot transition##############
+
 xlim_mo = [4.8e9,1.24e12]
 ylim_mo = [0.28,44]
 #plot morphology based selection
 text_location=[1.61e10,10]
 delta_text = 3
+
+
 def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=None,
                                xo_1=None,yo_1=None,xn_1=None,yn_1=None, name1=None,
                                xo_2=None,yo_2=None,xn_2=None,yn_2=None, name2=None,
