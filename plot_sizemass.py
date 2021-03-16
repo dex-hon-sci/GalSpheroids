@@ -24,7 +24,13 @@ D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180))-np.cos(np.pi/2))
 
-V1,V2,V3=voll[2],voll[1],voll[0]
+#V1,V2,V3=voll[2],voll[1],voll[0]
+
+V1_V = voll[2]-voll[1]
+V2_V = voll[1]-voll[0]
+V3_V = voll[0]
+
+V1,V2,V3 = V1_V,V2_V,V3_V
 
 #voll[0],voll[1],voll[2]
 
@@ -36,23 +42,23 @@ print("5/V", 5/V1, 5/V2, 5/V3)
 ###
 
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
 
 D0_all_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
@@ -72,9 +78,9 @@ b_a_2 = D0_Bin2_table[:,34]
 b_a_3 = D0_Bin3_table[:,34]
 
 # calculate the Radius in equivalent axis 
-#Sersic2D_50rad_1 = D0_Bin1_table[:,33]*np.sqrt(1-(1-(b_a_1)**2))
-#Sersic2D_50rad_2 = D0_Bin2_table[:,33]*np.sqrt(1-(1-(b_a_2)**2))
-#Sersic2D_50rad_3 = D0_Bin3_table[:,33]*np.sqrt(1-(1-(b_a_3)**2))
+Sersic2D_50rad_1 = D0_Bin1_table[:,33]*np.sqrt(1-(1-(b_a_1)**2))
+Sersic2D_50rad_2 = D0_Bin2_table[:,33]*np.sqrt(1-(1-(b_a_2)**2))
+Sersic2D_50rad_3 = D0_Bin3_table[:,33]*np.sqrt(1-(1-(b_a_3)**2))
 
 Sersic2D_50rad_1 = D0_Bin1_table[:,33]
 Sersic2D_50rad_2 = D0_Bin2_table[:,33]
@@ -99,34 +105,39 @@ morph3_new = D0_Bin3_table_n[:,-1]
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
 
-name1 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-name2 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-name3 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+name1 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+name2 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+name3 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
 
-total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
 
-sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"])
-sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"])
-sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
 
-Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
-Sersic_n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 2) #get n
-Sersic_n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 2) #get n
-Sersic_n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 2) #get n
+Sersic_n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 2) #get n
+Sersic_n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 2) #get n
+Sersic_n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 2) #get n
 
-mu_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 0) #get n
-mu_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 0) #get n
-mu_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 0) #get n
+mu_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) #get n
+mu_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) #get n
+mu_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) #get n
 
-core_sersic_mu_p1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["CoreBulge"], 0)
-core_sersic_mu_p2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["CoreBulge"], 0)
-core_sersic_mu_p3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["CoreBulge"], 0)
+
+#Get Re major axis
+Re_1_major = SRead.grab_parameter("F_Gal_bundle_major_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2_major = SRead.grab_parameter("F_Gal_bundle_major_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3_major = SRead.grab_parameter("F_Gal_bundle_major_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
 print("core_sersic_mu_p1",core_sersic_mu_p1)
 print("core_sersic_mu_p2",core_sersic_mu_p2)
@@ -146,6 +157,11 @@ scale3_lerr, scale3_uerr =  (D3-D3_lerr)*ars, (D3+D3_uerr)*ars
 Re_1_kpc = Re_1* scale1
 Re_2_kpc = Re_2* scale2
 Re_3_kpc = Re_3* scale3
+
+Re_1_kpc_major = Re_1_major* scale1
+Re_2_kpc_major = Re_2_major* scale2
+Re_3_kpc_major = Re_3_major* scale3
+
 
 Re_1_kpc_lerr, Re_1_kpc_uerr = abs(Re_1_kpc - Re_1* scale1_lerr) , abs(Re_1* scale1_uerr - Re_1_kpc)
 Re_2_kpc_lerr, Re_2_kpc_uerr = abs(Re_2* scale2_lerr - Re_2_kpc) , abs(Re_2* scale2_uerr - Re_2_kpc)
@@ -220,20 +236,20 @@ print("Abs_sph_mag1",Abs_sph_mag1)
 #Calculate mass with K-correction
 
 K_table1 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat")
 K_table2 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat")
 K_table3 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat")
 
 K_table1_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat", 
     dtype='str')
 K_table2_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2_Kcorr.dat",
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat",
     dtype='str')
 K_table3_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat", 
     dtype='str')
 
 K_name1, K_name2, K_name3 = K_table1_n[:,4], K_table2_n[:,4], K_table3_n[:,4]
@@ -368,7 +384,7 @@ MLR_e2 = 10**0.1
 MLR3 = ML_select3_R15BC_K
 MLR_e3 = 10**0.1
 
-mag_e = 0.28 #magnitude error
+mag_e = 0.3 #magnitude error
 
 mass_uerr1 = np.sqrt(((mag_e/2.5)**2)+((2*D1_uerr/(D1*np.log(10)))**2)+((MLR_e1/(MLR1*np.log(10)))**2))
 mass_uerr2 = np.sqrt(((mag_e/2.5)**2)+((2*D2_uerr/(D2*np.log(10)))**2)+((MLR_e2/(MLR2*np.log(10)))**2))
@@ -484,9 +500,9 @@ def plot_vdWel_cut_all(AX):
     vdWcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).vdWel14_cut()
     vdWcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).vdWel14_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, vdWcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, vdWcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, vdWcut3)
+    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc_major, vdWcut1)
+    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc_major, vdWcut2)
+    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc_major, vdWcut3)
     
     n1 = np.size(S1["bag_y"]) / V1
     n2 = np.size(S2["bag_y"]) / V2
@@ -651,7 +667,7 @@ def plot_sizemass_vdWelCut_mine(ax):
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
                                                       "van der Wel et al. 2014",
                                                       alpha0=0, AX=ax)
-    plot_dexter_sample_all2(ax)
+    plot_dexter_sample_all2_major(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", "", AX=ax)
 
     plt.ylim(ylim[0],ylim[1])
@@ -758,6 +774,38 @@ def plot_dexter_sample_all2_T11(A,scale='log',alpha=0.65):
               s =70, alpha=0.7)
     A.errorbar(E3_T11, Re_3_kpc, yerr = Re_3_kpc_err, 
                   xerr = mass_err3*E3_T11,ls='none',linewidth=4,
+                  color = '#a5200b',
+                  ecolor='#a5200b',capsize=0,
+                  alpha=alpha, marker='o')   
+
+    
+    A.set_xlim(left = xlim[0], right = xlim[1])
+    A.set_ylim(bottom = ylim[0], top = ylim[1])
+       
+    A.set_xscale(scale)
+    A.set_yscale(scale)
+
+
+def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
+    #Bin1
+    A.scatter(E1_R15BC_K, Re_1_kpc_major, marker='o',c='#a5200b',label='This work', 
+              s =70, alpha=0.7)
+    A.errorbar(E1_R15BC_K, Re_1_kpc_major, yerr = Re_1_kpc_err, 
+                  xerr = mass_err1*E1_R15BC, ls='none',linewidth=4, 
+                  color ='#a5200b',
+                  ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
+    #Bin2
+    A.scatter(E2_R15BC_K, Re_2_kpc_major,marker='o',c='#a5200b',label='', 
+              s =70,alpha=0.71)
+    A.errorbar(E2_R15BC_K, Re_2_kpc_major, yerr = Re_2_kpc_err, 
+                  xerr = mass_err2*E2_R15BC,ls='none',linewidth=4,
+                  color = '#a5200b',
+                  ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
+    #Bin3
+    A.scatter(E3_R15BC_K, Re_3_kpc_major,marker='o',c='#a5200b',label='', 
+              s =70, alpha=0.7)
+    A.errorbar(E3_R15BC_K, Re_3_kpc_major, yerr = Re_3_kpc_err, 
+                  xerr = mass_err3*E3_R15BC,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0,
                   alpha=alpha, marker='o')   
@@ -996,13 +1044,11 @@ def plot_Magi_to_mu0(mu,Abs_mag,Sersic_n):
     plt.gca().invert_yaxis()
     plt.gca().invert_xaxis()
 
-    #ax.set_xscale( 'log' )
-   
-    
+    #ax.set_xscale( 'log' )    
     plt.show()
 
-plot_Magi_to_n(Sersic_n_mine,Abs_sph_mag_mine)
-plot_Magi_to_mu0(mu_mine,Abs_sph_mag_mine,Sersic_n_mine)
+#plot_Magi_to_n(Sersic_n_mine,Abs_sph_mag_mine)
+#plot_Magi_to_mu0(mu_mine,Abs_sph_mag_mine,Sersic_n_mine)
 
 ## Nandini's script insert(temp) #####################
 

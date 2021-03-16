@@ -27,8 +27,13 @@ D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180)-np.cos(np.pi/2)))
 
-V1,V2,V3=voll[2],voll[1],voll[0]
+#V1,V2,V3=voll[2],voll[1],voll[0]
 
+V1_V = voll[2]-voll[1]
+V2_V = voll[1]-voll[0]
+V3_V = voll[0]
+
+V1,V2,V3 = V1_V,V2_V,V3_V
 
 Barro_data = SRead.read_table("/home/dexter/result/stat/completeness/nd_Barro.dat")
 Barro_z = Barro_data[:,0]
@@ -62,22 +67,34 @@ my_z = np.array([0.0127,0.0085,0.005])
 #
 #my_nd_Graham = np.array([1.54e-4,1.33e-5,0])
 #
-####
-my_nd_Barro = np.array([4.41e-5,1.19e-4,4.3e-4])
-my_nd_Dam = np.array([4.83e-5,1.33e-4,4.3e-4])
-my_nd_vDokkum = np.array([8.41e-6, 1.33e-5, 9.21e-5])
-my_nd_vdWel = np.array([1.89e-5,2.65e-5,9.21e-5])
+#####
+#Bin number density
+#my_nd_Barro = np.array([4.41e-5,1.19e-4,4.3e-4])
+#my_nd_Dam = np.array([4.83e-5,1.33e-4,4.3e-4])
+#my_nd_vDokkum = np.array([8.41e-6, 1.33e-5, 9.21e-5])
+#my_nd_vdWel = np.array([1.89e-5,2.65e-5,9.21e-5])
+#
+#my_nd_Graham = np.array([8.41e-6,6.63e-6,0])
 
-my_nd_Graham = np.array([8.41e-6,6.63e-6,0])
+#####
+#Bin V number density
+my_nd_Barro = np.array([4.92e-5,1.10e-4,7.37e-4])
+my_nd_Dam = np.array([4.92e-5,1.27e-4,7.98e-4])
+my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 1.23e-4])
+my_nd_vdWel = np.array([6.15e-6,2.54e-5,1.23e-4])
 
-my_nd_E = np.array([6/V1, 3/V2, 2/V3])#8.97e-5]
+my_nd_Graham = np.array([1.23e-6,8.46e-6,0])
+
+#my_nd_E = np.array([6/V1, 3/V2, 2/V3])#8.97e-5]
+my_nd_E = np.array([6/V1, 3/V2, 3/V3])#8.97e-5] BinV
 
 my_nd_E_Bin1 = np.array([my_nd_E[0],0])
 my_nd_E_Bin2 = np.array([my_nd_E[1],0])
 my_nd_E_Bin3 = np.array([my_nd_E[2],0])
 
 
-my_nd_oldE = np.array([15/V1, 11/V2, 2/V3])
+#my_nd_oldE = np.array([15/V1, 11/V2, 2/V3])
+my_nd_oldE = np.array([13/V1, 9/V2, 6/V3]) #BinV
 
 my_nd_oldE_Bin1 = np.array([my_nd_oldE[0],0])
 my_nd_oldE_Bin2 = np.array([my_nd_oldE[1],0])

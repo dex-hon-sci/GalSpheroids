@@ -78,15 +78,17 @@ volume = voll
 #volume = [357422.506,357422.506,357422.506]
 
 ##########################################
+# input, horizontal bins
+# "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt"
+# input, vertical bins
 
 # Calculate the local Sph mass
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt")
-
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
 
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
@@ -96,16 +98,29 @@ D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
 
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
 
-total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
-sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"])
-sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"])
-sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
+Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
+ars = (4.84814e-6)*1e3 # 1arcsec = (4.84814e-6) rad ars:arcsec to rad scale
 
+scale1 = D1* ars
+scale2 = D2* ars
+scale3 = D3* ars
+
+Re_1_kpc = Re_1* scale1
+Re_2_kpc = Re_2* scale2
+Re_3_kpc = Re_3* scale3
+
+# Calculate mass
 ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
 ML_select1_R15BC = SPlot.MLRelationIband(mag_g1,mag_i1).Roediger15BC03_MassRatio
 ML_select1_Z09 = SPlot.MLRelationIband(mag_g1,mag_i1).Zibetti09_MassRatio
@@ -145,9 +160,28 @@ E3_Z09 = M3.cal_Mass(ML_select3_Z09)
 E3_T11 = M3.cal_Mass(ML_select3_T11)
 
 
-mass1 = np.log10(E1_T11)
-mass2 = np.log10(E2_T11)
-mass3 = np.log10(E3_T11)
+array1_2kpc = np.repeat(2.0,len(E1_R15BC))
+array2_2kpc = np.repeat(2.0,len(E2_R15BC))
+array3_2kpc = np.repeat(2.0,len(E3_R15BC))
+
+print(array1_2kpc)
+print(np.size(array1_2kpc),np.size(array2_2kpc),np.size(array3_2kpc))
+print(np.size(Re_1_kpc),np.size(Re_2_kpc),np.size(Re_3_kpc))
+
+E1_2kpc = SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
+E2_2kpc = SSort.selection_generic(E2_R15BC, Re_2_kpc, array2_2kpc, direction="down")['bag_x']
+E3_2kpc = SSort.selection_generic(E3_R15BC, Re_3_kpc, array3_2kpc, direction="down")['bag_x']
+
+print(SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_y']
+      , E1_2kpc)
+
+mass1 = np.log10(E1_R15BC)
+mass2 = np.log10(E2_R15BC)
+mass3 = np.log10(E3_R15BC)
+
+mass1_2kpc = np.log10(E1_2kpc)
+mass2_2kpc = np.log10(E2_2kpc)
+mass3_2kpc = np.log10(E3_2kpc)
 
 ##### calculate the mass function (GAMA)
 Kalvin14_all1 ={'M_star':[],
@@ -216,22 +250,26 @@ line_style = Kalvin14_morph['line_style']
 
 ##Ploting##################################
 
+V1_V = volume[2] - volume[1]
+V2_V = volume[1] - volume[0]
+V3_V = volume[0]
 fig, ax = plt.subplots()
 
 
 #plt.plot(M,Phi,color="black", linestyle="solid", lw = 3,alpha=0.6)
 
-for i in range(len(M_star)):
-    Phi = func.Schechter_func(M, alpha[i], M_star[i], phi_0[i])
-    plt.plot(M,Phi, color=colour[i]
-             , label =label[i],
-             linestyle=line_style[i], lw=3,alpha=0.6)
-
-    plt.xscale( 'log' )
-    plt.yscale( 'log' )
-
-plt.xlim(10**7.9,10**11.9)
-plt.ylim(2*10**-6,10**-2 )
+#Plot GAMA mass function
+#for i in range(len(M_star)):
+#    Phi = func.Schechter_func(M, alpha[i], M_star[i], phi_0[i])
+#    plt.plot(M,Phi, color=colour[i]
+#             , label =label[i],
+#             linestyle=line_style[i], lw=3,alpha=0.6)#
+#
+#    plt.xscale( 'log' )
+#    plt.yscale( 'log' )
+#
+#plt.xlim(10**7.9,10**11.9)
+#plt.ylim(2*10**-6,10**-2 )
 
 #mass1 = np.log10(SRead.read_list("Gal_table1_bin2_Tmass")["mass"]*1e10)
 #mass2 = np.log10(SRead.read_list("Gal_table1_bin3_Tmass")["mass"]*1e10)
@@ -241,10 +279,53 @@ plt.ylim(2*10**-6,10**-2 )
 #print(np.log10(SRead.read_list("Gal_table1_bin3_Tmass")["mass"]*1e10))
 #print(np.log10(SRead.read_list("Gal_table1_bin4_Tmass")["mass"]*1e10))
 
-SPlot.ShowcaseIndi.mass_function_plot(mass3, box, volume[0], colour='#2a3236',label="Bin3")
-SPlot.ShowcaseIndi.mass_function_plot(mass2, box, volume[1], colour='#0b5786',label="Bin2")
-SPlot.ShowcaseIndi.mass_function_plot(mass1, box, volume[2], colour='#a5200b',label="Bin1")
+#nu_dens1, mid_pt1 = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
+#                                                          colour='#2a3236',
+#                                                          label="Bin3")
+#nu_dens2, mid_pt2 = SPlot.ShowcaseIndi.mass_function_plot(mass2, box, V2_V, 
+#                                                          colour='#0b5786',
+#                                                          label="Bin2")
+#nu_dens3, mid_pt3 = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
+#                                                          colour='#a5200b',
+#                                                          label="Bin1")
 
-plt.grid(True)
+nu_dens1_t, mid_pt1_t = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
+                                                          colour='#2a3236',
+                                                          label="Bin 3",
+                                                          trim=False)
+nu_dens2_t, mid_pt2_t = SPlot.ShowcaseIndi.mass_function_plot(mass2, box, V2_V, 
+                                                          colour='#0b5786',
+                                                          label="Bin 2",
+                                                          trim=False)
+nu_dens3_t, mid_pt3_t = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
+                                                          colour='#a5200b',
+                                                          label="Bin 1",
+                                                          trim=False)
+
+
+nu_dens_t_sum = nu_dens1_t +nu_dens2_t +nu_dens3_t
+
+nu_dens1_2kpc, mid_pt1_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass3_2kpc, box, V3_V, 
+                                                          colour='#2a3236',
+                                                          label="",
+                                                          trim=False,
+                                                          plot_yes=False)
+nu_dens2_2kpc, mid_pt2_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass2_2kpc, box, V2_V, 
+                                                          colour='#0b5786',
+                                                          label="",
+                                                          trim=False,
+                                                          plot_yes=False)
+nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, box, V1_V, 
+                                                          colour='#a5200b',
+                                                          label="",
+                                                          trim=False,
+                                                          plot_yes=False)
+
+nu_dens_2kpc = nu_dens1_2kpc +nu_dens2_2kpc +nu_dens3_2kpc
+
+
+ax.plot( mid_pt1_t , nu_dens_t_sum,"o--",label="Sum",linewidth=7)
+ax.plot(mid_pt1_t,nu_dens_2kpc, 'o--',label="<2kpc",linewidth=7)
+#plt.grid(True)
 plt.legend()
 plt.show()

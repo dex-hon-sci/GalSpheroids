@@ -348,7 +348,7 @@ class SelectionCut(object):
                    linestyle="dashed", linewidth=3, color='y' )
             
             # define the left edge (mass limit)
-            a = 1e10 #10**10.6
+            a = 10**10.6
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             #define the upper edge
             xedge.append(a)
@@ -367,7 +367,7 @@ class SelectionCut(object):
                    linestyle="dashed",linewidth=3, color='b' )
             
             # define the left edge (mass limit)
-            a = 1e10 #10**10.7
+            a = 10**10.7
             xedge, yedge = [5e12,a], [1e-3,1e-3]
             #define the upper edge
           
@@ -843,7 +843,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         return fig, ax
 
     #
-    def mass_function_plot(mass,box, volume=None, colour=None, label=None):
+    def mass_function_plot(mass,box, volume=None, colour=None, label=None, 
+                           trim=True, plot_yes=True):
         """
         Plot the mass function 
 
@@ -913,14 +914,18 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         mid_pt = np.array(mid_pt)
         
         #Trim away the zeros, and the corresponding mid_pt
+        if trim == True:
+            zero_i = [i for i in range(len(list(nu_dens))) if nu_dens[i] == 0]
 
-        zero_i = [i for i in range(len(list(nu_dens))) if nu_dens[i] == 0]
+            nu_dens = SSort.trim_value(nu_dens, 0)
+            N = SSort.trim_value(N, 0)
+            N_err = SSort.trim_value(np.array(N_err), 0)
 
-        nu_dens = SSort.trim_value(nu_dens, 0)
-        N = SSort.trim_value(N, 0)
-        N_err = SSort.trim_value(np.array(N_err), 0)
-
-        mid_pt = SSort.remove_value(mid_pt, zero_i)
+            mid_pt = SSort.remove_value(mid_pt, zero_i)
+        elif trim == False:
+            pass
+        else:
+            raise Exception("Trim option has to be either ture of false")
         
         # Assume Poisson error sqrt(N)/vol/dex_factor
         nu_dens_err = N_err
@@ -931,23 +936,146 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         N = np.array(N)
 
         #plotting 
-        print('dex_factor', dex_factor)
-        print('nudens',nu_dens)
-        print('nudens_err',nu_dens_err)
-        print('mid_pt',mid_pt)
-        
-        plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, label=label)
-        plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
+        #print('dex_factor', dex_factor)
+        #print('nudens',nu_dens)
+        #print('nudens_err',nu_dens_err)
+        #print('mid_pt',mid_pt)
+        if plot_yes == True:
+            plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, label=label)
+            plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
                      linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)        
         
-        plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
-        plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)
+            plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
+            plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)
             
-        plt.xscale( 'log' )
-        plt.yscale( 'log' )
-        
+            plt.xscale( 'log' )
+            plt.yscale( 'log' )
+        elif plot_yes == False:
+            pass
+        else:
+            raise Exception("You need to decide either show plot or not")
         return nu_dens, mid_pt
 
+    def cpt_to_total_by_type_plot(bundle, morph_name, morph, cpt=["Bulge","CoreBulge"], 
+                                  show_plot=True, 
+                                  mode="average",AX=plt):
+        """
+        Plotting the magntiude cpt-to-total ratio
+
+        Parameters
+        ----------
+        bundle : str
+            The name of the input galaxy bundle.
+        morph : TYPE
+            DESCRIPTION.
+        cpt : str, optional
+            DESCRIPTION. The default is "Bulge".
+        show_plot : bol, optional
+            DESCRIPTION. The default is True.
+
+        Returns
+        -------
+        The dictionary sortted by morphology.
+
+        """
+        # input: Bundle, what component, morphology type
+        name = SRead.grab_name(bundle)
+        cpt_mag = SRead.grab_mag(bundle, cpt)
+        total_mag = SRead.grab_total_mag(bundle)
+        
+        # calculare flux ratio
+        mag_ratio = 10**((cpt_mag-total_mag) / 2.5)
+        
+        
+        #mag_ratio = 10**(cpt_mag)/10**total_mag
+
+        mag_ratio = np.log10(mag_ratio)
+        # check name alignment
+        if len(morph_name) == len(name):
+            for i in range(len(name)):
+                #print(morph_name[i],name[i])
+
+                if morph_name[i] == name[i]:
+                    pass
+                else:
+                    raise Exception("name doesn't match!")
+                
+        
+        # Bin by morphology
+        type_dict = ["E","0","S"]
+        morph_list = ["EAS","EABS","EBS","SA0","SAB0","SB0","SA","SAB","SB"]
+        
+        gal_bin = []
+        
+        # loop for morphology type
+
+        for morph_name in morph_list:
+            morph_bin =[] # bin that store based on morph type
+            for i in range(len(morph)):
+                if morph[i] == morph_name:
+                    morph_bin.append(mag_ratio[i])
+            
+            gal_bin.append(np.array(morph_bin))
+            #gal_bin = np.array(gal_bin)
+        
+        mag_dict={"EAS": gal_bin[0], "EABS": gal_bin[1], "EBS": gal_bin[2],
+                  "SA0": gal_bin[3],"SAB0": gal_bin[4],"SB0": gal_bin[5],
+                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]}
+                                   
+        average_bin, std_bin = [], []        
+        
+        if mode=="average":
+            for i in range(len(morph_list)):
+                avg_ratio = np.average(gal_bin[i]), 
+                std_ratio = np.std(gal_bin[i])/np.sqrt(len(gal_bin[i]))
+                average_bin.append(avg_ratio)
+                std_bin.append(std_ratio)
+                print(average_bin)
+        else:
+            pass
+        average_bin = np.array(average_bin)
+        std_bin = np.array(std_ratio)
+        # plot it        
+        
+        x_index =[]
+        
+        for i in range(len(mag_dict.keys())):
+            b = [i]*len(gal_bin[i])
+            x_index.append(np.array(b))
+            
+        # make x axis
+        #AX.plot(x_index)
+        
+        #plot the individual galaxies
+        
+        if show_plot == True:
+            for i in range(len(x_index)):
+                AX.plot(x_index[i],gal_bin[i],'o',ms=15,color="#905a97",alpha =0.4
+                    )
+            AX.plot([],[],'o',ms=15,color="#905a97",alpha =0.4, label="galaxies")
+        #print(list(np.linspace(0,len(mag_dict.keys()),num=len(mag_dict.keys()))))
+        
+            AX.plot([0,1,2,3,4,5,6,7,8],average_bin, 'o',color="k", ms = 12,
+                label = "average")
+            AX.errorbar([0,1,2,3,4,5,6,7,8], average_bin, yerr = std_bin, 
+                     ms = 12, linewidth=3, ls='none',
+                     color='k',zorder=20,mew=1,capsize=3)
+        
+            AX.set_ylabel(r"$\rm log_{10}(B/T)$",fontsize=22)
+        #AX.set_xlabel(r"$ \rm Morphology$",fontsize=18)
+        #AX.set_yscale( 'log' )
+            AX.set_xlim(-1,9)
+            AX.set_ylim(-0.2,2)
+        #AX.set_xticks(mag_)
+            plt.xticks([0,1,2,3,4,5,6,7,8], list(mag_dict.keys()), fontsize=18, 
+                   rotation=70)
+            plt.legend(loc=1)
+            #[0,1,2,3,4,5,6,7,8], 
+            #          list(mag_dict.keys()))
+        else:
+            pass
+
+        return mag_dict
         
     def n_Re_plot():
         return None
@@ -993,7 +1121,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         super().__init__(*args, **kwargs)
         
     
-    def plot_distdist(DD,scale,dc,sc,name,limit, DD_err=None,dc_err=None):
+    def plot_distdist(DD,scale,dc,sc,name, l_limit, u_limit, 
+                      DD_err=None,dc_err=None):
         """
         A method to plot the difference in distance estimation 
         ----------                        
@@ -1013,9 +1142,12 @@ class ShowcaseCompare2(ShowcaseIndi):
             
         name : str
             The name of each galaxy. 
+            
+        l_limit: float
+            Marker of selection lower limit.
         
-        limit : float
-            Marker of selection limit.
+        u_limit : float
+            Marker of selection upper limit.
         
         Return
         ------
@@ -1025,7 +1157,10 @@ class ShowcaseCompare2(ShowcaseIndi):
         dc, DD = np.array(dc), np.array(DD)
         DD_err = np.array(DD_err)
         index = np.linspace(0,len(DD),num=len(DD),dtype=int)
-        x_edge,y_edge= [limit,limit,120,120], \
+        
+        x_edge_l,y_edge_l = [0,0,l_limit,l_limit], \
+            [min(index),max(index),max(index),min(index)]        
+        x_edge_u,y_edge_u = [u_limit,u_limit,120,120], \
             [min(index),max(index),max(index),min(index)]
     
         fig = plt.figure()
@@ -1054,7 +1189,9 @@ class ShowcaseCompare2(ShowcaseIndi):
         axs1.plot(sc,index, "go",label="z-dependent")
 
     
-        axs0.vlines(limit, 0, len(DD), linestyle="dashed",
+        axs0.vlines(u_limit, 0, len(DD), linestyle="dashed",
+                    linewidth=3, color='black')
+        axs0.vlines(l_limit, 0, len(DD), linestyle="dashed",
                     linewidth=3, color='black')
     
         axs0.vlines(np.average(dc), 0, len(dc), linestyle="solid",
@@ -1074,9 +1211,10 @@ class ShowcaseCompare2(ShowcaseIndi):
         axs0.vlines(np.average(DD)-np.std(DD), 0, len(DD), 
                     linestyle="dashed",linewidth=1, color='blue')
     
-        axs0.fill(x_edge,y_edge, alpha=0.3, color='red',
+        axs0.fill(x_edge_u,y_edge_u, alpha=0.3, color='red',
                   label='selection limit')
-    
+        axs0.fill(x_edge_l,y_edge_l, alpha=0.3, color='red',
+                  label='selection limit')    
     
         axs0.fill([np.average(DD)-np.std(DD),np.average(DD)-np.std(DD),
                np.average(DD)+np.std(DD),np.average(DD)+np.std(DD)],
@@ -1103,7 +1241,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         return fig, axs0, axs1
     
     
-    def plot_distdist_3points(DD,dc,d, name, limit, 
+    def plot_distdist_3points(DD,dc,d, name, l_limit, u_limit, 
                               DD_err=None,dc_err=None, d_err=None, 
                                d_spec = None, d_spec_name = None , d_spec_err =None,
                                decision=[]):
@@ -1193,7 +1331,11 @@ class ShowcaseCompare2(ShowcaseIndi):
         print(d_spec_index, d_spec_d, d_spec_d_err)       
         #############################################
         index = np.linspace(0,len(DD),len(DD),dtype=int)
-        x_edge,y_edge= [limit,limit,160,160], \
+        
+        x_edge_l,y_edge_l = [0,0,l_limit,l_limit], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]        
+        
+        x_edge_u,y_edge_u = [u_limit,u_limit,120,120], \
             [min(index)-10,max(index)+10,max(index)+10,min(index)-10]
     
         fig = plt.figure()
@@ -1233,8 +1375,10 @@ class ShowcaseCompare2(ShowcaseIndi):
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
         
+        axs0.vlines(l_limit, 0 -10, len(DD)+10, linestyle="dashed",
+                    linewidth=5, color='black')       
         
-        axs0.vlines(limit, 0 -10, len(DD)+10, linestyle="dashed",
+        axs0.vlines(u_limit, 0 -10, len(DD)+10, linestyle="dashed",
                     linewidth=5, color='black')
         
 #        axs0.vlines(np.average(d), 0, len(d), linestyle="solid",
@@ -1263,7 +1407,10 @@ class ShowcaseCompare2(ShowcaseIndi):
 #                    linestyle="dashed",linewidth=1, color='green')
 #
 #    
-        axs0.fill(x_edge,y_edge, alpha=0.3, color='red',
+        axs0.fill(x_edge_l,y_edge_l, alpha=0.3, color='red',
+                  label='selection limit')
+
+        axs0.fill(x_edge_u,y_edge_u, alpha=0.3, color='red',
                   label='selection limit')
 #    
 #        axs0.fill([np.average(d)-np.std(d),np.average(d)-np.std(d),
@@ -1310,7 +1457,166 @@ class ShowcaseCompare2(ShowcaseIndi):
 
 
         return fig, axs0
+
+    def plot_dist_difference3_summary(DD,dc,d, name, 
+                              DD_err=None,dc_err=None, d_err=None, 
+                               d_spec = None, d_spec_name = None , d_spec_err =None,
+                               decision=[]):
+        """
+        Same as above, but plotting all three bins in the same time.
+
+        Parameters
+        ----------
+        DD : TYPE
+            DESCRIPTION.
+        dc : TYPE
+            DESCRIPTION.
+        d : TYPE
+            DESCRIPTION.
+        name : TYPE
+            DESCRIPTION.
+        l_limit : TYPE
+            DESCRIPTION.
+        u_limit : TYPE
+            DESCRIPTION.
+        DD_err : TYPE, optional
+            DESCRIPTION. The default is None.
+        dc_err : TYPE, optional
+            DESCRIPTION. The default is None.
+        d_err : TYPE, optional
+            DESCRIPTION. The default is None.
+        d_spec : TYPE, optional
+            DESCRIPTION. The default is None.
+        d_spec_name : TYPE, optional
+            DESCRIPTION. The default is None.
+        d_spec_err : TYPE, optional
+            DESCRIPTION. The default is None.
+        decision : TYPE, optional
+            DESCRIPTION. The default is [].
+
+        Returns
+        -------
+        None.
+
+        """
+
+        d, dc, DD = np.array(d), np.array(dc), np.array(DD)
+        d_err, dc_err, DD_err = np.array(d_err), np.array(dc_err), np.array(DD_err)
+        
+        decision_color = {"Cosmicflow-3":"#ab005a" ,
+                          "Mould2000": "blue",
+                          "Willick1997": "green",
+                          "z-independent":"#d79734",
+                          "out_of_bound":"black",
+                          "out_of_bound(1)":"black",
+                          "out_of_bound(2)":"black",
+                          "o":"black"}
+        ############################create d_spec####
+        #lookup name -> make index table - > plot on the right index
+        d_spec_index = []
+        d_spec_d = []
+        d_spec_d_err = []
+        
+        for i in range(len(d_spec_name)):
+            for j in range(len(name)):
+                if d_spec_name[i] == name[j]: 
+                    print(name[j])
+                    d_spec_index.append(float(j))
+                    d_spec_d.append(d_spec[i])
+                    d_spec_d_err.append(d_spec_err[i])
+                    
+        print(d_spec_index, d_spec_d, d_spec_d_err)       
+        #############################################
+        index = np.linspace(0,len(DD),len(DD),dtype=int)
+        
     
+        fig = plt.figure()
+        gs = gridspec.GridSpec(1, 1) 
+
+    
+        axs0 = plt.subplot(gs[0])
+    
+
+
+        ms0, lw = 12, 4        
+        
+        axs0.plot(dc,index, "o", ms = ms0, color="green",
+                  label="Willick et al. 1997")
+        axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='g',zorder=20,mew=1,capsize=ms0)
+
+        axs0.plot(DD,index, "o", ms = ms0, color="blue",
+                  label="Mould et al. 2000")
+        axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='b',zorder=20,mew=1,capsize=ms0)
+
+
+
+        axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
+                  label="Cosmicflow-3")
+        axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
+                     ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
+        
+        
+        axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734" ,
+                  label="z-independent")
+        axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
+                      ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
+                      mew=1,capsize=ms0)
+
+        # Define highlighted boxes
+        
+        #x_edge1,y_edge1= [75,75,110,110], [5e11,max_mass,max_mass,5e11]
+        #x_edge2,y_edge2= [45,45,75,75], [2e11,max_mass,max_mass,2e11]
+        #x_edge3,y_edge3= [0,0,45,45], [1e11,max_mass,max_mass,1e11]
+        
+        x_edge_1,y_edge_1 = [75,75,110,110], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]        
+        
+        x_edge_2,y_edge_2 = [45,45,75,75], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]
+
+        x_edge_3,y_edge_3 = [0,0,45,45], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]        
+
+        x_edge_limit,y_edge_limit = [110,110,120,120], \
+            [min(index)-10,max(index)+10,max(index)+10,min(index)-10]         
+
+        
+    
+        
+        axs0.vlines(110, 0 -10, len(DD)+10, linestyle="dashed",
+                    linewidth=5, color='black')
+        
+        axs0.vlines(75, 0 -10, len(DD)+10, linestyle="dashed",
+                    linewidth=5, color='black')
+        axs0.vlines(45, 0 -10, len(DD)+10, linestyle="dashed",
+                    linewidth=5, color='black')           
+        
+        axs0.fill(x_edge_1,y_edge_1, alpha=0.3, color='green',
+                  label='Bin 1')
+
+        axs0.fill(x_edge_2,y_edge_2, alpha=0.2, color='green',
+                  label='Bin 2')
+        
+        axs0.fill(x_edge_3,y_edge_3, alpha=0.1, color='green',
+                  label='Bin 3')
+
+        axs0.fill(x_edge_limit,y_edge_limit, alpha=0.3, color='red',
+                  label='selection limit')
+    
+        axs0.invert_yaxis()
+        plt.subplots_adjust(wspace = 0)
+        plt.yticks(index, name)
+        
+        ##################
+        #make the decision making on the right
+        ##################
+        axs0.set_xlabel(r"$\rm Distance/ \, M p c$",fontsize=22)
+        axs0.legend(loc='upper left')
+
+
+        return fig, axs0   
     
     
     def plot_compare_rms(input_list1,input_list2): #tested

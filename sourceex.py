@@ -19,7 +19,7 @@ from matplotlib import rcParams
 rcParams['figure.figsize'] = [10., 8.]
 
 
-data = fitsio.read("/home/dexter/result/Exclude_case/Bin3/NGC5375.fits")
+data = fitsio.read("/home/dexter/UGC7806.fits")
 objects = sep.extract(data, 0.5 )
 
 

@@ -344,6 +344,7 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
     if direction == "up":
         for i in range(len(input_list_y)):
             if input_list_y[i] > func[i]:
+                
                 index_list.append(i)
                 bag_list_x.append(input_list_x[i])
                 bag_list_y.append(input_list_y[i])
@@ -351,6 +352,8 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
     elif direction == "down":
         for i in range(len(input_list_y)):
             if input_list_y[i] < func[i]:
+                
+                #print(input_list_y[i], func[i])        
                 index_list.append(i)
                 bag_list_x.append(input_list_x[i])
                 bag_list_y.append(input_list_y[i])

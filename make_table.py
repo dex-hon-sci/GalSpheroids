@@ -27,25 +27,27 @@ M_sun = 4.53
 
 
 ##############################
+# make table for the parent data
+
 
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
 
 D0_all_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
@@ -103,29 +105,29 @@ corr_mass3 = D0_Bin3_table[:,13]
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
 
-name1 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-name2 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-name3 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+name1 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+name2 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+name3 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
 
-total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
 
-sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"])
-sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"])
-sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
-mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 0) 
-mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 0) 
-mu_e_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) 
 
-Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
-n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 2)
-n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 2)
-n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 2)
+n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 2)
+n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 2)
+n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 2)
 
 ars = (4.84814e-6)*1e3 #1 arcsec = (4.84814e-6) rad ars:arcsec to rad scale
 
@@ -197,20 +199,20 @@ E3_T11 = M3.cal_Mass(ML_select3_T11)
 #Calculate mass with K-correction
 
 K_table1 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat")
 K_table2 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat")
 K_table3 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat")
 
 K_table1_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat", 
     dtype='str')
 K_table2_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2_Kcorr.dat",
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat",
     dtype='str')
 K_table3_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat", 
     dtype='str')
 
 K_name1, K_name2, K_name3 = K_table1_n[:,4], K_table2_n[:,4], K_table3_n[:,4]
@@ -383,6 +385,236 @@ nsa_mass_IP13 = nsa[:,5]
 #########################################
 #########################################
 
+# making the table
+
+name = name1
+RA, DEC = RA_1, DEC_1
+Dist, Dist_lerr, Dist_uerr = D1, D1_lerr, D1_uerr
+mag_g, mag_i = mag_g1, mag_i1
+scale = scale1
+Mag_i = mag_i1_kcorr
+seeing = seeing1
+morph = morph1
+morph_new = morph1_new
+mass = corr_mass1
+
+
+Dist_final = SSort.str_zipping_generic( "$",
+                                        list(np.around(Dist,decimals=2)),
+                                       "\substack{+",
+                                       list(np.around(Dist_uerr,decimals=2)),
+                                       "\\\-",
+                                       list(np.around(Dist_lerr,decimals=2)),
+                                       "}$")
+
+
+table = {"Name": name,
+         "RA": np.around(RA, decimals=2),
+         "DEC": np.around(DEC, decimals=2),
+         "Dist": Dist_final,
+         "mag_g": np.around(mag_g, decimals=2) ,
+         "mag_i": np.around(mag_i, decimals=2) ,
+         "Scale": np.around(scale, decimals=2) ,
+         "seeing": np.around(seeing, decimals=2),
+         "morph (old)": morph,
+         "morph (new)": morph_new,
+         "Mag_i": np.around(Mag_i, decimals=2),
+         "mass": np.around(mass/1e10, decimals=2)}
+
+value = list(table.values())
+key = list(table.keys())
+
+for i in range(len(list(table.keys()))):
+    print(key[i],len(value[i]))
+
+# save the table in dict form    
+with open("Gal_table1_bin1V", 'wb') as f:
+    pickle.dump(table, f)
+
+# convert the dict to ascii file
+SRead.convert_dict_ascii("Gal_table1_bin1V","Gal_table1_bin1V.txt")
+
+##################################
+#Bundle = "/home/dexter/result/Gal_bundle_equvi_bin4_cpt"
+
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
+
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
+
+Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+
+ 
+
+name = name1
+mu_e = mu_e_1
+R_e = Re_1_kpc
+n = n1
+mag_sph =  sph_mag1
+Mag_sph = total_mag1
+
+
+
+Taylor_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E1_T11_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E1_T11_K+mass_T11_uerr1)-np.log10(E1_T11_K),decimals=2)),
+                                       "$")
+
+
+Zibetti_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E1_Z09_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E1_Z09_K+mass_Z09_uerr1)-np.log10(E1_Z09_K),decimals=2)),
+                                       "$")
+
+Roediger_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E1_R15BC_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E1_R15BC_K+mass_R15BC_uerr1)-np.log10(E1_R15BC_K),decimals=2)),
+                                       "$")
+
+Into_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E1_IP13_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E1_IP13_K+mass_IP13_uerr1)-np.log10(E1_IP13_K),decimals=2)),
+                                       "$")
+
+
+table = {"Name": name,
+         "mu_e": np.around(mu_e, decimals=2),
+         "R_e": np.around(R_e, decimals=2),
+         "n": np.around(n, decimals=2),
+         "mag_sph": np.around(mag_sph, decimals=2),
+         "Mag_sph": np.around(Mag_sph, decimals=2),
+         "Taylor_mass": Taylor_mass,
+         "Zibetti_mass":Zibetti_mass, 
+         "Roediger_mass": Roediger_mass,
+         "Into_mass": Into_mass} 
+
+value = list(table.values())
+key = list(table.keys())
+
+for i in range(len(list(table.keys()))):
+    print(key[i],len(value[i]))
+    
+with open("Gal_table2_bin1V", 'wb') as f:
+    pickle.dump(table, f)
+
+SRead.convert_dict_ascii("Gal_table2_bin1V","Gal_table2_bin1V.txt")
+
+
+
+#########################################
+
+# making the table
+# Bin2
+name = name2
+RA, DEC = RA_2, DEC_2
+Dist, Dist_lerr, Dist_uerr = D2, D2_lerr, D2_uerr
+mag_g, mag_i = mag_g2, mag_i2
+scale = scale2
+Mag_i = mag_i2_kcorr
+seeing = seeing2
+morph = morph2
+morph_new = morph2_new
+mass = corr_mass2
+
+
+Dist_final = SSort.str_zipping_generic( "$",
+                                        list(np.around(Dist,decimals=2)),
+                                       "\substack{+",
+                                       list(np.around(Dist_uerr,decimals=2)),
+                                       "\\\-",
+                                       list(np.around(Dist_lerr,decimals=2)),
+                                       "}$")
+
+
+table = {"Name": name,
+         "RA": np.around(RA, decimals=2),
+         "DEC": np.around(DEC, decimals=2),
+         "Dist": Dist_final,
+         "mag_g": np.around(mag_g, decimals=2) ,
+         "mag_i": np.around(mag_i, decimals=2) ,
+         "Scale": np.around(scale, decimals=2) ,
+         "seeing": np.around(seeing, decimals=2),
+         "morph (old)": morph,
+         "morph (new)": morph_new,
+         "Mag_i": np.around(Mag_i, decimals=2),
+         "mass": np.around(mass/1e10, decimals=2)}
+
+value = list(table.values())
+key = list(table.keys())
+
+for i in range(len(list(table.keys()))):
+    print(key[i],len(value[i]))
+
+# save the table in dict form    
+with open("Gal_table1_bin2V", 'wb') as f:
+    pickle.dump(table, f)
+
+# convert the dict to ascii file
+SRead.convert_dict_ascii("Gal_table1_bin2V","Gal_table1_bin2V.txt")
+
+##################################
+#Bundle = "/home/dexter/result/Gal_bundle_equvi_bin4_cpt"
+name = name2
+mu_e = mu_e_2
+R_e = Re_2_kpc
+n = n2
+mag_sph =  sph_mag2
+Mag_sph = total_mag2
+
+
+Taylor_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E2_T11_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E2_T11_K+mass_T11_uerr2)-np.log10(E2_T11_K),decimals=2)),
+                                       "$")
+
+
+Zibetti_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E2_Z09_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E2_Z09_K+mass_Z09_uerr2)-np.log10(E2_Z09_K),decimals=2)),
+                                       "$")
+
+Roediger_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E2_R15BC_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E2_R15BC_K+mass_R15BC_uerr2)-np.log10(E2_R15BC_K),decimals=2)),
+                                       "$")
+
+Into_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E2_IP13_K),decimals=2)), 
+                                       "\pm",
+                                       list(np.around(np.log10(E2_IP13_K+mass_IP13_uerr2)-np.log10(E2_IP13_K),decimals=2)),
+                                       "$")
+
+
+table = {"Name": name,
+         "mu_e": np.around(mu_e, decimals=2),
+         "R_e": np.around(R_e, decimals=2),
+         "n": np.around(n, decimals=2),
+         "mag_sph": np.around(mag_sph, decimals=2),
+         "Mag_sph": np.around(Mag_sph, decimals=2),
+         "Taylor_mass": Taylor_mass,
+         "Zibetti_mass":Zibetti_mass, 
+         "Roediger_mass": Roediger_mass,
+         "Into_mass": Into_mass} 
+
+value = list(table.values())
+key = list(table.keys())
+
+for i in range(len(list(table.keys()))):
+    print(key[i],len(value[i]))
+    
+with open("Gal_table2_bin2V", 'wb') as f:
+    pickle.dump(table, f)
+
+SRead.convert_dict_ascii("Gal_table2_bin2V","Gal_table2_bin2V.txt")
+
+#########################################
+
+# making the table
+# Bin3
 name = name3
 RA, DEC = RA_3, DEC_3
 Dist, Dist_lerr, Dist_uerr = D3, D3_lerr, D3_uerr
@@ -422,36 +654,22 @@ key = list(table.keys())
 
 for i in range(len(list(table.keys()))):
     print(key[i],len(value[i]))
-    
-with open("Gal_table1_bin3", 'wb') as f:
+
+# save the table in dict form    
+with open("Gal_table1_bin3V", 'wb') as f:
     pickle.dump(table, f)
 
-SRead.convert_dict_ascii("Gal_table1_bin3","Gal_table1_bin3.txt")
+# convert the dict to ascii file
+SRead.convert_dict_ascii("Gal_table1_bin3V","Gal_table1_bin3V.txt")
 
 ##################################
 #Bundle = "/home/dexter/result/Gal_bundle_equvi_bin4_cpt"
-
-total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1_cpt")
-total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2_cpt")
-total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3_cpt")
-
-sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"])
-sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"])
-sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"])
-
-Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2_cpt", ["Bulge","CoreBulge"], 1) #get Re
-Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3_cpt", ["Bulge","CoreBulge"], 1) #get Re
-
- 
-
 name = name3
 mu_e = mu_e_3
 R_e = Re_3_kpc
 n = n3
 mag_sph =  sph_mag3
 Mag_sph = total_mag3
-
 
 
 Taylor_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E3_T11_K),decimals=2)), 
@@ -493,10 +711,11 @@ key = list(table.keys())
 for i in range(len(list(table.keys()))):
     print(key[i],len(value[i]))
     
-with open("Gal_table2_bin3", 'wb') as f:
+with open("Gal_table2_bin3V", 'wb') as f:
     pickle.dump(table, f)
 
-SRead.convert_dict_ascii("Gal_table2_bin3","Gal_table2_bin3.txt")
+SRead.convert_dict_ascii("Gal_table2_bin3V","Gal_table2_bin3V.txt")
+
 #Mag_i = SRead.grab_total_mag("/home/dexter/result/Gal_bundle_equvi_bin4_cpt")
 
 
