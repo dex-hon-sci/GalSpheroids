@@ -50,14 +50,34 @@ vdWel_z = vdWel_data[:,0]
 vdWel_nd = vdWel_data[:,3]
 vdWel_nd_uerr = vdWel_data[:,4]
 
+# Damjanov 2015 Barro cut
 Dam_data = SRead.read_table("/home/dexter/result/stat/completeness/nd_Damjanov15.dat")
 Dam_z = Dam_data[:,0]
 Dam_nd = 10**Dam_data[:,1]
 Dam_nd_uerr = 10**Dam_data[:,2]
 
+Dam_data1 = SRead.read_table("/home/dexter/result/stat/completeness/nd_Damjanov15_COSMOS.dat")
+Dam_z1 = Dam_data1[:,0]
+Dam_nd1 = 10**Dam_data1[:,1]
+Dam_nd_uerr1 = 10**Dam_data1[:,2]
+
+Dam_data2 = SRead.read_table("/home/dexter/result/stat/completeness/nd_Damjanov14_BOSS.dat")
+Dam_z2 = Dam_data2[:,0]
+Dam_nd2 = 10**Dam_data2[:,1]
+Dam_nd_uerr2 = 10**Dam_data2[:,2]
+
+Dam_data3 = SRead.read_table("/home/dexter/result/stat/completeness/nd_Damjanov15_vdwel.dat")
+Dam_z3 = Dam_data3[:,0]
+Dam_nd3 = 10**Dam_data3[:,1]
+Dam_nd_uerr3 = 10**Dam_data3[:,2]
+
+Poggianti_z = 0.06009445742113899
+Poggianti_nd = 10**-3.8849206349206353
+Poggianti_nd_u = 10**-3.5238095238095237
 
 my_z = np.array([0.0127,0.0085,0.005])
 
+my_z = np.array([0,0,0])
 ###
 
 #my_nd_Barro = np.array([6.75e-4,1.19e-4,2.94e-5])
@@ -77,13 +97,38 @@ my_z = np.array([0.0127,0.0085,0.005])
 #my_nd_Graham = np.array([8.41e-6,6.63e-6,0])
 
 #####
-#Bin V number density
+#Bin V number density RC15
 my_nd_Barro = np.array([4.92e-5,1.10e-4,7.37e-4])
 my_nd_Dam = np.array([4.92e-5,1.27e-4,7.98e-4])
 my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 1.23e-4])
 my_nd_vdWel = np.array([6.15e-6,2.54e-5,1.23e-4])
-
 my_nd_Graham = np.array([1.23e-6,8.46e-6,0])
+
+#Bin V number density T11
+my_nd_Barro_T11 = np.array([2.77e-5,7.61e-5,4.61e-4])
+my_nd_Dam_T11 = np.array([4.62e-5,8.46e-5,6.14e-4])
+my_nd_vDokkum_T11 = np.array([0,0,0])
+my_nd_vdWel_T11 = np.array([0,0,0])
+my_nd_Graham_T11 = np.array([3.08e-6,0,0])
+
+#Bin V numbder density Z09
+my_nd_Barro_Z09 = np.array([4.0e-5,1.02e-4,6.45e-4])
+my_nd_Dam_Z09 = np.array([4.62e-5,1.10e-4,7.37e-4])
+my_nd_vDokkum_Z09 = np.array([6.15e-6,0,9.21e-5])
+my_nd_vdWel_Z09 = np.array([3.08e-6,1.69e-5,6.14e-5])
+my_nd_Graham_Z09 = np.array([6.15e-6,8.46e-6,0])
+
+#Bin V numer density Z09
+my_nd_Barro_IP13 = np.array([5.54e-5,1.52e-4,9.21e-4])
+my_nd_Dam_IP13 = np.array([5.85e-5,1.69e-4,1.04e-3])
+my_nd_vDokkum_IP13 = np.array([4.0e-5,6.77e-5,3.07e-4])
+my_nd_vdWel_IP13 = np.array([3.08e-5,6.77e-5,2.76e-4])
+my_nd_Graham_IP13 = np.array([1.85e-5,2.54e-5,1.54e-4])
+#my_nd_Barro = my_nd_Barro_T11
+#my_nd_Dam = my_nd_Dam_T11
+#my_nd_vDokkum = my_nd_vDokkum_T11
+#my_nd_vdWel = my_nd_vdWel_T11
+#my_nd_Graham = my_nd_Graham_T11
 
 #my_nd_E = np.array([6/V1, 3/V2, 2/V3])#8.97e-5]
 my_nd_E = np.array([6/V1, 3/V2, 3/V3])#8.97e-5] BinV
@@ -104,6 +149,10 @@ ms0 = 12
 
 print(np.sum(my_nd_Barro), np.sum(my_nd_vdWel), np.sum(my_nd_vDokkum))
 
+
+print(my_nd_E,sum(my_nd_E))
+print(my_nd_Barro_Z09,sum(my_nd_Barro_Z09))
+
 print("cE to E ratio:",
       np.sum(my_nd_Barro)/np.sum(my_nd_E), 
       np.sum(my_nd_vdWel)/np.sum(my_nd_E) , 
@@ -122,7 +171,7 @@ print("csph-peak RN /peak RN:",
 xlim = [-0.35,3.0]
 ylim = [1e-6,1e-3]
 
-def plot_compact_sum(nd0, linestyle = "dashed", colour="black", label = "", AX=plt):
+def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "", AX=plt):
     """
     plot the sum of compact sample and the Ellipitcals
 
@@ -132,13 +181,13 @@ def plot_compact_sum(nd0, linestyle = "dashed", colour="black", label = "", AX=p
 
     """ 
  
-    AX.axhline(sum(nd0),xlim[0],xlim[1],linestyle=linestyle, linewidth = 5,
+    AX.axhline(sum(nd0),xlim[0],xlim[1],linestyle=linestyle, linewidth = 3,
                color=colour , label= label)
     
 
     
 
-def plot_nd_3bins(nd,marker,AX=plt):
+def plot_nd_3bins(nd,marker, my_z=my_z,AX=plt):
     n_err_bin1 = np.sqrt(nd[0]*V1)/V1
     n_err_bin2 = np.sqrt(nd[1]*V2)/V2
     n_err_bin3 = np.sqrt(nd[2]*V3)/V3
@@ -176,7 +225,7 @@ def plot_nd_3bins(nd,marker,AX=plt):
     AX.plot(my_z[2],nd[2], color ='#2a3236',ms= ms0,marker=marker)
 
 def plot_nd_Dam(AX):
-    AX.plot(Dam_z,Dam_nd,'--o', ms= ms0, color='r',label="Damjanov et al. 2015")
+    AX.plot(Dam_z,Dam_nd,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015 (Barro cut)")
     AX.errorbar(Dam_z,Dam_nd,yerr=Dam_nd_uerr-Dam_nd,ls='none',
                      linewidth=3, ecolor='r',mew=1,capsize=3) 
 
@@ -190,7 +239,79 @@ def plot_nd_Dam(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 18)
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+
+
+    AX.set_ylim(ylim[0],ylim[1])
+    AX.set_xlim(xlim[0],xlim[1])
+
+    AX.set_yscale( 'log' )
+    #AX.legend() 
+
+def plot_nd_Dam1(AX):
+    AX.plot(Dam_z1,Dam_nd1,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015")
+    AX.errorbar(Dam_z1,Dam_nd1,yerr=Dam_nd_uerr1-Dam_nd1,ls='none',
+                     linewidth=3, ecolor='r',mew=1,capsize=3) 
+
+
+    xedge, yedge = list(Dam_z1), list(Dam_nd1)
+    xedge.append(Dam_z1[-1])
+    yedge.append(0)
+    xedge.append(Dam_z1[0])
+    yedge.append(0)
+
+    #AX.fill(xedge, yedge, alpha=0.1, color='g')
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+
+
+    AX.set_ylim(ylim[0],ylim[1])
+    AX.set_xlim(xlim[0],xlim[1])
+
+    AX.set_yscale( 'log' )
+    #AX.legend() 
+    
+def plot_nd_Dam2(AX):
+    AX.plot(Dam_z2,Dam_nd2,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015")
+    AX.errorbar(Dam_z2,Dam_nd2,yerr=Dam_nd_uerr2-Dam_nd2,ls='none',
+                     linewidth=3, ecolor='r',mew=1,capsize=3) 
+
+
+    xedge, yedge = list(Dam_z2), list(Dam_nd2)
+    xedge.append(Dam_z2[-1])
+    yedge.append(0)
+    xedge.append(Dam_z2[0])
+    yedge.append(0)
+
+    #AX.fill(xedge, yedge, alpha=0.1, color='g')
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+
+
+    AX.set_ylim(ylim[0],ylim[1])
+    AX.set_xlim(xlim[0],xlim[1])
+
+    AX.set_yscale( 'log' )
+    #AX.legend() 
+
+def plot_nd_Dam3(AX):
+    AX.plot(Dam_z3,Dam_nd3,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015 (van der Wel cut)")
+    AX.errorbar(Dam_z3,Dam_nd3,yerr=Dam_nd_uerr3-Dam_nd3,ls='none',
+                     linewidth=3, ecolor='r',mew=1,capsize=3) 
+
+
+    xedge, yedge = list(Dam_z3), list(Dam_nd3)
+    xedge.append(Dam_z3[-1])
+    yedge.append(0)
+    xedge.append(Dam_z3[0])
+    yedge.append(0)
+
+    #AX.fill(xedge, yedge, alpha=0.1, color='g')
+    #AX.set_xlabel(r"$ z$",fontsize=18)
+    
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -201,7 +322,7 @@ def plot_nd_Dam(AX):
 
 def plot_nd_Barro(AX):
 
-    AX.plot(Barro_z,Barro_nd,'--o', ms= ms0, color='g',label="Barro et al. 2013")
+    AX.plot(Barro_z,Barro_nd,'--d', lw =5,  ms= ms0, color='g',label="Barro et al. 2013")
     AX.errorbar(Barro_z,Barro_nd,yerr=Barro_nd_uerr-Barro_nd,ls='none',
                      linewidth=3, ecolor='g',mew=1,capsize=3) 
 
@@ -215,7 +336,7 @@ def plot_nd_Barro(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 18)
+    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -227,7 +348,7 @@ def plot_nd_Barro(AX):
 
 def plot_nd_vDokkum(AX):
 
-    AX.plot(vDokkum_z,vDokkum_nd,'--^', ms= ms0,color='#e58b1a', label="van Dokkum et al. 2015")
+    AX.plot(vDokkum_z,vDokkum_nd,'--d', lw=5, ms= ms0,color='#e58b1a', label="van Dokkum et al. 2015")
     AX.errorbar(vDokkum_z,vDokkum_nd,yerr= vDokkum_nd_uerr - vDokkum_nd,ls='none',
                      linewidth=3, ecolor='#e58b1a',mew=1,capsize=3) 
 
@@ -240,7 +361,7 @@ def plot_nd_vDokkum(AX):
 
     #AX.fill(xedge, yedge, alpha=0.1, color='y')
     #AX.set_xlabel(r"$ z$",fontsize=18)
-    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 18)
+    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 20)
     AX.set_yscale( 'log' )
     #AX.legend()
         
@@ -250,7 +371,7 @@ def plot_nd_vDokkum(AX):
 def plot_nd_vdWel(AX):
 
 
-    AX.plot(vdWel_z,vdWel_nd,'--s', ms= ms0, color='b', label="van der Wel et al. 2014")
+    AX.plot(vdWel_z,vdWel_nd,'--d', lw=5, ms= ms0, color='b', label="van der Wel et al. 2014")
     AX.errorbar(vdWel_z,vdWel_nd,yerr= vdWel_nd_uerr - vdWel_nd,ls='none',
                      linewidth=3, ecolor='b',mew=1,capsize=3) 
 
@@ -262,7 +383,7 @@ def plot_nd_vdWel(AX):
 
     #AX.fill(xedge, yedge, alpha=0.1, color='b')
     #AX.set_xlabel(r"$ z$",fontsize=18)
-    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 18)
+    AX.set_ylabel(r"$ n (Mpc^{-3})$",fontsize= 20)
     AX.set_yscale( 'log' )
     #AX.legend()
     
@@ -277,7 +398,7 @@ def plot_nd_E_3plot():
         
     fig = plt.figure()
     gs = gridspec.GridSpec(ncols=1, nrows=4,
-                               hspace=0.1, wspace=0.0) 
+                               hspace=0.0, wspace=0.0) 
 
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])  
@@ -293,7 +414,7 @@ def plot_nd_E_3plot():
 
     
     plot_nd_3bins(my_nd_Barro,'o',AX=axs0)
-
+    
     
     plot_nd_Barro(axs0)
     plt.setp(axs0.get_xticklabels(), visible=False)
@@ -337,11 +458,10 @@ def plot_nd_E_3plot():
     plot_compact_sum(my_nd_oldE_Bin3, linestyle="dashdot", colour='blue',label = r"old $n_{E}$ in Bin 3", AX=axs2)
     plot_compact_sum(my_nd_E_Bin3, linestyle = "dashdot", colour='red',label = r"new $n_{E}$ in Bin 3", AX=axs2)
 
-    plot_nd_3bins(my_nd_vDokkum,'^',AX=axs2)
+    plot_nd_3bins(my_nd_vDokkum,'o',AX=axs2)
     
     plot_nd_vDokkum(axs2)
 
-    axs2.set_xlabel(r"$ z$",fontsize=18)
     #axs2.grid(True)
     axs2.legend(loc=4)
     
@@ -357,7 +477,7 @@ def plot_nd_E_3plot():
 
     plot_compact_sum(my_nd_oldE_Bin3, linestyle="dashdot", colour='blue',label = r"old $n_{E}$ in Bin 3", AX=axs3)
     plot_compact_sum(my_nd_E_Bin3, linestyle = "dashdot", colour='red',label = r"new $n_{E}$ in Bin 3", AX=axs3)
-    plot_nd_3bins(my_nd_Dam,'^',AX=axs3)
+    plot_nd_3bins(my_nd_Dam,'o',AX=axs3)
     
     plot_nd_Dam(axs3)
 
@@ -372,68 +492,425 @@ def plot_nd_3plot():
     
     fig = plt.figure()
     gs = gridspec.GridSpec(ncols=1, nrows=4,
-                               hspace=0.1, wspace=0.0) 
+                               hspace=0.0, wspace=0.0) 
 
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])  
     
-    plot_compact_sum(my_nd_Barro, colour='black',label = r"$n_{sum}$", AX=axs0)
-    plot_compact_sum(my_nd_E, colour='red',label = r"$n_{E}$", AX=axs0)    
+    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs0)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs0)    
+
+    axs0.plot(Poggianti_z,Poggianti_nd,'d', lw=5, ms= ms0, color='purple', 
+              label="Poggianti et al. 2013")
+    #axs0.errorbar(Poggianti_z,Poggianti_nd,yerr= Poggianti_nd_u - Poggianti_nd
+    #              ,ls='none',linewidth=3, ecolor='purple',mew=1,capsize=3) 
+
     plot_nd_3bins(my_nd_Barro,'o',AX=axs0)
 
-    
+
     plot_nd_Barro(axs0)
+    plot_nd_Dam(axs0)
+
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
     axs0.legend(loc=4)
 
-
+    twin0=axs0.twinx()
     
     #plot Panel (2)
     axs1 = plt.subplot(gs[1],sharex=axs0) 
     
-
-    plot_compact_sum(my_nd_vdWel, colour='black',label = r"$n_{sum}$", AX=axs1)
-    plot_compact_sum(my_nd_E, colour='red',label = r"$n_{E}$", AX=axs1)    
-    plot_nd_3bins(my_nd_vdWel,'s',AX=axs1)
-    
+    plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs1)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1)    
+    plot_nd_3bins(my_nd_vdWel,'o',AX=axs1)
+     
     plot_nd_vdWel(axs1)
+    plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
     axs1.legend(loc=4)
 
-
-    
     #plot Panel (3)
     axs2 = plt.subplot(gs[2],sharex=axs0)  
 
-    
-
-    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"$n_{sum}$", AX=axs2)
-    plot_compact_sum(my_nd_E, colour='red',label = r"$n_{E}$", AX=axs2)    
-    plot_nd_3bins(my_nd_vDokkum,'^',AX=axs2)
+    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs2)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2)    
+    plot_nd_3bins(my_nd_vDokkum,'o',AX=axs2)
     
     plot_nd_vDokkum(axs2)
-
-    axs2.set_xlabel(r"$ z$",fontsize=18)
+    plt.setp(axs2.get_xticklabels(), visible=False)
+    
     #axs2.grid(True)
     axs2.legend(loc=4)
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
 
-
-    plot_compact_sum(my_nd_Dam, colour='black',label = r"$n_{sum}$", AX=axs3)
-    plot_compact_sum(my_nd_E, colour='red',label = r"$n_{E}$", AX=axs3)    
-    plot_nd_3bins(my_nd_Dam,'^',AX=axs3)
+    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs3)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3)    
+    plot_nd_3bins(my_nd_Dam,'o',AX=axs3)
     
-    plot_nd_Dam(axs3)
+    plot_nd_Dam1(axs3)
+    #plot_nd_Dam2(axs3)
 
-    axs3.set_xlabel(r"$ z$",fontsize=18)
+    axs3.set_xlabel(r"$ z$",fontsize=20)
     #axs2.grid(True)
     axs3.legend(loc=4)
     
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~1 $", color ='#a5200b', marker ="o")
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~2 $", color ='#0b5786', marker ="o")
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~3 $", color ='#2a3236', marker ="o")
+
+
+    plot_compact_sum([], colour='black',label = r"$n_\mathrm{c,sph}$", AX=twin0)
+    plot_compact_sum([], colour='red',label = r"$n_\mathrm{E}$", AX=twin0) 
+
+    twin0.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
+          fancybox=True, shadow=False, ncol=3)
+    twin0.set_yscale('log')
+    plt.setp(twin0.get_yticklabels(), visible=False)
+
     plt.show()
     
+    
+def plot_nd_all_mass():
+    
+    ylim_allmass = [0.1e-6,2e-3,2e-3,0.1e-6]
+    xlim_allmass = [-0.2,-0.2,0.2,0.2]
+    alpha_allmass = 0.25
+    
+    fig = plt.figure()
+    gs = gridspec.GridSpec(ncols=4, nrows=4,
+                               hspace=0.0, wspace=0.1) 
+    
+    # T11 Barro cut
+    axs0 = plt.subplot(gs[0])  
+    
+    plot_compact_sum(my_nd_Barro_T11, colour='black',label = r"$n_\mathrm{cSph}$", AX=axs0)
+    plot_compact_sum(my_nd_E, colour='red',label = r"$n_\mathrm{E}$", AX=axs0) 
+    
+    plot_nd_3bins(my_nd_Barro_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs0)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs0)
+
+    
+    plt.setp(axs0.get_xticklabels(), visible=False)
+    axs0.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+
+    axs0.set_ylim(0.1e-6,2e-3)
+    axs0.set_xlim(-0.2,0.2)
+    axs0.set_yscale('log')    
+    axs0.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+
+    # Z09 Barro cut
+    axs1 = plt.subplot(gs[1])  
+
+    plot_compact_sum(my_nd_Barro_Z09, colour='black',label = r"", AX=axs1)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1) 
+    
+    plot_nd_3bins(my_nd_Barro_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs1)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs1)
+     
+    axs1.set_ylim(0.1e-6,2e-3)
+    axs1.set_xlim(-0.2,0.2)
+    axs1.set_yscale('log')
+    axs1.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+
+    
+    plt.setp(axs1.get_xticklabels(), visible=False)
+    plt.setp(axs1.get_yticklabels(), visible=False)
+
+    # RC15 Barro cut
+    axs2 = plt.subplot(gs[2])  
+    
+    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs2)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2) 
+    
+    plot_nd_3bins(my_nd_Barro,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs2)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs2)
+     
+    axs2.set_ylim(0.1e-6,2e-3)
+    axs2.set_xlim(-0.2,0.2)
+    axs2.set_yscale('log')
+    axs2.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+
+    
+    plt.setp(axs2.get_xticklabels(), visible=False)
+    plt.setp(axs2.get_yticklabels(), visible=False)
+    
+    # IP13 Barro cut
+    axs3 = plt.subplot(gs[3])  
+    
+    plot_compact_sum(my_nd_Barro_IP13, colour='black',label = r"", AX=axs3)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3) 
+    
+    plot_nd_3bins(my_nd_Barro_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs3)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs3)
+     
+    axs3.set_ylim(0.1e-6,2e-3)
+    axs3.set_xlim(-0.2,0.2)
+    axs3.set_yscale('log')
+    
+    twin3=axs3.twinx()
+    twin3.set_ylabel(r'$\rm Barro~cut$',fontsize=20)
+    
+    axs3.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+
+    #axs3.yaxis.tick_right()
+    #axs3.yaxis.set_label_position("right")
+    #axs3.set_ylabel(r'$\rm Barro~cut$',fontsize=16)
+    plt.setp(axs3.get_xticklabels(), visible=False)
+    plt.setp(axs3.get_yticklabels(), visible=False)
+    plt.setp(twin3.get_xticklabels(), visible=False)
+    plt.setp(twin3.get_yticklabels(), visible=False)
+    # T11 vdWel cut
+    axs4 = plt.subplot(gs[4])  
+    plot_compact_sum(my_nd_vdWel_T11, colour='black',label = r"", AX=axs4)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs4) 
+    
+    plot_nd_3bins(my_nd_vdWel_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs4)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs4)
+     
+    axs4.set_ylim(0.1e-6,2e-3)
+    axs4.set_xlim(-0.2,0.2)
+    axs4.set_yscale('log')
+
+    plt.setp(axs4.get_xticklabels(), visible=False)
+    axs4.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+    
+    axs4.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+
+    # Z09 vdWel cut 
+    axs5 = plt.subplot(gs[5])  
+    plot_compact_sum(my_nd_vdWel_Z09, colour='black',label = r"", AX=axs5)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs5) 
+    
+    plot_nd_3bins(my_nd_vdWel_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs5)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs5)
+     
+    axs5.set_ylim(0.1e-6,2e-3)
+    axs5.set_xlim(-0.2,0.2)
+    axs5.set_yscale('log')   
+    
+    plt.setp(axs5.get_xticklabels(), visible=False)
+    plt.setp(axs5.get_yticklabels(), visible=False)
+    
+    axs5.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+
+    # RC15 vdWel cut
+    axs6 = plt.subplot(gs[6])  
+    
+    plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs6)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs6)
+    
+    plot_nd_3bins(my_nd_vdWel,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs6)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs6)
+    
+    axs6.set_ylim(0.1e-6,2e-3)
+    axs6.set_xlim(-0.2,0.2)
+    axs6.set_yscale('log')
+    axs6.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+
+    plt.setp(axs6.get_xticklabels(), visible=False)
+    plt.setp(axs6.get_yticklabels(), visible=False)
+    
+    # IP13 vdWel cut
+    axs7 = plt.subplot(gs[7]) 
+    plot_compact_sum(my_nd_vdWel_IP13, colour='black',label = r"", AX=axs7)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs7) 
+    
+    plot_nd_3bins(my_nd_vdWel_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs7)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs7)
+     
+    axs7.set_ylim(0.1e-6,2e-3)
+    axs7.set_xlim(-0.2,0.2)
+    axs7.set_yscale('log')
+        
+    twin7 = axs7.twinx()
+    #twin7.set_yscale('log')
+    twin7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=20)
+    #axs7.yaxis.tick_right()
+    #axs7.yaxis.set_label_position("right")
+    #axs7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
+    
+    plt.setp(axs7.get_xticklabels(), visible=False)
+    plt.setp(axs7.get_yticklabels(), visible=False)
+    plt.setp(twin7.get_xticklabels(), visible=False)
+    plt.setp(twin7.get_yticklabels(), visible=False)   
+    
+    axs7.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+
+    # T11 vDokkum cut
+    axs8 = plt.subplot(gs[8]) 
+    
+    plot_compact_sum(my_nd_vDokkum_T11, colour='black',label = r"", AX=axs8)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs8) 
+    
+    plot_nd_3bins(my_nd_vDokkum_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs8)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs8)
+     
+    axs8.set_ylim(0.1e-6,2e-3)
+    axs8.set_xlim(-0.2,0.2)
+    axs8.set_yscale('log')
+    axs8.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+    
+    plt.setp(axs8.get_xticklabels(), visible=False)
+    axs8.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+
+    #Z09 vDokkum cut
+    axs9 = plt.subplot(gs[9]) 
+    
+    plot_compact_sum(my_nd_vDokkum_Z09, colour='black',label = r"", AX=axs9)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs9) 
+    
+    plot_nd_3bins(my_nd_vDokkum_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs9)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs9)
+     
+    axs9.set_ylim(0.1e-6,2e-3)
+    axs9.set_xlim(-0.2,0.2)
+    axs9.set_yscale('log')
+    
+    plt.setp(axs9.get_xticklabels(), visible=False)
+    plt.setp(axs9.get_yticklabels(), visible=False)
+    
+    axs9.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+
+    # RC15 vDokkum cut
+    axs10 = plt.subplot(gs[10]) 
+    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs10)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs10) 
+    
+    plot_nd_3bins(my_nd_vDokkum,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs10)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs10)
+     
+    axs10.set_ylim(0.1e-6,2e-3)
+    axs10.set_xlim(-0.2,0.2)
+    axs10.set_yscale('log')
+    axs10.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+   
+    plt.setp(axs10.get_xticklabels(), visible=False)
+    plt.setp(axs10.get_yticklabels(), visible=False)
+    
+    # IP13 vDokkum cut
+    axs11 = plt.subplot(gs[11]) 
+    plot_compact_sum(my_nd_vDokkum_IP13, colour='black',label = r"", AX=axs11)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs11) 
+    
+    plot_nd_3bins(my_nd_vDokkum_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs11)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs11)
+     
+    axs11.set_ylim(0.1e-6,2e-3)
+    axs11.set_xlim(-0.2,0.2)
+    axs11.set_yscale('log')
+
+    twin11 = axs11.twinx()
+    twin11.set_ylabel(r'$\rm van~Dokkum~cut$',fontsize=20)
+    
+    axs11.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+
+    plt.setp(axs11.get_xticklabels(), visible=False)
+    plt.setp(axs11.get_yticklabels(), visible=False)
+    plt.setp(twin11.get_xticklabels(), visible=False)
+    plt.setp(twin11.get_yticklabels(), visible=False)    
+    # T11 Dam cut
+    axs12 = plt.subplot(gs[12]) 
+    
+    plot_compact_sum(my_nd_Dam_T11, colour='black',label = r"", AX=axs12)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs12) 
+    
+    plot_nd_3bins(my_nd_Dam_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs12)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs12)    
+    
+    axs12.set_ylim(0.1e-6,2e-3)
+    axs12.set_xlim(-0.2,0.2)
+    axs12.set_yscale('log')
+    axs12.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+    
+    plt.setp(axs12.get_xticklabels(), visible=False)
+
+    axs12.set_xlabel(r"$\rm T11$",fontsize=20)
+    axs12.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+
+    # Z09 Dam cut
+    axs13 = plt.subplot(gs[13]) 
+    plot_compact_sum(my_nd_Dam_Z09, colour='black',label = r"", AX=axs13)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs13) 
+    
+    plot_nd_3bins(my_nd_Dam_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs13)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs13)
+     
+    axs13.set_ylim(0.1e-6,2e-3)
+    axs13.set_xlim(-0.2,0.2)
+    axs13.set_yscale('log')
+    
+    plt.setp(axs13.get_yticklabels(), visible=False)
+    plt.setp(axs13.get_xticklabels(), visible=False)
+    
+    axs13.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+
+    axs13.set_xlabel(r"$\rm Z09$",fontsize=20)
+
+
+    # RC15 Dam cut
+    axs14 = plt.subplot(gs[14]) 
+    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs14)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs14) 
+    
+    plot_nd_3bins(my_nd_Dam,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs14)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs14)
+     
+    axs14.set_ylim(0.1e-6,2e-3)
+    axs14.set_xlim(-0.2,0.2)
+    axs14.set_yscale('log')
+    axs14.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+
+    
+    plt.setp(axs14.get_yticklabels(), visible=False)
+    plt.setp(axs14.get_xticklabels(), visible=False)
+    axs14.set_xlabel(r"$\rm RC15$",fontsize=20)
+
+    # IP13 Dam cut
+    axs15 = plt.subplot(gs[15]) 
+    plot_compact_sum(my_nd_Dam_IP13, colour='black',label = r"", AX=axs15)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs15) 
+    
+    plot_nd_3bins(my_nd_Dam_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs15)
+    plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs15)
+     
+    axs15.set_ylim(0.1e-6,2e-3)
+    axs15.set_xlim(-0.2,0.2)
+    axs15.set_yscale('log')
+
+    twin15 = axs15.twinx()
+    #twin15.set_yscale('log')
+    twin15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=20)
+    #axs15.yaxis.tick_right()
+    #axs15.set_yticks([])
+    #axs15.yaxis.set_label_position("right")
+    #axs15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=16)
+    plt.setp(axs15.get_yticklabels(), visible=False)
+    plt.setp(axs15.get_xticklabels(), visible=False)  
+
+    plt.setp(twin15.get_yticklabels(), visible=False)
+    plt.setp(twin15.get_xticklabels(), visible=False)  
+    
+    axs15.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+
+    axs15.set_xlabel(r"$\rm IP13$",fontsize=20)
+
+    
+    axs0.plot([],[],label=r"$\rm cSph~in~Bin~1 $", color ='#a5200b', marker="o")
+    axs0.plot([],[],label=r"$\rm cSph~in~Bin~2 $", color ='#0b5786', marker ="o")
+    axs0.plot([],[],label=r"$\rm cSph~in~Bin~3 $", color ='#2a3236', marker ="o")
+
+    axs0.plot([],[],label=r"$\rm E~in~Bin~1 $", color ='#a5200b', marker ="^")
+    axs0.plot([],[],label=r"$\rm E~in~Bin~2 $", color ='#0b5786', marker = "^")
+    axs0.plot([],[],label=r"$\rm E~in~Bin~3 $", color ='#2a3236', marker = "^")
+    axs0.legend(loc='upper center', bbox_to_anchor=(2.2, 1.6),
+          fancybox=True, shadow=False, ncol=3)
+
+    return None
+    
 plot_nd_3plot()
-plot_nd_E_3plot()
+#plot_nd_E_3plot()
+
+plot_nd_all_mass()

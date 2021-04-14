@@ -65,7 +65,7 @@ box=[[8.0,8.3],[8.3,8.6],[8.6,8.9],
      [8.9,9.2],[9.2,9.5],[9.5,9.8],
      [9.8,10.1],[10.1,10.4],[10.4,10.7],
      [10.7,11.0],[11.0,11.3],[11.3,11.6],
-     [11.6,11.9],[11.9,12.0]]
+     [11.6,11.9],[11.9,12.2],[12.2,12.5],[12.5,12.8]]
 
 #box=[[7,8],[8,9],[9,10],[10,11],[11,12]]
 #box =[[9.9,10.5],[10.5,11.0],[11.0,11.6]]
@@ -168,16 +168,17 @@ print(array1_2kpc)
 print(np.size(array1_2kpc),np.size(array2_2kpc),np.size(array3_2kpc))
 print(np.size(Re_1_kpc),np.size(Re_2_kpc),np.size(Re_3_kpc))
 
-E1_2kpc = SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
-E2_2kpc = SSort.selection_generic(E2_R15BC, Re_2_kpc, array2_2kpc, direction="down")['bag_x']
-E3_2kpc = SSort.selection_generic(E3_R15BC, Re_3_kpc, array3_2kpc, direction="down")['bag_x']
+mass1 = np.log10(E1_IP13)
+mass2 = np.log10(E2_IP13)
+mass3 = np.log10(E3_IP13)
+
+E1_2kpc = SSort.selection_generic(10**mass1, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
+E2_2kpc = SSort.selection_generic(10**mass2, Re_2_kpc, array2_2kpc, direction="down")['bag_x']
+E3_2kpc = SSort.selection_generic(10**mass3, Re_3_kpc, array3_2kpc, direction="down")['bag_x']
 
 print(SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_y']
       , E1_2kpc)
 
-mass1 = np.log10(E1_R15BC)
-mass2 = np.log10(E2_R15BC)
-mass3 = np.log10(E3_R15BC)
 
 mass1_2kpc = np.log10(E1_2kpc)
 mass2_2kpc = np.log10(E2_2kpc)
@@ -255,6 +256,9 @@ V2_V = volume[1] - volume[0]
 V3_V = volume[0]
 fig, ax = plt.subplots()
 
+print('V1','V2','V3',volume[2],volume[1],volume[0])
+
+print('V1_V','V2_V','V3_V',V1_V,V2_V,V3_V)
 
 #plt.plot(M,Phi,color="black", linestyle="solid", lw = 3,alpha=0.6)
 
@@ -321,11 +325,48 @@ nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, 
                                                           trim=False,
                                                           plot_yes=False)
 
+# create mass function for sph Re<2kpc
 nu_dens_2kpc = nu_dens1_2kpc +nu_dens2_2kpc +nu_dens3_2kpc
+
+#set limit for each bin
+Bin1_limit, Bin2_limit, Bin3_limit = 2.11e11,6.70e10,2.41e10
+Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.6, Bin2_limit*0.6, Bin3_limit*0.6
+
+Bin1_l,Bin1_u = Bin1_limit - Bin1_sigma, Bin1_limit + Bin1_sigma
+Bin2_l,Bin2_u = Bin2_limit - Bin2_sigma, Bin2_limit + Bin2_sigma
+Bin3_l,Bin3_u = Bin3_limit - Bin3_sigma, Bin3_limit + Bin3_sigma
+
+#Bin1_shade_x, Bin1_shade_y = [1e-6,1e-2,1e-2,1e-6],[Bin1_l,Bin1_u, Bin1_u,Bin1_l]
+#Bin2_shade_x, Bin2_shade_y = [1e-6,1e-2,1e-2,1e-6],[Bin2_l,Bin2_u, Bin2_u,Bin2_l]
+#Bin3_shade_x, Bin3_shade_y = [1e-6,1e-2,1e-2,1e-6],[Bin3_l,Bin3_u, Bin3_u,Bin3_l]
+
+high_end =5e12
+
+Bin1_shade_y, Bin1_shade_x = [3.1e-6,3.6e-6,3.6e-6,3.1e-6], [Bin1_limit, Bin1_limit, high_end, high_end]
+Bin2_shade_y, Bin2_shade_x = [4.0e-6,4.6e-6,4.6e-6,4.0e-6], [Bin2_limit, Bin2_limit, high_end, high_end]
+Bin3_shade_y, Bin3_shade_x = [5.0e-6,5.9e-6,5.9e-6,5.0e-6], [Bin3_limit, Bin3_limit, high_end, high_end]
+
+
+#Bin1_shade_y, Bin1_shade_x = [3.1e-3,3.6e-6,3.6e-6,3.1e-3], [Bin1_limit, Bin1_limit, high_end, high_end]
+#Bin2_shade_y, Bin2_shade_x = [4.0e-3,4.6e-6,4.6e-6,4.0e-3], [Bin2_limit, Bin2_limit, high_end, high_end]
+#Bin3_shade_y, Bin3_shade_x = [5.0e-3,5.9e-6,5.9e-6,5.0e-3], [Bin3_limit, Bin3_limit, high_end, high_end]
+
+ax.fill(Bin1_shade_x, Bin1_shade_y, '#a5200b',alpha=0.7)
+ax.fill(Bin2_shade_x, Bin2_shade_y, '#0b5786',alpha=0.7)
+ax.fill(Bin3_shade_x, Bin3_shade_y, '#2a3236',alpha=0.7)
 
 
 ax.plot( mid_pt1_t , nu_dens_t_sum,"o--",label="Sum",linewidth=7)
 ax.plot(mid_pt1_t,nu_dens_2kpc, 'o--',label="<2kpc",linewidth=7)
+
+#ax.vlines(x=Bin1_limit,ymin=1e-2,ymax=1e-6,color='#a5200b',lw=5, alpha=0.7)
+#ax.vlines(x=Bin2_limit,ymin=1e-2,ymax=1e-6,color='#0b5786',lw=5, alpha=0.7)
+#ax.vlines(x=Bin3_limit,ymin=1e-2,ymax=1e-6,color='#2a3236',lw=5, alpha=0.7)
+
+ax.set_xlabel(r"$M_*/ \rm M_{\odot}(IP13)$",fontsize=16)
+
 #plt.grid(True)
+ax.set_ylim(1e-6,1e-2)
+ax.set_xlim(1e8,6e12)
 plt.legend()
 plt.show()

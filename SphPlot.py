@@ -232,7 +232,7 @@ class SelectionCut(object):
         a = 10.0 #mass limit
         for i in range(np.size(self.mass)):
             if (np.log10(self.mass[i])>=a):
-                cut[i] = 10**((np.log10(self.mass[i])*0.4)-5.5)
+                cut[i] = 10**((np.log10(self.mass[i])*0.54)-5.5)
             elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
@@ -271,8 +271,9 @@ class SelectionCut(object):
         """
         
         plt.plot(self.mass,self.Cassata11_cut(),
-                 ls = "dashed", color="cyan", linewidth=3,
+                 ls = "dashed", color="magenta", linewidth=3,
                  label="Cassata et al. 2011" )
+        
         plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
                  label="Damjanov et al. 2014" )
 
@@ -340,6 +341,23 @@ class SelectionCut(object):
             
             AX.fill(xedge, yedge, alpha=0.1, color='g')
 
+        elif input_cut == "Cassata":
+            AX.plot(self.mass,self.Cassata11_cut(),ls="dashed",color="magenta" , linewidth=3, 
+                 label=label )
+            AX.vlines(1e10, 0, 10**(0.54*np.log10(1e10)-5.5), 
+                   linestyle="dashed", linewidth=3, color='magenta' )
+            
+            # define the left edge (mass limit)
+            a = 1e10
+            xedge, yedge = [5e12,a], [1e-3,1e-3]
+            #define the upper edge
+            xedge.append(a)
+            yedge.append(10**(0.54*np.log10(a)-5.5))
+                         
+            xedge.append(xedge[0])
+            yedge.append(10**(0.54*np.log10(xedge[0])-5.5))
+                         
+            AX.fill(xedge, yedge, alpha=0.1, color='magenta')
             
         elif input_cut == "vDokkum":
             AX.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
@@ -627,7 +645,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         #plt.hlines(0,0,200, color='k', linestyle="dashed", linewidth=3)
         ##plt.legend()
 
-        
         return None
     
     def Mass_Re_plot(x,y,xerr=None,yerr=None,name=None,
@@ -929,7 +946,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         
         # Assume Poisson error sqrt(N)/vol/dex_factor
         nu_dens_err = N_err
-            
+        
         
         N =  [np.sqrt(np.size(master_bin[j])/vol/dex_factor) for j in 
                    range(len(master_bin))]
@@ -945,8 +962,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
                      linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)        
         
-            plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
-            plt.ylabel("$\Phi(Mpc^{-3}dex^{-1})$",fontsize=16)
+            #plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
+            plt.ylabel(r"$ \Phi~\rm (Mpc^{-3}dex^{-1})$", fontsize=16)
             
             plt.xscale( 'log' )
             plt.yscale( 'log' )
@@ -983,8 +1000,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         cpt_mag = SRead.grab_mag(bundle, cpt)
         total_mag = SRead.grab_total_mag(bundle)
         
-        # calculare flux ratio
-        mag_ratio = 10**((cpt_mag-total_mag) / 2.5)
+        # calculate flux ratio
+        mag_ratio = 10**((cpt_mag-total_mag) / -2.5)
         
         
         #mag_ratio = 10**(cpt_mag)/10**total_mag
@@ -994,8 +1011,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         if len(morph_name) == len(name):
             for i in range(len(name)):
                 #print(morph_name[i],name[i])
-
                 if morph_name[i] == name[i]:
+                    print(name[i], 10**mag_ratio[i])
                     pass
                 else:
                     raise Exception("name doesn't match!")
@@ -1014,66 +1031,102 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             for i in range(len(morph)):
                 if morph[i] == morph_name:
                     morph_bin.append(mag_ratio[i])
+                    
             
             gal_bin.append(np.array(morph_bin))
             #gal_bin = np.array(gal_bin)
         
         mag_dict={"EAS": gal_bin[0], "EABS": gal_bin[1], "EBS": gal_bin[2],
                   "SA0": gal_bin[3],"SAB0": gal_bin[4],"SB0": gal_bin[5],
-                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]}
+                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]
+                  }
                                    
         average_bin, std_bin = [], []        
         
         if mode=="average":
             for i in range(len(morph_list)):
-                avg_ratio = np.average(gal_bin[i]), 
-                std_ratio = np.std(gal_bin[i])/np.sqrt(len(gal_bin[i]))
-                average_bin.append(avg_ratio)
-                std_bin.append(std_ratio)
-                print(average_bin)
+                #print(morph_list[i])
+                #print(gal_bin[i])
+                avg_ratio = np.median(10**gal_bin[i]), 
+                #std_ratio = np.std(gal_bin[i])/np.sqrt(len(gal_bin[i]))
+                std_ratio = np.std(10**gal_bin[i])
+                average_bin.append(np.log10(avg_ratio))
+                std_bin.append(np.log10(std_ratio))
+                
+                
+                print(list(mag_dict.keys())[i], 10**average_bin[i]) 
+                      
+                if len(gal_bin[i]) > 1 :
+                    print(min(10**gal_bin[i]), max(10**gal_bin[i]))
+                else:
+                    pass
         else:
             pass
+        
         average_bin = np.array(average_bin)
         std_bin = np.array(std_ratio)
         # plot it        
         
         x_index =[]
         
+        
         for i in range(len(mag_dict.keys())):
-            b = [i]*len(gal_bin[i])
+            b = [i+1]*len(gal_bin[i])
             x_index.append(np.array(b))
             
         # make x axis
         #AX.plot(x_index)
-        
         #plot the individual galaxies
         
         if show_plot == True:
             for i in range(len(x_index)):
-                AX.plot(x_index[i],gal_bin[i],'o',ms=15,color="#905a97",alpha =0.4
-                    )
-            AX.plot([],[],'o',ms=15,color="#905a97",alpha =0.4, label="galaxies")
+                AX.plot(x_index[i],gal_bin[i],'o',ms=15,color="#4c5f84",
+                        alpha =0.6)
+                
+            AX.plot([],[],'o',ms=15,color="#4c5f84",alpha =0.4, label="galaxies")
         #print(list(np.linspace(0,len(mag_dict.keys()),num=len(mag_dict.keys()))))
+            
+            # plot box diagram
+            bbox_props = dict(color="k", alpha=0.9, linewidth = 3.5, 
+                              linestyle="solid")
+            
+            medianprops = dict(linestyle='-', linewidth=3.5, color='r')
+            line_props = dict(color="k", alpha=0.9, linewidth = 3.5, 
+                              linestyle='solid')
+            flierprops= dict(color="r",marker="^")
+            
+            AX.boxplot(list(gal_bin), widths=0.5, boxprops=bbox_props, 
+                       medianprops=medianprops, whiskerprops=line_props,
+                       flierprops=flierprops)
         
-            AX.plot([0,1,2,3,4,5,6,7,8],average_bin, 'o',color="k", ms = 12,
-                label = "average")
-            AX.errorbar([0,1,2,3,4,5,6,7,8], average_bin, yerr = std_bin, 
-                     ms = 12, linewidth=3, ls='none',
-                     color='k',zorder=20,mew=1,capsize=3)
+            #AX.plot([0,1,2,3,4,5,6,7,8],average_bin, 'o',color="k", ms = 12,
+            #    label = "average")
+            #AX.errorbar([1,2,3,4,5,6,7,8,9], average_bin, yerr = std_bin, 
+            #         ms = 12, linewidth=5, ls='none',
+            #         color='b',zorder=20,mew=1,capsize=3)
         
             AX.set_ylabel(r"$\rm log_{10}(B/T)$",fontsize=22)
         #AX.set_xlabel(r"$ \rm Morphology$",fontsize=18)
         #AX.set_yscale( 'log' )
-            AX.set_xlim(-1,9)
-            AX.set_ylim(-0.2,2)
+            AX.set_xlim(-1,10)
+            AX.set_ylim(-2,0.2)
         #AX.set_xticks(mag_)
-            plt.xticks([0,1,2,3,4,5,6,7,8], list(mag_dict.keys()), fontsize=18, 
+            plt.xticks([1,2,3,4,5,6,7,8,9], list(mag_dict.keys()), fontsize=18, 
                    rotation=70)
             plt.legend(loc=1)
             #[0,1,2,3,4,5,6,7,8], 
             #          list(mag_dict.keys()))
         else:
             pass
+
+        # S0 and S B/T ratio in general
+        S0 = 10**np.concatenate((gal_bin[3], gal_bin[4], gal_bin[5]))
+        S = 10**np.concatenate((gal_bin[6], gal_bin[7], gal_bin[8]))
+        
+        print("S0:", np.average(S0))
+        print("S:",np.average(S))
+
+        print()
 
         return mag_dict
         

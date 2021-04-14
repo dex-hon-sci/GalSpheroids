@@ -297,6 +297,7 @@ E3_Z09_K = M3_K.cal_Mass(ML_select3_Z09_K)
 E3_T11_K = M3_K.cal_Mass(ML_select3_T11_K)
 
 #####################
+
 E_R15BC_K = np.concatenate((E1_R15BC_K,E2_R15BC_K, E3_R15BC_K))
 E_T11_K = np.concatenate((E1_T11_K,E2_T11_K, E3_T11_K))
 
@@ -425,38 +426,52 @@ Zahid2015_mass  = np.array(10**Zahid2015[:,4])
 
 
 #################################
+#T11 for mass
+#mass1,mass2,mass3 = E1_T11_K, E2_T11_K, E3_T11_K
+
+#Z09 for mass
+#mass1,mass2,mass3 = E1_Z09_K, E2_Z09_K, E3_Z09_K
+
+#RC15 for mass
+mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
+
+#IP13 for mass
+#mass1, mass2, mass3 = E1_IP13_K, E2_IP13_K, E3_IP13_K
+
+
+################################
 # Define ploting in RDJ15
 def plot_dexter_sample_Bin():
     
     
-    SPlot.ShowcaseIndi.Mass_Re_plot(E1_R15BC_K, Re_1_kpc, yerr = Re_1_kpc_err, 
-                                xerr = mass_err1*E1_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
+                                xerr = mass_err1*mass1,
                                 colour = '#a5200b',
                                 name=name1,legend='Bin1',ms=8,alpha0 = 0.2, lw=3)
 
-    SPlot.ShowcaseIndi.Mass_Re_plot(E2_R15BC_K, Re_2_kpc, yerr = Re_2_kpc_err, 
-                                xerr = mass_err2*E2_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass2, Re_2_kpc, yerr = Re_2_kpc_err, 
+                                xerr = mass_err2*mass2,
                                 colour = '#0b5786',
                                 name=name2,legend='Bin2',ms=8,alpha0 = 0.2, lw=3)
-    SPlot.ShowcaseIndi.Mass_Re_plot(E3_R15BC_K, Re_3_kpc, yerr = Re_3_kpc_err, 
-                                xerr = mass_err3*E3_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass3, Re_3_kpc, yerr = Re_3_kpc_err, 
+                                xerr = mass_err3*mass3,
                                 colour='#2a3236',
                                 name=name1,legend='Bin3',ms=8,alpha0 = 0.2, lw=3)
     
 def plot_dexter_sample_all():
     
-    SPlot.ShowcaseIndi.Mass_Re_plot(E1_R15BC_K, Re_1_kpc, yerr = Re_1_kpc_err,
-                                xerr = mass_err1*E1_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass1, Re_1_kpc, yerr = Re_1_kpc_err,
+                                xerr = mass_err1*mass1,
                                 colour = '#a5200b',
                                 name=name1,legend='This work',ms=8,alpha0 = 0.4, lw=3)
 
-    SPlot.ShowcaseIndi.Mass_Re_plot(E2_R15BC_K, Re_2_kpc, yerr = Re_2_kpc_err,
-                                xerr = mass_err2*E2_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass2, Re_2_kpc, yerr = Re_2_kpc_err,
+                                xerr = mass_err2*mass2,
                                 colour = '#a5200b',
                                 name=name2,legend='',ms=8,alpha0 = 0.4, lw=3)
 
-    SPlot.ShowcaseIndi.Mass_Re_plot(E3_R15BC_K, Re_3_kpc, yerr = Re_3_kpc_err,
-                                xerr = mass_err3*E3_R15BC_K,
+    SPlot.ShowcaseIndi.Mass_Re_plot(mass3, Re_3_kpc, yerr = Re_3_kpc_err,
+                                xerr = mass_err3*mass3,
                                 colour='#a5200b',
                                 name=name1,legend='',ms=8,alpha0 = 0.4,lw=3 )
     
@@ -471,13 +486,13 @@ circle_size = 310
 
 def plot_Barro_cut_all(AX):
     
-    Bcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).Barro13_cut()
-    Bcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).Barro13_cut()
-    Bcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).Barro13_cut()
+    Bcut1 = SPlot.SelectionCut(mass1, D1).Barro13_cut()
+    Bcut2 = SPlot.SelectionCut(mass2, D2).Barro13_cut()
+    Bcut3 = SPlot.SelectionCut(mass3, D3).Barro13_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, Bcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, Bcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, Bcut3)
+    S1 = SSort.selection_generic(mass1, Re_1_kpc, Bcut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc, Bcut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc, Bcut3)
     
     
     n1 = np.size(S1["bag_y"]) / V1
@@ -496,13 +511,13 @@ def plot_Barro_cut_all(AX):
     
 def plot_vdWel_cut_all(AX):
 
-    vdWcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).vdWel14_cut()
-    vdWcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).vdWel14_cut()
-    vdWcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).vdWel14_cut()
+    vdWcut1 = SPlot.SelectionCut(mass1, D1).vdWel14_cut()
+    vdWcut2 = SPlot.SelectionCut(mass2, D2).vdWel14_cut()
+    vdWcut3 = SPlot.SelectionCut(mass3, D3).vdWel14_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc_major, vdWcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc_major, vdWcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc_major, vdWcut3)
+    S1 = SSort.selection_generic(mass1, Re_1_kpc_major, vdWcut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc_major, vdWcut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc_major, vdWcut3)
     
     n1 = np.size(S1["bag_y"]) / V1
     n2 = np.size(S2["bag_y"]) / V2
@@ -521,13 +536,13 @@ def plot_vdWel_cut_all(AX):
     
 def plot_vDokkum_cut_all(AX):
     
-    vDcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).vDokkum15_cut()
-    vDcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).vDokkum15_cut()
-    vDcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).vDokkum15_cut()
+    vDcut1 = SPlot.SelectionCut(mass1, D1).vDokkum15_cut()
+    vDcut2 = SPlot.SelectionCut(mass2, D2).vDokkum15_cut()
+    vDcut3 = SPlot.SelectionCut(mass3, D3).vDokkum15_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, vDcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, vDcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, vDcut3)
+    S1 = SSort.selection_generic(mass1, Re_1_kpc, vDcut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc, vDcut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc, vDcut3)
     
     n1 = np.size(S1["bag_y"]) / V1
     n2 = np.size(S2["bag_y"]) / V2
@@ -547,13 +562,13 @@ def plot_vDokkum_cut_all(AX):
 def plot_Damjanov_cut_all(AX):
     
 
-    Damcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).Damjanov14_cut()
-    Damcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).Damjanov14_cut()
-    Damcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).Damjanov14_cut()
+    Damcut1 = SPlot.SelectionCut(mass1, D1).Damjanov14_cut()
+    Damcut2 = SPlot.SelectionCut(mass2, D2).Damjanov14_cut()
+    Damcut3 = SPlot.SelectionCut(mass3, D3).Damjanov14_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, Damcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, Damcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, Damcut3)
+    S1 = SSort.selection_generic(mass1, Re_1_kpc, Damcut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc, Damcut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc, Damcut3)
 
     n1 = np.size(S1["bag_y"]) / V1
     n2 = np.size(S2["bag_y"]) / V2
@@ -569,17 +584,41 @@ def plot_Damjanov_cut_all(AX):
     AX.scatter(S2["bag_x"],S2["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
     AX.scatter(S3["bag_x"],S3["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
     
+def plot_Cassata_cut_all(AX):
+    
+
+    Cascut1 = SPlot.SelectionCut(mass1, D1).Cassata11_cut()
+    Cascut2 = SPlot.SelectionCut(mass2, D2).Cassata11_cut()
+    Cascut3 = SPlot.SelectionCut(mass3, D3).Cassata11_cut()
+
+    S1 = SSort.selection_generic(mass1, Re_1_kpc, Cascut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc, Cascut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc, Cascut3)
+
+    n1 = np.size(S1["bag_y"]) / V1
+    n2 = np.size(S2["bag_y"]) / V2
+    n3 = np.size(S3["bag_y"]) / V3
+    
+    
+    AX.text(x, y, "$n(Mpc^{-3})$",fontsize=16)
+    AX.text(x, y-txsep1, "Bin1: {:.2e} (N={})".format(n1,np.size(S1["bag_y"])),fontsize=16)
+    AX.text(x, y-txsep2, "Bin2: {:.2e} (N={})".format(n2,np.size(S2["bag_y"])),fontsize=16)
+    AX.text(x, y-txsep3, "Bin3: {:.2e} (N={})".format(n3,np.size(S3["bag_y"])),fontsize=16)
+
+    AX.scatter(S1["bag_x"],S1["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
+    AX.scatter(S2["bag_x"],S2["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
+    AX.scatter(S3["bag_x"],S3["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
     
 def plot_Graham_cut_all(AX):
     
 
-    Gcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).Graham15_broad_cut()
-    Gcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).Graham15_broad_cut()
-    Gcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).Graham15_broad_cut()
+    Gcut1 = SPlot.SelectionCut(mass1, D1).Graham15_broad_cut()
+    Gcut2 = SPlot.SelectionCut(mass2, D2).Graham15_broad_cut()
+    Gcut3 = SPlot.SelectionCut(mass3, D3).Graham15_broad_cut()
 
-    S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, Gcut1)
-    S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, Gcut2)
-    S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, Gcut3)
+    S1 = SSort.selection_generic(mass1, Re_1_kpc, Gcut1)
+    S2 = SSort.selection_generic(mass2, Re_2_kpc, Gcut2)
+    S3 = SSort.selection_generic(mass3, Re_3_kpc, Gcut3)
 
     n1 = np.size(S1["bag_y"]) / V1
     n2 = np.size(S2["bag_y"]) / V2
@@ -620,7 +659,18 @@ def plot_sizemass_SDSS_mine():
     plot_dexter_sample_Bin()
     plt.show()
 
+def plot_sizemass_CasCut_mine(ax):
 
+    plot_Cassata_cut_all(ax)
+    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Cassata",
+                                                      "Cassata et al. 2011",
+                                                      alpha0=0, AX=ax)
+    plot_dexter_sample_all2(ax)
+    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Cassata","", AX=ax)
+
+    plt.ylim(ylim[0],ylim[1])
+    plt.xlim(xlim[0],xlim[1])
+    plt.show()
 
 def plot_sizemass_DamCut_mine(ax):
 
@@ -674,6 +724,7 @@ def plot_sizemass_vdWelCut_mine(ax):
     plt.xlim(xlim[0],xlim[1])
     plt.show()
 
+
 def plot_sizemass_GrahamCut_mine(ax):
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Graham", 
                                                       "Graham et al. 2015",
@@ -723,24 +774,24 @@ def plot_dexter_sample_Bin2(A):
 
 def plot_dexter_sample_all2(A,alpha=0.65):
     #Bin1
-    A.scatter(E1_R15BC_K, Re_1_kpc,marker='o',c='#a5200b',label='This work', 
+    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='This work', 
               s =70, alpha=0.1)
-    A.errorbar(E1_R15BC_K, Re_1_kpc, yerr = Re_1_kpc_err, 
-                  xerr = mass_err1*E1_R15BC_K, ls='none',linewidth=4, 
+    A.errorbar(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
+                  xerr = mass_err1*mass1, ls='none',linewidth=4, 
                   color ='#a5200b',
                   ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
     #Bin2
-    A.scatter(E2_R15BC_K, Re_2_kpc,marker='o',c='#a5200b',label='', 
+    A.scatter(mass2, Re_2_kpc,marker='o',c='#a5200b',label='', 
               s =70,alpha=0.71)
-    A.errorbar(E2_R15BC_K, Re_2_kpc, yerr = Re_2_kpc_err, 
-                  xerr = mass_err2*E2_R15BC_K,ls='none',linewidth=4,
+    A.errorbar(mass2, Re_2_kpc, yerr = Re_2_kpc_err, 
+                  xerr = mass_err2*mass2,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
     #Bin3
-    A.scatter(E3_R15BC_K, Re_3_kpc,marker='o',c='#a5200b',label='', 
+    A.scatter(mass3, Re_3_kpc,marker='o',c='#a5200b',label='', 
               s =70, alpha=0.7)
-    A.errorbar(E3_R15BC_K, Re_3_kpc, yerr = Re_3_kpc_err, 
-                  xerr = mass_err3*E3_R15BC_K,ls='none',linewidth=4,
+    A.errorbar(mass3, Re_3_kpc, yerr = Re_3_kpc_err, 
+                  xerr = mass_err3*mass3,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0,
                   alpha=alpha, marker='o')   
@@ -788,24 +839,24 @@ def plot_dexter_sample_all2_T11(A,scale='log',alpha=0.65):
 
 def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
     #Bin1
-    A.scatter(E1_R15BC_K, Re_1_kpc_major, marker='o',c='#a5200b',label='This work', 
+    A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label='This work', 
               s =70, alpha=0.7)
-    A.errorbar(E1_R15BC_K, Re_1_kpc_major, yerr = Re_1_kpc_err, 
-                  xerr = mass_err1*E1_R15BC, ls='none',linewidth=4, 
+    A.errorbar(mass1, Re_1_kpc_major, yerr = Re_1_kpc_err, 
+                  xerr = mass_err1*mass1, ls='none',linewidth=4, 
                   color ='#a5200b',
                   ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
     #Bin2
-    A.scatter(E2_R15BC_K, Re_2_kpc_major,marker='o',c='#a5200b',label='', 
+    A.scatter(mass2, Re_2_kpc_major,marker='o',c='#a5200b',label='', 
               s =70,alpha=0.71)
-    A.errorbar(E2_R15BC_K, Re_2_kpc_major, yerr = Re_2_kpc_err, 
-                  xerr = mass_err2*E2_R15BC,ls='none',linewidth=4,
+    A.errorbar(mass2, Re_2_kpc_major, yerr = Re_2_kpc_err, 
+                  xerr = mass_err2*mass2,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
     #Bin3
-    A.scatter(E3_R15BC_K, Re_3_kpc_major,marker='o',c='#a5200b',label='', 
+    A.scatter(mass3, Re_3_kpc_major,marker='o',c='#a5200b',label='', 
               s =70, alpha=0.7)
-    A.errorbar(E3_R15BC_K, Re_3_kpc_major, yerr = Re_3_kpc_err, 
-                  xerr = mass_err3*E3_R15BC,ls='none',linewidth=4,
+    A.errorbar(mass3, Re_3_kpc_major, yerr = Re_3_kpc_err, 
+                  xerr = mass_err3*mass3,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0,
                   alpha=alpha, marker='o')   
@@ -855,6 +906,14 @@ def plot_sizemass_6plot():
     #axs1.set_yticks([])
     #axs1.grid(True)
     
+    #plot Panel (2)
+    #axs1 = plt.subplot(gs[1],sharey=axs0)
+    #plot_sizemass_CasCut_mine(axs1)
+    #axs1.legend(loc=4)
+    #plt.setp(axs1.get_yticklabels(), visible=False)
+    ##axs1.set_yticks([])
+    ##axs1.grid(True)
+    
     #plot Panel (3)
     axs2 = plt.subplot(gs[2])
     plot_sizemass_BarroCut_mine(axs2)
@@ -875,7 +934,7 @@ def plot_sizemass_6plot():
     plot_sizemass_vdWelCut_mine(axs4)
     axs4.legend(loc=4)
     axs4.set_ylabel("$ R_{e,sph}$ (kpc)", fontsize=16)
-    axs4.set_xlabel(r"$\rm M_{*,sph} / M_{\odot}$", fontsize=16)
+    axs4.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axs4.grid(True)
    
     #plot Panel (6)
@@ -884,7 +943,7 @@ def plot_sizemass_6plot():
     axs5.legend(loc=4)
     plt.setp(axs5.get_yticklabels(), visible=False)
     #axs5.set_yticks([])
-    axs5.set_xlabel(r"$\rm M_{*,sph} / M_{\odot}$", fontsize=16)
+    axs5.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axs5.grid(True)
 
     plt.show()
@@ -1112,15 +1171,15 @@ ss = graham_equ
 print(len(E_T11),len(Re_kpc))
 
 ##fitting
-popt,pcov = curve_fit(s, E_T11, Re_kpc)
-popt2,pcov2 = curve_fit(s,E_T11_mine, Re_kpc_mine)
-popt3,pcov3 = curve_fit(s,Savorgnan_mass_T11, Savorgnan_size_eq_kpc)
-popt4,pcov4 = curve_fit(s,Davis_mass_T11, Davis_size_eq_kpc)
-popt5,pcov5 = curve_fit(s,Sahu_mass_T11, Sahu_size_eq_kpc)
+#popt,pcov = curve_fit(s, E_T11, Re_kpc)
+#popt2,pcov2 = curve_fit(s,E_T11_mine, Re_kpc_mine)
+#popt3,pcov3 = curve_fit(s,Savorgnan_mass_T11, Savorgnan_size_eq_kpc)
+#popt4,pcov4 = curve_fit(s,Davis_mass_T11, Davis_size_eq_kpc)
+#popt5,pcov5 = curve_fit(s,Sahu_mass_T11, Sahu_size_eq_kpc)
+#
+#popt_g,pcov_g = curve_fit(ss, E_T11, Re_kpc)
 
-popt_g,pcov_g = curve_fit(ss, E_T11, Re_kpc)
-
-print("graham_equ_para", *popt_g )
+#print("graham_equ_para", *popt_g )
 #plotting
 
 def plot_sizemass_z0comparison():
@@ -1175,7 +1234,7 @@ def plot_sizemass_z0comparison():
     plt.show()
     
     
-plot_sizemass_z0comparison()
+#plot_sizemass_z0comparison()
 
 
 ########################
@@ -1527,13 +1586,13 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
 
 
 # Apply Barro cut, select the subsample
-Bcut1 = SPlot.SelectionCut(E1_R15BC_K, D1).Barro13_cut()
-Bcut2 = SPlot.SelectionCut(E2_R15BC_K, D2).Barro13_cut()
-Bcut3 = SPlot.SelectionCut(E3_R15BC_K, D3).Barro13_cut()
+Bcut1 = SPlot.SelectionCut(mass1, D1).Barro13_cut()
+Bcut2 = SPlot.SelectionCut(mass2, D2).Barro13_cut()
+Bcut3 = SPlot.SelectionCut(mass3, D3).Barro13_cut()
 
-S1 = SSort.selection_generic(E1_R15BC_K, Re_1_kpc, Bcut1)
-S2 = SSort.selection_generic(E2_R15BC_K, Re_2_kpc, Bcut2)
-S3 = SSort.selection_generic(E3_R15BC_K, Re_3_kpc, Bcut3)
+S1 = SSort.selection_generic(mass1, Re_1_kpc, Bcut1)
+S2 = SSort.selection_generic(mass2, Re_2_kpc, Bcut2)
+S3 = SSort.selection_generic(mass3, Re_3_kpc, Bcut3)
 
 #select the morphology of the host that passes the selection
 morph1_sub = SSort.cherry_pick(S1['index'], morph1_new)
@@ -1614,15 +1673,15 @@ E_sph_Bin3_S =  SSort.cherry_pick(index_Bin3_S, E3_R15BC)
 R_sph_Bin3_S = SSort.cherry_pick(index_Bin3_S, Re_3_kpc)
 
 # plot the comaprison
-plot_sizemass_trans_3plots(xo_0 = E_host_Bin1_E, yo_0 = R_host_Bin1_E, xn_0 = E_sph_Bin1_E, yn_0 = R_sph_Bin1_E, name0 = morph_Bin1_E, 
-                           xo_1 = E_host_Bin1_S0, yo_1 = R_host_Bin1_S0, xn_1 = E_sph_Bin1_S0, yn_1 = R_sph_Bin1_S0, name1 = morph_Bin1_S0,
-                           xo_2 = E_host_Bin1_S, yo_2= R_host_Bin1_S, xn_2 = E_sph_Bin1_S, yn_2 = R_sph_Bin1_S, name2 = morph_Bin1_S,
-                           xo_3 = E_host_Bin2_E, yo_3 = R_host_Bin2_E, xn_3 = E_sph_Bin2_E, yn_3 = R_sph_Bin2_E, name3 = morph_Bin2_E,
-                           xo_4 = E_host_Bin2_S0, yo_4 = R_host_Bin2_S0, xn_4 = E_sph_Bin2_S0, yn_4 = R_sph_Bin2_S0, name4 = morph_Bin2_S0,
-                           xo_5 = E_host_Bin2_S, yo_5 = R_host_Bin2_S, xn_5 = E_sph_Bin2_S, yn_5 = R_sph_Bin2_S, name5 = morph_Bin2_S,
-                           xo_6 = E_host_Bin3_E, yo_6 = R_host_Bin3_E, xn_6 = E_sph_Bin3_E, yn_6 = R_sph_Bin3_E, name6 = morph_Bin3_E,
-                           xo_7 = E_host_Bin3_S0, yo_7 = R_host_Bin3_S0, xn_7 = E_sph_Bin3_S0, yn_7 = R_sph_Bin3_S0, name7 = morph_Bin3_S0,
-                           xo_8 = E_host_Bin3_S, yo_8 = R_host_Bin3_S, xn_8 = E_sph_Bin3_S, yn_8 = R_sph_Bin3_S, name8 = morph_Bin3_S)
+#plot_sizemass_trans_3plots(xo_0 = E_host_Bin1_E, yo_0 = R_host_Bin1_E, xn_0 = E_sph_Bin1_E, yn_0 = R_sph_Bin1_E, name0 = morph_Bin1_E, 
+#                           xo_1 = E_host_Bin1_S0, yo_1 = R_host_Bin1_S0, xn_1 = E_sph_Bin1_S0, yn_1 = R_sph_Bin1_S0, name1 = morph_Bin1_S0,
+#                           xo_2 = E_host_Bin1_S, yo_2= R_host_Bin1_S, xn_2 = E_sph_Bin1_S, yn_2 = R_sph_Bin1_S, name2 = morph_Bin1_S,
+#                           xo_3 = E_host_Bin2_E, yo_3 = R_host_Bin2_E, xn_3 = E_sph_Bin2_E, yn_3 = R_sph_Bin2_E, name3 = morph_Bin2_E,
+#                           xo_4 = E_host_Bin2_S0, yo_4 = R_host_Bin2_S0, xn_4 = E_sph_Bin2_S0, yn_4 = R_sph_Bin2_S0, name4 = morph_Bin2_S0,
+#                           xo_5 = E_host_Bin2_S, yo_5 = R_host_Bin2_S, xn_5 = E_sph_Bin2_S, yn_5 = R_sph_Bin2_S, name5 = morph_Bin2_S,
+#                           xo_6 = E_host_Bin3_E, yo_6 = R_host_Bin3_E, xn_6 = E_sph_Bin3_E, yn_6 = R_sph_Bin3_E, name6 = morph_Bin3_E,
+#                           xo_7 = E_host_Bin3_S0, yo_7 = R_host_Bin3_S0, xn_7 = E_sph_Bin3_S0, yn_7 = R_sph_Bin3_S0, name7 = morph_Bin3_S0,
+#                           xo_8 = E_host_Bin3_S, yo_8 = R_host_Bin3_S, xn_8 = E_sph_Bin3_S, yn_8 = R_sph_Bin3_S, name8 = morph_Bin3_S)
 
 #reserve
 #

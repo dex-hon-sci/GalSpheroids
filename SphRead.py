@@ -601,6 +601,3 @@ def run_list(input_list,output_name,check_equvi):
         
     return Gal_bundle
 #%%
-
-#%%
-#%% 
