@@ -1242,6 +1242,19 @@ def plot_sizemass_z0comparison():
 
 import matplotlib.patches as mpatches
 
+def count_gal(x,y,x1,x2,y1,y2):
+    # quick function to count how many sph live within x1,x2,y1,y2 boundary
+    # x ,y are 1D arrays
+    count =0
+    for i in range(len(x)):
+        if x[i] < x2 and x[i] >x1 and y[i] < y2 and y[i] > y1:
+            count = count +1 
+        else:
+            pass
+    print('count',count)
+
+count_gal(E_R15BC_K,Re_kpc_mine, 1e10,2.5e11,0.4,6.0)
+
 def add_arrow(A,x0,y0,x1,y1):
     N = len(x0)
 

@@ -42,7 +42,6 @@ def plot_B_T_ratio():
                                                  morph, AX =ax)
 plot_B_T_ratio()    #
 
-
 bundle_2 = "/home/dexter/SphProject/F_Gal_bundle_equvi_V"
 
 B = SRead.grab_parameter(bundle_2, ["BrokenExp"], 2)

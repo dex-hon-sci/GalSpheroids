@@ -151,9 +151,10 @@ print(np.sum(my_nd_Barro), np.sum(my_nd_vdWel), np.sum(my_nd_vDokkum))
 
 
 print(my_nd_E,sum(my_nd_E))
-print(my_nd_Barro_Z09,sum(my_nd_Barro_Z09))
 
-print("cE to E ratio:",
+print("Csph", my_nd_Barro,sum(my_nd_Barro))
+
+print("cSph to E ratio:",
       np.sum(my_nd_Barro)/np.sum(my_nd_E), 
       np.sum(my_nd_vdWel)/np.sum(my_nd_E) , 
       np.sum(my_nd_vDokkum)/np.sum(my_nd_E))
@@ -163,7 +164,7 @@ print("E-peak RN /peak RN:",
       (np.sum(my_nd_E)/max(vdWel_nd)), 
       (np.sum(my_nd_E)/max(vDokkum_nd)))
 
-print("csph-peak RN /peak RN:",
+print("csph-peak /peak RN:",
       (np.sum(my_nd_Barro)/max(Barro_nd)), 
       (np.sum(my_nd_vdWel)/max(vdWel_nd)), 
       (np.sum(my_nd_vDokkum)/max(vDokkum_nd)))
@@ -422,11 +423,9 @@ def plot_nd_E_3plot():
     axs0.legend(loc=4)
 
 
-    
     #plot Panel (2)
     axs1 = plt.subplot(gs[1],sharex=axs0) 
     
-
     plot_compact_sum(my_nd_oldE_Bin1, linestyle="dashed", colour='blue',label = r"old $n_{E}$ in Bin 1", AX=axs1)
     plot_compact_sum(my_nd_E_Bin1, linestyle = "dashed", colour='red',label = r"new $n_{E}$ in Bin 1", AX=axs1)
 
@@ -586,20 +585,22 @@ def plot_nd_all_mass():
     # T11 Barro cut
     axs0 = plt.subplot(gs[0])  
     
-    plot_compact_sum(my_nd_Barro_T11, colour='black',label = r"$n_\mathrm{cSph}$", AX=axs0)
+    plot_compact_sum(my_nd_Barro_T11, colour='black',label = r"$n_\mathrm{cSph}$", 
+                     AX=axs0)
     plot_compact_sum(my_nd_E, colour='red',label = r"$n_\mathrm{E}$", AX=axs0) 
     
     plot_nd_3bins(my_nd_Barro_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs0)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs0)
 
     
-    plt.setp(axs0.get_xticklabels(), visible=False)
+    #plt.setp(axs0.get_xticklabels(), visible=False)
     axs0.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
 
     axs0.set_ylim(0.1e-6,2e-3)
     axs0.set_xlim(-0.2,0.2)
     axs0.set_yscale('log')    
     axs0.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     # Z09 Barro cut
     axs1 = plt.subplot(gs[1])  
@@ -614,9 +615,10 @@ def plot_nd_all_mass():
     axs1.set_xlim(-0.2,0.2)
     axs1.set_yscale('log')
     axs1.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     
-    plt.setp(axs1.get_xticklabels(), visible=False)
+    #plt.setp(axs1.get_xticklabels(), visible=False)
     plt.setp(axs1.get_yticklabels(), visible=False)
 
     # RC15 Barro cut
@@ -632,9 +634,9 @@ def plot_nd_all_mass():
     axs2.set_xlim(-0.2,0.2)
     axs2.set_yscale('log')
     axs2.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
-    
-    plt.setp(axs2.get_xticklabels(), visible=False)
+    #plt.setp(axs2.get_xticklabels(), visible=False)
     plt.setp(axs2.get_yticklabels(), visible=False)
     
     # IP13 Barro cut
@@ -654,13 +656,11 @@ def plot_nd_all_mass():
     twin3.set_ylabel(r'$\rm Barro~cut$',fontsize=20)
     
     axs3.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
-    #axs3.yaxis.tick_right()
-    #axs3.yaxis.set_label_position("right")
-    #axs3.set_ylabel(r'$\rm Barro~cut$',fontsize=16)
-    plt.setp(axs3.get_xticklabels(), visible=False)
+    #plt.setp(axs3.get_xticklabels(), visible=False)
     plt.setp(axs3.get_yticklabels(), visible=False)
-    plt.setp(twin3.get_xticklabels(), visible=False)
+    #plt.setp(twin3.get_xticklabels(), visible=False)
     plt.setp(twin3.get_yticklabels(), visible=False)
     # T11 vdWel cut
     axs4 = plt.subplot(gs[4])  
@@ -674,10 +674,11 @@ def plot_nd_all_mass():
     axs4.set_xlim(-0.2,0.2)
     axs4.set_yscale('log')
 
-    plt.setp(axs4.get_xticklabels(), visible=False)
+    #plt.setp(axs4.get_xticklabels(), visible=False)
     axs4.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
     
     axs4.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     # Z09 vdWel cut 
     axs5 = plt.subplot(gs[5])  
@@ -695,6 +696,7 @@ def plot_nd_all_mass():
     plt.setp(axs5.get_yticklabels(), visible=False)
     
     axs5.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     # RC15 vdWel cut
     axs6 = plt.subplot(gs[6])  
@@ -709,8 +711,9 @@ def plot_nd_all_mass():
     axs6.set_xlim(-0.2,0.2)
     axs6.set_yscale('log')
     axs6.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
-    plt.setp(axs6.get_xticklabels(), visible=False)
+    #plt.setp(axs6.get_xticklabels(), visible=False)
     plt.setp(axs6.get_yticklabels(), visible=False)
     
     # IP13 vdWel cut
@@ -732,12 +735,13 @@ def plot_nd_all_mass():
     #axs7.yaxis.set_label_position("right")
     #axs7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
     
-    plt.setp(axs7.get_xticklabels(), visible=False)
+    #plt.setp(axs7.get_xticklabels(), visible=False)
     plt.setp(axs7.get_yticklabels(), visible=False)
-    plt.setp(twin7.get_xticklabels(), visible=False)
+    #plt.setp(twin7.get_xticklabels(), visible=False)
     plt.setp(twin7.get_yticklabels(), visible=False)   
     
     axs7.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     # T11 vDokkum cut
     axs8 = plt.subplot(gs[8]) 
@@ -752,8 +756,9 @@ def plot_nd_all_mass():
     axs8.set_xlim(-0.2,0.2)
     axs8.set_yscale('log')
     axs8.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
-    
-    plt.setp(axs8.get_xticklabels(), visible=False)
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
+
+    #plt.setp(axs8.get_xticklabels(), visible=False)
     axs8.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
 
     #Z09 vDokkum cut
@@ -769,10 +774,11 @@ def plot_nd_all_mass():
     axs9.set_xlim(-0.2,0.2)
     axs9.set_yscale('log')
     
-    plt.setp(axs9.get_xticklabels(), visible=False)
+    #plt.setp(axs9.get_xticklabels(), visible=False)
     plt.setp(axs9.get_yticklabels(), visible=False)
     
     axs9.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     # RC15 vDokkum cut
     axs10 = plt.subplot(gs[10]) 
@@ -786,7 +792,8 @@ def plot_nd_all_mass():
     axs10.set_xlim(-0.2,0.2)
     axs10.set_yscale('log')
     axs10.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
-   
+    plt.xticks([-0.1, 0.1],[],fontsize=18)
+
     plt.setp(axs10.get_xticklabels(), visible=False)
     plt.setp(axs10.get_yticklabels(), visible=False)
     
@@ -806,10 +813,11 @@ def plot_nd_all_mass():
     twin11.set_ylabel(r'$\rm van~Dokkum~cut$',fontsize=20)
     
     axs11.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
+    plt.xticks([-0.1, 0.1],[])
 
-    plt.setp(axs11.get_xticklabels(), visible=False)
+    #plt.setp(axs11.get_xticklabels(), visible=False)
     plt.setp(axs11.get_yticklabels(), visible=False)
-    plt.setp(twin11.get_xticklabels(), visible=False)
+    #plt.setp(twin11.get_xticklabels(), visible=False)
     plt.setp(twin11.get_yticklabels(), visible=False)    
     # T11 Dam cut
     axs12 = plt.subplot(gs[12]) 
@@ -824,8 +832,9 @@ def plot_nd_all_mass():
     axs12.set_xlim(-0.2,0.2)
     axs12.set_yscale('log')
     axs12.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
-    
-    plt.setp(axs12.get_xticklabels(), visible=False)
+    plt.xticks([-0.1, 0.1],[r'$\rm c,sph$', r'$\rm E$'],fontsize=18)
+
+    #plt.setp(axs12.get_xticklabels(), visible=False)
 
     axs12.set_xlabel(r"$\rm T11$",fontsize=20)
     axs12.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
@@ -841,9 +850,10 @@ def plot_nd_all_mass():
     axs13.set_ylim(0.1e-6,2e-3)
     axs13.set_xlim(-0.2,0.2)
     axs13.set_yscale('log')
-    
+    plt.xticks([-0.1, 0.1],[r'$\rm c,sph$', r'$\rm E$'],fontsize=20)
+
     plt.setp(axs13.get_yticklabels(), visible=False)
-    plt.setp(axs13.get_xticklabels(), visible=False)
+    #plt.setp(axs13.get_xticklabels(), visible=False)
     
     axs13.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
 
@@ -862,10 +872,11 @@ def plot_nd_all_mass():
     axs14.set_xlim(-0.2,0.2)
     axs14.set_yscale('log')
     axs14.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+    plt.xticks([-0.1, 0.1],[r'$\rm c,sph$', r'$\rm E$'],fontsize=18)
 
     
     plt.setp(axs14.get_yticklabels(), visible=False)
-    plt.setp(axs14.get_xticklabels(), visible=False)
+    #plt.setp(axs14.get_xticklabels(), visible=False)
     axs14.set_xlabel(r"$\rm RC15$",fontsize=20)
 
     # IP13 Dam cut
@@ -879,6 +890,9 @@ def plot_nd_all_mass():
     axs15.set_ylim(0.1e-6,2e-3)
     axs15.set_xlim(-0.2,0.2)
     axs15.set_yscale('log')
+    
+    axs15.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
+    plt.xticks([-0.1, 0.1],[r'$\rm c,sph$', r'$\rm E$'],fontsize=18)
 
     twin15 = axs15.twinx()
     #twin15.set_yscale('log')
@@ -887,20 +901,19 @@ def plot_nd_all_mass():
     #axs15.set_yticks([])
     #axs15.yaxis.set_label_position("right")
     #axs15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=16)
-    plt.setp(axs15.get_yticklabels(), visible=False)
-    plt.setp(axs15.get_xticklabels(), visible=False)  
 
-    plt.setp(twin15.get_yticklabels(), visible=False)
-    plt.setp(twin15.get_xticklabels(), visible=False)  
-    
-    axs15.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
 
     axs15.set_xlabel(r"$\rm IP13$",fontsize=20)
+    #twin15.set_xticks([-0.2, 0.2],['c,sph', 'E'])
+    plt.setp(axs15.get_yticklabels(), visible=False)
+    #plt.setp(axs15.get_xticklabels(), visible=False)  
 
+    plt.setp(twin15.get_yticklabels(), visible=False)
+    #plt.setp(twin15.get_xticklabels(), visible=False)  
     
-    axs0.plot([],[],label=r"$\rm cSph~in~Bin~1 $", color ='#a5200b', marker="o")
-    axs0.plot([],[],label=r"$\rm cSph~in~Bin~2 $", color ='#0b5786', marker ="o")
-    axs0.plot([],[],label=r"$\rm cSph~in~Bin~3 $", color ='#2a3236', marker ="o")
+    axs0.plot([],[],label=r"$\rm c,~Sph~in~Bin~1 $", color ='#a5200b', marker="o")
+    axs0.plot([],[],label=r"$\rm c,~Sph~in~Bin~2 $", color ='#0b5786', marker ="o")
+    axs0.plot([],[],label=r"$\rm c,~Sph~in~Bin~3 $", color ='#2a3236', marker ="o")
 
     axs0.plot([],[],label=r"$\rm E~in~Bin~1 $", color ='#a5200b', marker ="^")
     axs0.plot([],[],label=r"$\rm E~in~Bin~2 $", color ='#0b5786', marker = "^")

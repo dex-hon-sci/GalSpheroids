@@ -1064,7 +1064,10 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             pass
         
         average_bin = np.array(average_bin)
-        std_bin = np.array(std_ratio)
+        std_bin = np.array(std_bin)
+        
+        print('average_bin',average_bin,'std_bin',std_bin)
+        
         # plot it        
         
         x_index =[]
@@ -1968,7 +1971,7 @@ class ShowcaseCompare2(ShowcaseIndi):
         ax.vlines(mid_line,min_index,max_index, linestyle="dashed",
                   linewidth=5, color='black')
         ax.vlines(avg_delta,min_index,max_index,linestyle="solid",
-                  linewidth=3, color=colour, label= "mean %s"%para_name)
+                  linewidth=3, color=colour, label= "mean")
 
         ax.vlines(avg_delta+std_delta,min_index,max_index, 
                   linestyle="dashed",linewidth=2, color=colour)
@@ -1984,12 +1987,13 @@ class ShowcaseCompare2(ShowcaseIndi):
         
         ax.invert_yaxis()
         
+        print('mean:', avg_delta,'std:',std_delta)
         #plt.setp(ax.get_yticklabels(), visible=False)
         
         plt.yticks(index, name)
 
         ax.set_xlabel(xlabel, fontsize=16)
-        ax.legend(loc='center left', bbox_to_anchor=(0.5, 0.5))
+        ax.legend(loc='upper right')# bbox_to_anchor=(0.5, 0.5))
         return fig, ax, delta
     
     def plot_compare_index_para(list_input1, list_input2, 
@@ -2052,6 +2056,7 @@ class ShowcaseCompare2(ShowcaseIndi):
                                                      colour=colour,
                                                      name=gal_name,
                                                      label = label)
+        
         return plot
 
     def plot_compare_feature_para(list_input1, list_input2, 
