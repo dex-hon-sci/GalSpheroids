@@ -2225,6 +2225,10 @@ class Plot2D(object):
         """
         Read 2D image from Fits files
         
+        Parameters
+        ----------
+        file : str
+            The 2D file name.
         """
         hdul = fits.open(file)
         #hdul.info()
@@ -2236,21 +2240,23 @@ class Plot2D(object):
     
     def trunk_window(array,centre,r_max):
         """
-        Resize the window of plots to focus on one specfic galaxy.
+        Resize the window of 2D plots to focus 
+        on one specfic galaxy, into a square centering at 
+        the centre of the galaxy.
 
         Parameters
         ----------
-        array : TYPE
-            DESCRIPTION.
-        centre : TYPE
-            DESCRIPTION.
-        r_max : TYPE
-            DESCRIPTION.
+        array : 2D array
+            The input 2D matrix.
+        centre : 1D list, array
+            A list constining the centre of the galaxy, i.e. [x0,y0]
+        r_max : float
+            The maximum.
 
         Returns
         -------
         window : TYPE
-            DESCRIPTION.
+            The output 2D matrix of a resized image.
 
         """
 
@@ -2295,17 +2301,17 @@ class Plot2D(object):
     # tested
     def x_average(matrix):
         """
-        
+        Collapse the 2D matric into an 1D array by x-axis.
 
         Parameters
         ----------
-        matrix : TYPE
-            DESCRIPTION.
+        matrix : 2D array
+            The input image.
 
         Returns
         -------
-        array : TYPE
-            DESCRIPTION.
+        array : 1D array
+            The output array.
 
         """
         
@@ -2316,17 +2322,17 @@ class Plot2D(object):
     # tested
     def y_average(matrix):
         """
-        
+        Collapse the 2D matric into an 1D array by y-axis.        
 
         Parameters
         ----------
-        matrix : TYPE
-            DESCRIPTION.
+        matrix : 2D array
+            The input image.
 
         Returns
         -------
-        array : TYPE
-            DESCRIPTION.
+        array : 1D array
+            The output array.
 
         """
         
@@ -2338,16 +2344,17 @@ class Plot2D(object):
     #
     def find_mode_sky(file_name,showplot=False, saveplot= True):
         """
-        
+        Find the median of the pixel value distribution and the 
+        value itself. 
 
         Parameters
         ----------
         file_name : TYPE
             DESCRIPTION.
         showplot : TYPE, optional
-            DESCRIPTION. The default is False.
+            Control fr showing the plot. The default is False.
         saveplot : TYPE, optional
-            DESCRIPTION. The default is True.
+            Control for saving the plot. The default is True.
 
         Returns
         -------
@@ -2392,7 +2399,7 @@ class Plot2D(object):
         K,KK=(n[peaks]+n[peaks+1])/2, np.argmax(n)
         #print(K, KK)
         print(file_name, n[peaks], bins[peaks])
-        return None
+        return n[peaks]
 
     
     def plot_galaxy(data,val_min,val_max, centre):    
@@ -2439,9 +2446,15 @@ class Plot2D(object):
         plt.show()
         
     def plot_galaxy_3plot(file_name,md_file_name, res_file_name,
-                         centre,r_max=400, a=15):
+                         centre,r_max=400, alp=15):
         """
-        Plot individual galaxy 
+        Plot individual galaxy in three column., two row
+        
+        Top row is a 1D representation of the average pixel value 
+        of the 2D image. The bottom row is the 2D image itself.
+    
+        From left tot right: original image, the cmodel image, 
+        and the residual image. 
         ----------
         file_name : str
             The fits file of the original galaxy image 
@@ -2456,9 +2469,9 @@ class Plot2D(object):
         Optional
         ---------
         r_max:
-            
-        a:
-               
+            The maximum window size
+        alp:
+            Scaling control of the contrast level.
         
         Return
         ------
@@ -2475,13 +2488,13 @@ class Plot2D(object):
 
 
         data_trunk0 = Plot2D.trunk_window(data0,centre,r_max)
-        data_log0 = np.log(a*data_trunk0+1) / np.log(a)
+        data_log0 = np.log(alp*data_trunk0+1) / np.log(alp)
 
         data_trunk1 = Plot2D.trunk_window(data1,centre,r_max)
-        data_log1 = np.log(a*data_trunk1+1) / np.log(a)
+        data_log1 = np.log(alp*data_trunk1+1) / np.log(alp)
          
         data_trunk2 = Plot2D.trunk_window(data2,centre,r_max)
-        data_log2 = np.log(a*data_trunk2+1) / np.log(a)
+        data_log2 = np.log(alp*data_trunk2+1) / np.log(alp)
 
         #############diagnoisis mode
         #data_trunk1_mask = Plot2D.flatten2D(data_trunk1)
