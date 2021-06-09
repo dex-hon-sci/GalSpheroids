@@ -27,6 +27,50 @@ from math import cosh
 import SphRead as SRead
 import SphPlot as SPlot
 
+__all__ = ['AnalyticFunctions','Isophote']
+
+__author__="Dexter S.H. Hon"
+
+#%% utility
+def closest(lst, K):
+    lst = np.asarray(lst)
+    idx = (np.abs(lst - K)).argmin()
+    return lst[idx]
+#%% The two function from Profiler. For the sake of consistency I do not attempt to write my own functions
+def gammadif(a, x):
+    out = gammainc(a, x) - 0.5
+    return out
+
+def get_bn(n):
+    precision = 1e-06
+    a = 2.0 * n
+    bn = 2.0 * n - 0.333
+    if bn < 0:
+        bn = 0.0
+    d = gammadif(a, bn)
+    inc = 1.0
+    while abs(d) > precision:
+        d = gammadif(a, bn)
+        bnplus, bnminus = bn + inc, bn - inc
+        if bnminus < 0:
+            bnminus = 0.0
+        dplus, dminus = gammadif(a, bnplus), gammadif(a, bnminus)
+        if abs(dplus) < precision:
+            bn = bnplus
+            break
+        elif abs(dminus) < precision:
+            bn = bnminus
+            break
+        else:
+            if abs(dplus) < abs(d):
+                bn = bnplus
+            elif abs(dminus) < abs(d):
+                bn = bnminus
+            inc = inc / 2.0
+
+    return bn
+
+#%%
 class AnalyticFunctions(object):
     """
     """
@@ -198,11 +242,9 @@ class Fitting():
 #class 2Dplot(object)
 
 #%%
-def closest(lst, K):
-    lst = np.asarray(lst)
-    idx = (np.abs(lst - K)).argmin()
-    return lst[idx]
-#%%
+
+from scipy.interpolate import interp1d
+
 class Isophote(object):
     
     def pix_val_to_mu(pix_val,zp=22.5,scale=0.4):
@@ -246,7 +288,7 @@ class Isophote(object):
         return R_m*np.sqrt(1-e)
 
 
-    def cal_SB_mag(input_SB_x,input_SB_y,Rmax,e,step=0.5):
+    def cal_SB_mag(input_SB_x,input_SB_y,Rmax,e,step=0.1,scale=0.4):
         """
         Cacluate the SB magnitude in total numerically.
         (the result is slightly different than profiler. I suspect it is because
@@ -256,99 +298,158 @@ class Isophote(object):
         Parameters
         ----------
         input_SB_x : 1D list, np array
-            DESCRIPTION.
+            Radius, pixel or arcsec.
         input_SB_y : 1D list, np array
-    
+            The brightness, flux, intensity, or surface brightness.
         Rmax : float
             The maximum radius.
-        e :
-        
+        e : 1D numpy array
+            The ellipicity at each radius
         step: float
             The interval between each radial data point, default: 0.5 (pix)
-
+        scale: float
+            The arcsec/pixel scale, default: 0.4
+        
         Returns
         -------
         float
             The total magnitude.
 
         """
-        A = closest(input_SB_x,Rmax)
+        # Turn the input from major to equvi axis
+        input_SB_x = np.nan_to_num(Isophote.circularized(input_SB_x,e))
         
+        A = closest(input_SB_x,Rmax) #Find the closest value to Rmax
+        
+        # profiler weird operation
+        nxt = 2.0
+        extsize = nxt*len(input_SB_x)
+        xx = np.array(np.linspace(input_SB_x[0],nxt*input_SB_x[len(input_SB_x)-1],int(extsize)))
+        #print(xx,input_SB_x)
+        
+     		#total_galaxy_magnitude=integrator.magnitude(x_ex,fit_nice_extended,mzp)
+        
+        yy = interp1d(input_SB_x, input_SB_y, kind='linear')
+        ee = interp1d(input_SB_x, e, kind='linear')
+
+        #yy_o = yy(xx)
+        #ee_o = ee(xx)
+        # find the index of maximum radius
         index= np.where(input_SB_x==A)[0][:]
-        
-        #index0 = np.where(input_SB_x==Rmax)[0][0]
-        print(input_SB_y[index],int(index), Rmax*0.4)
-   #     print('index',index)
-        #print('mu',mu)
+        #print(input_SB_y[index],int(index), Rmax*scale)
     
-        dx = step#0.5*0.4 #0.1 #0.5 is the sma distance, 0.4 is the pixel to arcsec ratio
+        dx = step #0.5 is the sma distance, 0.4 is the pixel to arcsec ratio
         l, dl = 0, 0
-    
-        max_mag = max(input_SB_y)
+        #print(len(input_SB_x),len(input_SB_y))
+        #for i in range(1,int(index)): #int temp
+        #
+        #    if input_SB_y[i] > -50.0:
+        #        
+        #        #dl = 2*np.pi*(1-e[i])*input_SB_x[i]*10**(input_SB_y[i]/-2.5)*dx
+        ##        dl = 2*np.pi*(1-ee_o[i])*xx[i]*10**(yy_o[i]/-2.5)*dx
+        #        #dl = 2*np.pi*input_SB_x[i]*10**(input_SB_y[i]/-2.5)*dx
+        #        l = l +dl
+        #        
+        #        total_mag = -2.5*np.log10(l*scale*scale)
+        #        #total_mag = input_SB_y[0:index] +2.5*np.log10(2*input_SB_x[0:index]*np.pi*0.5)
         
-        for i in range(1,int(index)): #int temp
+        r = input_SB_x*0.4
+        p = input_SB_y
         
-            if input_SB_y[i] > -50.0:
-                dl = 2*np.pi*(1-e[i])*input_SB_x[i]*10**(input_SB_y[i]/-2.5)*dx
-                #dl = 2*np.pi*input_SB_x[i]*10**(input_SB_y[i]/-2.5)*dx
-                
-                l = l +dl
-                
-                total_mag = -2.5*np.log10(l*0.4*0.4)
-                #total_mag = input_SB_y[0:index] +2.5*np.log10(2*input_SB_x[0:index]*np.pi*0.5)
-    
-        #sum(input_SB_y[0:index]*((input_SB_x[0:index])*2*np.pi*0.5*0.4)) -input_SB_y[index]* input_SB_x[index]     
-    
-        ax = plt.gca()
-        ax.plot(input_SB_x,input_SB_y,'o')
-        #ax.vlines(Rmax_e, min(mu), max(mu))
+        
+        
+        n_ex = 7
+        lx_ex = nxt*len(r)
+        #rr = np.array(np.linspace(r[0],r[len(r)-1],int(extsize)))
+        #print(xx,input_SB_x)
+        rr = np.array(np.linspace(r[0],1.*n_ex*r[len(r)-1],int(4*lx_ex)))
+        
+        print(len(r),len(rr))
+        print(max(r),max(rr))
+     		#total_galaxy_magnitude=integrator.magnitude(x_ex,fit_nice_extended,mzp)
+        
+        pp = interp1d(r, p, kind='linear')
+        ee = interp1d(r, e, kind='linear')
+        
+        pp_o, ee_o = pp(rr), ee(rr)
+        p#p_o, ee_o = p, e
+        #rr = r 
+        # profiler code
+        mzp = 22.5
+        mu = Isophote.pix_val_to_mu(pp_o)
+        #mu = mu - mzp
+        lum = 10.0 ** (-mu / 2.5)
+        dl, t = 0.0, 0.0
+        for i in range(1, int(index)-1):#len(r) - 1):
+            s = np.pi * (rr[i] ** 2 - rr[i-1] ** 2)
+            l = 0.5 * (lum[i] + lum[i-1])
+            dl = l * s
+            t = t + dl
+
+        total_mag = -2.5 * np.log10(t) 
+        #ax = plt.gca()
+        #ax.plot(input_SB_x*scale,input_SB_y,'o')
+        #ax.vlines(Rmax*scale,  max(input_SB_y), min(input_SB_y))
         #ax.fill(list(R_e)+[0,R_e[0],R_e[0]],
         #        list(mu)+[min(mu),mu[index0],mu[0]])
 
-        ax.invert_yaxis()
+        #ax.invert_yaxis()
         #plt.show()
 
         return total_mag
     
     #WIP
-    def scan_basic1D(input_array_x, input_array_y, 
+    def scan_basic1D(input_array_x, input_array_y, e, Rmax,
                  percentage=1.0, start_point=0.5):
+        
         # Find max
-    
         # start with start_point, find area, 
         return None #x,y coordinate for the percentage
 
-def radius_by_percentage(input_file,max_radius=None,percentage=None):
-    """
-    A function to calculate the radius of the galaxy at some percentage of 
-    light. 
-    If one 
-    
-    Parameters
-    ----------
-    input_file: str
-        The output file of ISOFIT
-    max_radius: float
-        The maximum radius of the galaxy, given in arcsec.
-    percentage: float
-        The percentage of light, from the centre extending outward. 
+    def radius_by_percentage(input_file,max_radius=None,fraction=None):
+        """
+        A function to calculate the radius of the galaxy at some percentage of 
+        light. 
+        If one 
+        
+        Parameters
+        ----------
+        input_file: str
+            The name of the output file of ISOFIT.
+        max_radius: float
+            The maximum radius of the galaxy, given in arcsec.
+        fraction: float
+            The fraction of light, from the centre extending outward.
+            The value should be between 0 to 1.
+            
+        Returns
+        -------
+        perc_radius: float
+            The radius of the galaxy in which the amount of light matches the 
+            assigned percentage parameter.
 
-    Returns
-    -------
-    perc_radius: float
-        The radius of the galaxy in which the amount of light reaches the 
-        assigned percentage parameter.
-
-    """
-    #Read inputfile, b/a e and so on
-    
-    #calculate the light within each isophote
-    
-    #calculate the total light covered within max_radius
-    
-    #loop from the centre, and numerically determine the radius in which 
-    # x percentage of light are included (stopping condition)
-    
-    
-    
-    return None
+        """
+        #Read inputfile, b/a e and so on
+        table, table_n = SRead.read_list(input_file), SRead.read_list(input_file,dtype ="str")
+        
+        x = table[:,0] # sma
+        y = table[:,1] # intens
+        e = table[:,5] # ellipticity    
+        #calculate the total light covered within max_radius
+        total_mag = Isophote.cal_SB_mag(x, y, max_radius, e)
+        
+        # Set the target magnitude
+        target_lum = 10**(total_mag/-2.5) * fraction
+        
+        #loop from the centre, and numerically determine the radius in which 
+        
+        Lum = []
+        #calculate the cumulative luminosity at each radius
+        for i in range(1,len(x)):
+            Lum.append(0.5*(y[i]-[i-1])*(x[i]**2-x[i-1]**2)*np.pi)
+            
+            #x percentage of light are included (stopping condition)
+            if Lum > target_lum[i] and Lum < target_lum[i-1]:
+                R_traget = x[i]
+                break
+        return R_traget

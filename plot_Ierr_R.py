@@ -82,7 +82,7 @@ def plot_Ierr_R(item_bundle, Rnorm):
 
     Returns
     -------
-    None.
+    plot.
 
     """
     

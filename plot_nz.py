@@ -27,6 +27,7 @@ D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180)-np.cos(np.pi/2)))
 
+print(voll)
 #V1,V2,V3=voll[2],voll[1],voll[0]
 
 V1_V = voll[2]-voll[1]
@@ -34,6 +35,12 @@ V2_V = voll[1]-voll[0]
 V3_V = voll[0]
 
 V1,V2,V3 = V1_V,V2_V,V3_V
+
+V = np.array([V1_V, V2_V, V3_V])
+
+print('-----volume-----')
+print(voll[2], voll[1], voll[0],'sum')
+print(V1_V,V2_V,V3_V,'sum',V1_V+V2_V+V3_V)
 
 Barro_data = SRead.read_table("/home/dexter/result/stat/completeness/nd_Barro.dat")
 Barro_z = Barro_data[:,0]
@@ -79,7 +86,6 @@ my_z = np.array([0.0127,0.0085,0.005])
 
 my_z = np.array([0,0,0])
 ###
-
 #my_nd_Barro = np.array([6.75e-4,1.19e-4,2.94e-5])
 #my_nd_Dam = np.array([7.68e-4,1.39e-4,2.94e-5])
 #my_nd_vDokkum = np.array([2.14e-4, 1.99e-5, 6.31e-6])
@@ -88,7 +94,7 @@ my_z = np.array([0,0,0])
 #my_nd_Graham = np.array([1.54e-4,1.33e-5,0])
 #
 #####
-#Bin number density
+#Bin H number density
 #my_nd_Barro = np.array([4.41e-5,1.19e-4,4.3e-4])
 #my_nd_Dam = np.array([4.83e-5,1.33e-4,4.3e-4])
 #my_nd_vDokkum = np.array([8.41e-6, 1.33e-5, 9.21e-5])
@@ -103,6 +109,15 @@ my_nd_Dam = np.array([4.92e-5,1.27e-4,7.98e-4])
 my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 1.23e-4])
 my_nd_vdWel = np.array([6.15e-6,2.54e-5,1.23e-4])
 my_nd_Graham = np.array([1.23e-6,8.46e-6,0])
+
+# The lower limit for the overall num dens
+my_nd_sum_Barro_low = sum(my_nd_Barro*V)/voll[2]
+my_nd_sum_Dam_low = sum(my_nd_Dam*V)/voll[2]
+my_nd_sum_vDokkum_low =  sum(my_nd_vDokkum*V)/voll[2]
+my_nd_sum_vdWel_low =  sum(my_nd_vdWel*V)/voll[2]
+my_nd_sum_Graham_low =  sum(my_nd_Graham*V)/voll[2]
+
+my_nd_sum_E_low = (6+ 3+ 3)/voll[2]
 
 #Bin V number density T11
 my_nd_Barro_T11 = np.array([2.77e-5,7.61e-5,4.61e-4])
@@ -172,7 +187,7 @@ print("csph-peak /peak RN:",
 xlim = [-0.35,3.0]
 ylim = [1e-6,1e-3]
 
-def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "", AX=plt):
+def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "", AX=plt, nsum=False):
     """
     plot the sum of compact sample and the Ellipitcals
 
@@ -181,8 +196,14 @@ def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "", AX=pl
     None.
 
     """ 
- 
-    AX.axhline(sum(nd0),xlim[0],xlim[1],linestyle=linestyle, linewidth = 3,
+    #nd = sum(nd0)
+    if nsum == True:
+        nd = sum(nd0)
+
+    elif nsum == False:
+        nd = nd0
+
+    AX.axhline(nd,xlim[0],xlim[1],linestyle=linestyle, linewidth = 3,
                color=colour , label= label)
     
 
@@ -240,7 +261,7 @@ def plot_nd_Dam(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+    AX.set_ylabel(r"$n \rm (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -264,7 +285,7 @@ def plot_nd_Dam1(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+    AX.set_ylabel(r"$n \rm (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -288,7 +309,7 @@ def plot_nd_Dam2(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+    AX.set_ylabel(r"$n \rm (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -312,7 +333,7 @@ def plot_nd_Dam3(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+    AX.set_ylabel(r"$n \rm (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -337,7 +358,7 @@ def plot_nd_Barro(AX):
     #AX.fill(xedge, yedge, alpha=0.1, color='g')
     #AX.set_xlabel(r"$ z$",fontsize=18)
     
-    AX.set_ylabel(r"$n (Mpc^{-3}$)",fontsize= 20)
+    AX.set_ylabel(r"$n \rm (Mpc^{-3}$)",fontsize= 20)
 
 
     AX.set_ylim(ylim[0],ylim[1])
@@ -496,8 +517,8 @@ def plot_nd_3plot():
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])  
     
-    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs0)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs0)    
+    plot_compact_sum(my_nd_sum_Barro_low, colour='black',label = r"", AX=axs0)
+    plot_compact_sum(my_nd_sum_E_low, colour='red',label = r"", AX=axs0)    
 
     axs0.plot(Poggianti_z,Poggianti_nd,'d', lw=5, ms= ms0, color='purple', 
               label="Poggianti et al. 2013")
@@ -519,8 +540,8 @@ def plot_nd_3plot():
     #plot Panel (2)
     axs1 = plt.subplot(gs[1],sharex=axs0) 
     
-    plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs1)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1)    
+    plot_compact_sum(my_nd_sum_vdWel_low, colour='black',label = r"", AX=axs1)
+    plot_compact_sum(my_nd_sum_E_low, colour='red',label = r"", AX=axs1)    
     plot_nd_3bins(my_nd_vdWel,'o',AX=axs1)
      
     plot_nd_vdWel(axs1)
@@ -532,8 +553,8 @@ def plot_nd_3plot():
     #plot Panel (3)
     axs2 = plt.subplot(gs[2],sharex=axs0)  
 
-    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs2)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2)    
+    plot_compact_sum(my_nd_sum_vDokkum_low, colour='black',label = r"", AX=axs2)
+    plot_compact_sum(my_nd_sum_E_low, colour='red',label = r"", AX=axs2)    
     plot_nd_3bins(my_nd_vDokkum,'o',AX=axs2)
     
     plot_nd_vDokkum(axs2)
@@ -545,8 +566,8 @@ def plot_nd_3plot():
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
 
-    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs3)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3)    
+    plot_compact_sum(my_nd_sum_Dam_low, colour='black',label = r"", AX=axs3)
+    plot_compact_sum(my_nd_sum_E_low, colour='red',label = r"", AX=axs3)    
     plot_nd_3bins(my_nd_Dam,'o',AX=axs3)
     
     plot_nd_Dam1(axs3)
@@ -556,13 +577,16 @@ def plot_nd_3plot():
     #axs2.grid(True)
     axs3.legend(loc=4)
     
-    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~1 $", color ='#a5200b', marker ="o")
-    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~2 $", color ='#0b5786', marker ="o")
-    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~3 $", color ='#2a3236', marker ="o")
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~1 $", color ='#a5200b', 
+               marker ="o")
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~2 $", color ='#0b5786', 
+               marker ="o")
+    twin0.plot([],[],label=r"$\rm c,sph~in~Bin~3 $", color ='#2a3236', 
+               marker ="o")
 
 
-    plot_compact_sum([], colour='black',label = r"$n_\mathrm{c,sph}$", AX=twin0)
-    plot_compact_sum([], colour='red',label = r"$n_\mathrm{E}$", AX=twin0) 
+    plot_compact_sum([np.nan], colour='black',label = r"$n_\mathrm{c,sph}$", AX=twin0)
+    plot_compact_sum([np.nan], colour='red',label = r"$n_\mathrm{E}$", AX=twin0) 
 
     twin0.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
           fancybox=True, shadow=False, ncol=3)
@@ -586,8 +610,8 @@ def plot_nd_all_mass():
     axs0 = plt.subplot(gs[0])  
     
     plot_compact_sum(my_nd_Barro_T11, colour='black',label = r"$n_\mathrm{cSph}$", 
-                     AX=axs0)
-    plot_compact_sum(my_nd_E, colour='red',label = r"$n_\mathrm{E}$", AX=axs0) 
+                     AX=axs0,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"$n_\mathrm{E}$", AX=axs0,nsum = True) 
     
     plot_nd_3bins(my_nd_Barro_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs0)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs0)
@@ -605,8 +629,8 @@ def plot_nd_all_mass():
     # Z09 Barro cut
     axs1 = plt.subplot(gs[1])  
 
-    plot_compact_sum(my_nd_Barro_Z09, colour='black',label = r"", AX=axs1)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1) 
+    plot_compact_sum(my_nd_Barro_Z09, colour='black',label = r"", AX=axs1, nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1,nsum = True) 
     
     plot_nd_3bins(my_nd_Barro_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs1)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs1)
@@ -624,8 +648,8 @@ def plot_nd_all_mass():
     # RC15 Barro cut
     axs2 = plt.subplot(gs[2])  
     
-    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs2)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2) 
+    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs2,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2,nsum = True) 
     
     plot_nd_3bins(my_nd_Barro,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs2)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs2)
@@ -642,8 +666,8 @@ def plot_nd_all_mass():
     # IP13 Barro cut
     axs3 = plt.subplot(gs[3])  
     
-    plot_compact_sum(my_nd_Barro_IP13, colour='black',label = r"", AX=axs3)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3) 
+    plot_compact_sum(my_nd_Barro_IP13, colour='black',label = r"", AX=axs3,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3,nsum = True) 
     
     plot_nd_3bins(my_nd_Barro_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs3)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs3)
@@ -664,8 +688,8 @@ def plot_nd_all_mass():
     plt.setp(twin3.get_yticklabels(), visible=False)
     # T11 vdWel cut
     axs4 = plt.subplot(gs[4])  
-    plot_compact_sum(my_nd_vdWel_T11, colour='black',label = r"", AX=axs4)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs4) 
+    plot_compact_sum(my_nd_vdWel_T11, colour='black',label = r"", AX=axs4,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs4,nsum = True) 
     
     plot_nd_3bins(my_nd_vdWel_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs4)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs4)
@@ -682,8 +706,8 @@ def plot_nd_all_mass():
 
     # Z09 vdWel cut 
     axs5 = plt.subplot(gs[5])  
-    plot_compact_sum(my_nd_vdWel_Z09, colour='black',label = r"", AX=axs5)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs5) 
+    plot_compact_sum(my_nd_vdWel_Z09, colour='black',label = r"", AX=axs5,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs5,nsum = True) 
     
     plot_nd_3bins(my_nd_vdWel_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs5)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs5)
@@ -701,8 +725,8 @@ def plot_nd_all_mass():
     # RC15 vdWel cut
     axs6 = plt.subplot(gs[6])  
     
-    plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs6)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs6)
+    plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs6,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs6,nsum = True)
     
     plot_nd_3bins(my_nd_vdWel,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs6)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs6)
@@ -718,8 +742,8 @@ def plot_nd_all_mass():
     
     # IP13 vdWel cut
     axs7 = plt.subplot(gs[7]) 
-    plot_compact_sum(my_nd_vdWel_IP13, colour='black',label = r"", AX=axs7)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs7) 
+    plot_compact_sum(my_nd_vdWel_IP13, colour='black',label = r"", AX=axs7,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs7,nsum = True) 
     
     plot_nd_3bins(my_nd_vdWel_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs7)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs7)
@@ -746,8 +770,8 @@ def plot_nd_all_mass():
     # T11 vDokkum cut
     axs8 = plt.subplot(gs[8]) 
     
-    plot_compact_sum(my_nd_vDokkum_T11, colour='black',label = r"", AX=axs8)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs8) 
+    plot_compact_sum(my_nd_vDokkum_T11, colour='black',label = r"", AX=axs8,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs8,nsum = True) 
     
     plot_nd_3bins(my_nd_vDokkum_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs8)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs8)
@@ -764,8 +788,8 @@ def plot_nd_all_mass():
     #Z09 vDokkum cut
     axs9 = plt.subplot(gs[9]) 
     
-    plot_compact_sum(my_nd_vDokkum_Z09, colour='black',label = r"", AX=axs9)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs9) 
+    plot_compact_sum(my_nd_vDokkum_Z09, colour='black',label = r"", AX=axs9,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs9,nsum = True) 
     
     plot_nd_3bins(my_nd_vDokkum_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs9)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs9)
@@ -782,8 +806,8 @@ def plot_nd_all_mass():
 
     # RC15 vDokkum cut
     axs10 = plt.subplot(gs[10]) 
-    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs10)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs10) 
+    plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs10,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs10,nsum = True) 
     
     plot_nd_3bins(my_nd_vDokkum,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs10)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs10)
@@ -799,8 +823,8 @@ def plot_nd_all_mass():
     
     # IP13 vDokkum cut
     axs11 = plt.subplot(gs[11]) 
-    plot_compact_sum(my_nd_vDokkum_IP13, colour='black',label = r"", AX=axs11)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs11) 
+    plot_compact_sum(my_nd_vDokkum_IP13, colour='black',label = r"", AX=axs11,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs11,nsum = True) 
     
     plot_nd_3bins(my_nd_vDokkum_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs11)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs11)
@@ -822,8 +846,8 @@ def plot_nd_all_mass():
     # T11 Dam cut
     axs12 = plt.subplot(gs[12]) 
     
-    plot_compact_sum(my_nd_Dam_T11, colour='black',label = r"", AX=axs12)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs12) 
+    plot_compact_sum(my_nd_Dam_T11, colour='black',label = r"", AX=axs12,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs12,nsum = True) 
     
     plot_nd_3bins(my_nd_Dam_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs12)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs12)    
@@ -841,8 +865,8 @@ def plot_nd_all_mass():
 
     # Z09 Dam cut
     axs13 = plt.subplot(gs[13]) 
-    plot_compact_sum(my_nd_Dam_Z09, colour='black',label = r"", AX=axs13)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs13) 
+    plot_compact_sum(my_nd_Dam_Z09, colour='black',label = r"", AX=axs13,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs13,nsum = True) 
     
     plot_nd_3bins(my_nd_Dam_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs13)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs13)
@@ -862,8 +886,8 @@ def plot_nd_all_mass():
 
     # RC15 Dam cut
     axs14 = plt.subplot(gs[14]) 
-    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs14)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs14) 
+    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs14,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs14,nsum = True) 
     
     plot_nd_3bins(my_nd_Dam,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs14)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs14)
@@ -881,8 +905,8 @@ def plot_nd_all_mass():
 
     # IP13 Dam cut
     axs15 = plt.subplot(gs[15]) 
-    plot_compact_sum(my_nd_Dam_IP13, colour='black',label = r"", AX=axs15)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs15) 
+    plot_compact_sum(my_nd_Dam_IP13, colour='black',label = r"", AX=axs15,nsum = True)
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs15,nsum = True) 
     
     plot_nd_3bins(my_nd_Dam_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs15)
     plot_nd_3bins(my_nd_E, '^', my_z=np.array([0.1,0.1,0.1]),AX=axs15)

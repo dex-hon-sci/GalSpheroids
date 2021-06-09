@@ -26,10 +26,10 @@ import matplotlib.image as mpimg
 import SphRead as SRead
 import SphSort as SSort
 
-
+# Class declaration
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
          "ShowcaseIndi","ShowcaseCompare2", "PlotHist","Plot2D"]
-
+# Author declaration
 __author__="Dexter S.H. Hon"
 
 fontname_choice = "Times New Roman"
