@@ -18,7 +18,7 @@ from astropy.io import ascii
 __all__ = ["read_list", "read_table", "match_list_dim", "convert_dict_ascii", 
            "convert_list_textable","lookup_bundle", "grab_name",
            "grab_parameter","grab_mag","grab_total_mag", "grab_dist", 
-           "grab_info_mag", "extract_match",
+            "extract_match",
            "pd_read","run_list"]
 
 __author__="Dexter S.H. Hon"
@@ -73,8 +73,6 @@ def match_list_dim(input1,input2):
     Parameters
     ----------
     input1, input2: list
-        
-        
 
     """
     if len(input1) == len(input2):
@@ -107,8 +105,7 @@ def convert_list_ascii(input_name,output_name):
             f.write("%s\n" % item)
     
 
-
-
+#%%
 def convert_dict_ascii(input_name,output_name):
     """
     Convert python dictionary or list to a ASCII file.
@@ -192,8 +189,8 @@ def grab_name(filename):
 
     Parameters
     ----------
-    filename : str
-        The file name of the galaxy bundle.
+    filename : str, list
+        The file name or the list of the galaxy bundle.
 
 
     Return
@@ -202,7 +199,11 @@ def grab_name(filename):
         A 1D numpy array of the apparant magnitude of set component.
 
     """
-    table = read_list(filename)
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+        
     storage = []
     for row in range(len(table)):
                 storage.append(table[row][0])
@@ -232,8 +233,11 @@ def grab_parameter(filename, keyword, number):
     storage
         A 1D numpy array of the apparant magnitude of set component.
     """
-    
-    table = read_list(filename)
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+        
     storage = []
     #generate a list of singular parameter
     for row in range(len(table)):
@@ -243,6 +247,44 @@ def grab_parameter(filename, keyword, number):
                 
     storage = np.array(storage)       
     return storage
+#%%
+def grab_parameter_whole(filename, keyword):
+    """
+    A function to grab the parameter set as a whole
+    of a component from a galaxy bundle.
+
+    ...
+
+    Parameters
+    ----------
+    filename : str
+        The file name of the galaxy bundle.
+    keyword: str, list
+        The name of the componets, such as: "Bulge", "Disk", "PrimBar", etc.
+    number: float
+        The index of the function parameters
+
+    Return
+    -------
+    storage: 1D numpy array
+        A 1D numpy array of the apparant magnitude of set component.
+    """
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+        
+    storage = []
+    #generate a list of singular parameter
+    for row in range(len(table)):
+        for item in range(len(table[row])):
+            if table[row][item] in (keyword):
+                #print(table[row][item+1])
+                storage.append(table[row][item+1])
+                
+    storage = np.array(storage)       
+    return storage
+
 #%% tested
 def grab_mag(filename, keyword):
     """
@@ -263,7 +305,11 @@ def grab_mag(filename, keyword):
         A 1D numpy array of the apparant magnitude of set component.
 
     """
-    table = read_list(filename)
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+    
     storage = []
     for row in range(len(table)):
         for item in range(len(table[row])):
@@ -292,7 +338,11 @@ def grab_total_mag(filename):
         A 1D numpy array of the total apparant magnitude.
 
     """
-    table = read_list(filename)
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+        
     storage = []
     for row in range(len(table)):
         for item in range(len(table[row])):
@@ -375,14 +425,11 @@ def grab_dist(dir_dist_list,dist_list,
                 
     return {"Gal_name": name, "Dist": dist,"Dist_err": dist_err, "Scale": scale}
 
-#%%
-
-def grab_info_mag():
-    return None
 #%% tested
 def extract_match(keyword_list, match_list ,value_can):
     """
-    
+    Selecct a list of "values" if the keyword matches the element in the match 
+    list.
 
     Parameters
     ----------

@@ -19,7 +19,8 @@ import matplotlib as mpl
 plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
-##
+
+##Define the selection volume
 D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180))-np.cos(np.pi/2))
@@ -39,8 +40,7 @@ print("1/V", 1/V1, 1/V2, 1/V3)
 print("2/V", 2/V1, 2/V2, 2/V3)
 print("5/V", 5/V1, 5/V2, 5/V3)
 
-###
-
+##Read input file by bins
 D0_Bin1_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
 D0_Bin2_table = SRead.read_table(
@@ -64,10 +64,12 @@ D0_Bin3_table_n = SRead.read_table(
 D0_all_table_n = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
 
+# The apparant magnitude of the galaxy in g- and i-band.
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
 mag_g3, mag_i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 
+# The distance (final decision), lower limit and upper limit
 D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:,31]
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
@@ -77,7 +79,8 @@ b_a_1 = D0_Bin1_table[:,34]
 b_a_2 = D0_Bin2_table[:,34]
 b_a_3 = D0_Bin3_table[:,34]
 
-# calculate the Radius in equivalent axis 
+# Calculate the Radius in equivalent axis given by the SDSS ATLAS catalogue
+# Accuracy questionable
 Sersic2D_50rad_1 = D0_Bin1_table[:,33]*np.sqrt(1-(1-(b_a_1)**2))
 Sersic2D_50rad_2 = D0_Bin2_table[:,33]*np.sqrt(1-(1-(b_a_2)**2))
 Sersic2D_50rad_3 = D0_Bin3_table[:,33]*np.sqrt(1-(1-(b_a_3)**2))
@@ -91,16 +94,15 @@ name_D1 = D0_Bin1_table_n[:,0]
 name_D2 = D0_Bin2_table_n[:,0]
 name_D3 = D0_Bin3_table_n[:,0]
 
-#Get the morphology of the galaxies
+#Get the morphology of the galaxies in RC3
 morph1 = D0_Bin1_table_n[:,17]
 morph2 = D0_Bin2_table_n[:,17]
 morph3 = D0_Bin3_table_n[:,17]
 
-morph1_new = D0_Bin1_table_n[:,-1]
-morph2_new = D0_Bin2_table_n[:,-1]
-morph3_new = D0_Bin3_table_n[:,-1]
-
-
+# Get the new morphology given by us 
+morph1_new = D0_Bin1_table_n[:,39]
+morph2_new = D0_Bin2_table_n[:,39]
+morph3_new = D0_Bin3_table_n[:,39]
 
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
@@ -116,7 +118,6 @@ total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bi
 sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
-
 
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
@@ -230,11 +231,8 @@ Abs_sph_mag1 = M1.cal_abs_mag()
 Abs_sph_mag2 = M2.cal_abs_mag()
 Abs_sph_mag3 = M3.cal_abs_mag()
 
-print("Abs_sph_mag1",Abs_sph_mag1)
-
 ################################
 #Calculate mass with K-correction
-
 K_table1 = SRead.read_table(
     "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat")
 K_table2 = SRead.read_table(
@@ -1161,10 +1159,6 @@ def graham_equ(mass, B):
     return R_e
    
 ## End Nadini'script  ################################
-
-
-
-
 
 ss = graham_equ
 

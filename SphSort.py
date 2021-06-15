@@ -28,7 +28,7 @@ __author__="Dexter S.H. Hon"
 #%% tested
 def remove_value(input_array,value_list):
     """
-    
+    Remove the sepcfied value in an numpy array.
 
     Parameters
     ----------
@@ -59,7 +59,7 @@ def remove_value(input_array,value_list):
 #%% tested
 def trim_value(input_array,value):
     """
-    Remove the sepcfied value in an numpy array.
+    Trim down an numpy array by removing a specific value.
 
     Parameters
     ----------
@@ -115,7 +115,7 @@ def replace_value(input_array,value1,value2):
     
     return temp
 
-#%%
+#%% tested
 def str_zipping(list1,list2,zip_symbol=""):
     """
     Convert the content of two lists into str and link them together.
@@ -288,8 +288,7 @@ def add_item(parent_list_name, target_list_name, keyword_list):
     return target_sample
 
 #%%
-def outliers(name,input_array,limit):
-    
+def outliers(name,input_array,limit, direction="large"):
     """
     A generic function to select outliers larger than the limit
     ----------                        
@@ -302,6 +301,11 @@ def outliers(name,input_array,limit):
     limit : float
         The outlier cut. 
         
+    direction: str
+        Define which direction of outlier to select.
+        The options are "large" or "small".
+        The default is "large".
+
     Return
     ------
     Dictionary containing the selected sample name and values
@@ -310,18 +314,27 @@ def outliers(name,input_array,limit):
     
     #the outlier name and attribute
     outliers_name, outliers =[], []
-    
-    for row in range(len(input_array)):
-        if (input_array[row] > limit):
-            outliers_name.append(name[row])
-            outliers.append(input_array[row])
-        else: 
-            pass
+    if direction == "large":
+        for row in range(len(input_array)):
+            if (input_array[row] > limit):
+                outliers_name.append(name[row])
+                outliers.append(input_array[row])
+            else: 
+                pass
+    elif direction == "small":
+        for row in range(len(input_array)):
+            if (input_array[row] < limit):
+                outliers_name.append(name[row])
+                outliers.append(input_array[row])
+            else: 
+                pass    
+            
     return {"name":outliers_name, "Dist":outliers}
+
 #%%
-def selection_generic(input_list_x, input_list_y, func, direction="down"):
+def selection_generic(input_list_x, input_list_y, func, direction="down", axis="y"):
     """
-    A generic method to select a set of sample base on a cut.
+    A generic method (2D) to select a set of sample base on a cut.
         
     Parameters
     ----------
@@ -330,6 +343,14 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
         
     func: 1D numpy array
         An function with the same dimension as the input list.
+    
+    direction: str
+        The direction of the selection
+        The options are either "down" or "up".
+        The default is "down".
+        
+    axis: str
+        The axis 
         
     Returns
     -------
@@ -340,7 +361,9 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
     """
     index_list,bag_list_y, bag_list_x=[],[],[]
     
-        
+    match_list_dim(input_list_x, func)
+    match_list_dim(input_list_x, input_list_y)
+    
     if direction == "up":
         for i in range(len(input_list_y)):
             if input_list_y[i] > func[i]:
@@ -364,6 +387,94 @@ def selection_generic(input_list_x, input_list_y, func, direction="down"):
                }
     return Bag 
 
+#%% tested
+def seperator_label_generic(bundle, 
+                            compartment_label,label_entry=None):
+    """
+    A generic method to compartmentalise a bundle.
+    This function convert a parent list bundle into a list that contain 
+    a number of dictionaries, based on labels.
+    
+    Example:
+        [[name1,label1,value1,label2,value2,...],[...],...]
+        -->input compartment_label = ["A","B","C",..]
+        -->[{"A_index": [...],
+             "A_sample":[[...],...]},
+            {"B_index":[...].
+             "B_sample":[[...],...] }...]
+
+    Parameters
+    ----------
+    bundle : list
+        A list bundle.
+        
+    compartment_label : list
+        A list of label for matches.
+        
+    label_entry : float or int or list
+        The location of the label entries.
+        The default is None. We loop through the whole sample entry to FIND 
+        the desired label.
+        
+        If the input is float, we assume all label_entries are in the 
+        same position. e.g. Second column, input:1
+        If the input is a list, we loop through the list and extract 
+        information based on the location provided by a list. 
+        e.g. [1,3,6], first loop: 2 nd column, second loop: 4th column, and 
+        third loop, 6th column.
+        
+
+    Returns
+    -------
+    new_bundle.
+        A new bundle that contain the compartmentalised data.
+    """
+
+    
+    # check the nature of the label_entry
+    
+    new_bundle = []
+    
+    # loop through the list of labels
+    for i in range(len(compartment_label)):
+        Dict ={}
+        
+        index, data = [], []
+        
+        # Loop through everything if label_entry is None
+        if label_entry == None:
+            for j in range(len(bundle)):
+                for k in range(len(bundle[j])):
+                    if bundle[j][k] == compartment_label[i]:
+                        index.append(j)
+                        data.append(bundle[j])
+                        pass
+                    
+        # Look up a fixed column if label_entry is int or float
+        elif type(label_entry) == float or type(label_entry) == int:
+            for j in range(len(bundle)):
+                if bundle[j][int(label_entry)] == compartment_label[i]:
+                    index.append(j)
+                    data.append(bundle[j])
+                    pass      
+                
+        # Look up specific column according to label_entry list
+        elif type(label_entry) == list:
+            #check if the dimension of label_entry and compartment_label matches
+            match_list_dim(compartment_label, label_entry)
+            
+            for j in range(len(bundle)):
+                if bundle[j][i] == compartment_label[i]:
+                    index.append(j)
+                    data.append(bundle[j])
+                    pass       
+                
+        Dict[compartment_label[i]+"_index"] = index
+        Dict[compartment_label[i]] = data
+        
+        new_bundle.append(Dict)
+        
+    return new_bundle
 #%% tested
 def cherry_pick(index_list,parent_list):
     """
@@ -400,6 +511,7 @@ def morph_str_selection(index_list,morph_list):
         The target index list.
     morph_list : 1D list
         The corresponding morphology list to the index list.
+        
     Returns
     -------
     morph_dict: dict
@@ -616,10 +728,15 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
             CoreBulge are desribed by core-Sersic function
             
         "Disk": 
-            The extended Disk
+            The extended Disk.
+            The disk is described by either an expenetial function, a broken 
+            exponential function, or a inclined disk model.
+            
         
         "nucDisk": 
-            The nuclear Disk
+            The nuclear Disk.
+            The nuclear disk is desribed by an exponential function with very
+            steep slope.
         
         "PrimBar":
             The primary bar
@@ -916,7 +1033,45 @@ def plus_minus_seperator(name,input_array,limit):
             "Dist_positive":outliers_positive,
             "name_negative":outliers_name_negative, 
             "Dist_negative":outliers_negative}
+
+#%% tested
+def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
+                      output_list_name_ETG):    
+    ## correction, LTG and ETG are selected by if there's a spiral arm
+    """
+    A method to seprate Early-Type and Late-Type Galaxy.
+    The seperation condition is whether the galaxy contain a extended disk.
+    ----------                        
+    input_lis_name : str
+        The galaxy component bundle 
+            
+    output_list_name1,2 : str      
+        The name for the output dictionary
+
+        
+    Return
+    ------
+    Dictionary containing two list: ETG and LTG.
+    """
+    input_list = read_list(input_list_name)
+    ETG, LTG = [],[]
     
+    for row in range(len(input_list)):
+        #for index in range(len(input_list[row])):
+        if "Ring" in input_list[row]:
+            #print("LTG",input_list[row][0])
+            LTG.append(input_list[row])
+        elif "Ring" not in input_list[row]:
+            #print("ETG",input_list[row][0])
+            ETG.append(input_list[row])
+            
+    output = {"ETG": ETG, "LTG": LTG}
+    
+    with open(output_list_name_LTG, 'wb') as f:
+        pickle.dump(output["LTG"], f)
+    with open(output_list_name_ETG, 'wb') as f:
+        pickle.dump(output["ETG"], f)
+    return output    
 #%% tested
 def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     """
@@ -1003,48 +1158,7 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
         pickle.dump(output, f)
     return output
 
-#%% tested
-def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
-                      output_list_name_ETG):    
-    ## correction, LTG and ETG are selected by if there's a spiral arm
-    """
-    A method to seprate Early-Type and Late-Type Galaxy.
-    The seperation condition is whether the galaxy contain a extended disk.
-    ----------                        
-    input_lis_name : str
-        The galaxy component bundle 
-            
-    output_list_name1,2 : str      
-        The name for the output dictionary
 
-        
-    Return
-    ------
-    Dictionary containing two list: ETG and LTG.
-    """
-    input_list = read_list(input_list_name)
-    ETG, LTG = [],[]
-    
-    for row in range(len(input_list)):
-        #for index in range(len(input_list[row])):
-        if "Ring" in input_list[row]:
-            #print("LTG",input_list[row][0])
-
-            LTG.append(input_list[row])
-        elif "Ring" not in input_list[row]:
-            #print("ETG",input_list[row][0])
-            ETG.append(input_list[row])
-            
-    
-    output = {"ETG": ETG, "LTG": LTG}
-
-    
-    with open(output_list_name_LTG, 'wb') as f:
-        pickle.dump(output["LTG"], f)
-    with open(output_list_name_ETG, 'wb') as f:
-        pickle.dump(output["ETG"], f)
-        
-    return output
 #%%
  
     

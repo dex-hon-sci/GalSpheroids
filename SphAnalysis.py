@@ -4,9 +4,11 @@
 Created on Wed Apr  1 01:11:25 2020
 
 @author: dexter
+
+The module for Sph Project analysis.
+
+
 """
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import ascii
@@ -67,7 +69,6 @@ def get_bn(n):
             elif abs(dminus) < abs(d):
                 bn = bnminus
             inc = inc / 2.0
-
     return bn
 
 #%%
@@ -81,10 +82,14 @@ class AnalyticFunctions(object):
     @property
     def r(self):
         return(self._r)
+    
+    def linear_func_1D(x,A,B):
+    
+        return A*x+B
         
     def mu_sersic_func(r, mu_e,r_e,n_Ser):
         """
-        The Sersic function in surface brightness form
+        The Sersic function in surface brightness form.
 
         Parameters
         ----------
@@ -99,8 +104,40 @@ class AnalyticFunctions(object):
 
         """
         b_n = get_bn(n_Ser)
-        return -1.0*(mu_e + 1.0857362*b_n*((r / r_e)**(1.0/n_Ser)-1))
+        return (mu_e + 1.0857362*b_n*((r / r_e)**(1.0/n_Ser)-1))
+    
+    def mu_core_sersic_func(r, mu_p, r_e, n_ser, r_b, al, ga):
+        """
+        The core Sersic function in surface brightness form.
 
+        Parameters
+        ----------
+        r : 1D numpy array
+            Radius.
+        mu_pr : float
+            The surface brightness constant.
+        al : float
+            DESCRIPTION.
+        ga : float
+            DESCRIPTION.
+        r_b : float
+            The breaking radius.
+        r_e : float
+            The effective radius.
+        n_Ser : TYPE
+            The Sersic index.
+        """
+        b_n = get_bn(n_ser)
+        if r[0] == 0.0:
+            r[0] = 1e-10
+        y = -1.0 * (mu_p - 2.5 * ga / al * np.log10(1.0 + (r_b / r) ** al) 
+                    + 1.0857362 * b_n * ((r ** al + r_b ** al) / r_e ** al) ** 
+                    (1 / (n_ser * al)))
+        y[0] = -1.0 * (mu_p - 2.5 * ga / al * 
+                       np.log10(1.0 + (r_b / (r[1] / 10.0)) ** al) + 
+                       1.0857362 * b_n * (((r[1] / 10.0) ** al + r_b ** al) / 
+                                          r_e ** al) ** (1 / (n_ser * al)))
+        return y*-1.0
     
     def mu_exp_func(r,mu_0,h):
         """
@@ -117,9 +154,31 @@ class AnalyticFunctions(object):
 
 
         """
-        return -1.0 * (mu_0 + 1.0857362 * (r / h))   
+        return  (mu_0 + 1.0857362 * (r / h))   
     
     def mu_broken_exp_func(r, mu_0, r_b, h1, h2):
+        """
+        The broken exponential function in surface brightness form
+
+        Parameters
+        ----------
+        r : TYPE
+            DESCRIPTION.
+        mu_0 : TYPE
+            DESCRIPTION.
+        r_b : TYPE
+            DESCRIPTION.
+        h1 : TYPE
+            DESCRIPTION.
+        h2 : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        y : TYPE
+            DESCRIPTION.
+
+        """
         mu_b = mu_0 + 1.0857362 * (r_b / h1)
         i = len(r) - 1
         y = mu_0 + 1.0857362 * (r / h1)
@@ -127,7 +186,7 @@ class AnalyticFunctions(object):
             y[i] = mu_b + 1.0857362 * ((r[i] - r_b) / h2)
             i = i - 1
             
-        return -1.0 * y
+        return  y
     
     def mu_incl_exp_func(r, mu_0z, z0, case):
         s = np.array([0.0] * len(r))
@@ -139,7 +198,7 @@ class AnalyticFunctions(object):
 
         if r[0] == 0.0:
             s[0] = -1.0 * mu_0z
-        return s
+        return s*-1.0
     
     def mu_ferrer_func(r, mu_0f, r_out, alpha_F, beta_F):
         """
@@ -166,7 +225,7 @@ class AnalyticFunctions(object):
             else:
                 fprof = -1.0 * (mu_0f - alpha_F * np.log10(1.0 - (r / r_out) ** (2.0 - beta_F)))
 
-        return fprof
+        return fprof*-1.0
 
 
     def size_mass_powerlaw(M,a,b):

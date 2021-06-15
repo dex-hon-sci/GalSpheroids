@@ -59,8 +59,8 @@ f2 = interp1d(R, mu, kind='cubic')
 xnew = np.linspace(0, max(R), num=800, endpoint=True)
 #print("totalmag",cal_SB_mag(R,pix,Rmax,e)) #10.3
 
-print("NGC4772 totalmag",SAna.Isophote.cal_SB_mag(R,pix,112/0.4,e),
-      'right answer',10.3) #10.3 #no conv 10.299
+#print("NGC4772 totalmag",SAna.Isophote.cal_SB_mag(R,pix,112/0.4,e),
+#      'right answer',10.3) #10.3 #no conv 10.299
 #print("NGC4772 totalmag",SAna.Isophote.cal_SB_mag(xnew,f2(xnew),max(R),e),
 #      'right answer',10.3) #10.3 #no conv 10.299
 
@@ -83,11 +83,11 @@ plt.plot(R_1, e_1, 'o', xnew_1, np.nan_to_num(ef_1(xnew_1)), '-')
 plt.legend(['data','cubic'], loc='best')
 plt.show()
 
-print(np.nan_to_num(ef_1(xnew_1)))
-print(len(xnew_1),len(f2_1(xnew_1)),len(ef_1(xnew_1)))
+#print(np.nan_to_num(ef_1(xnew_1)))
+#print(len(xnew_1),len(f2_1(xnew_1)),len(ef_1(xnew_1)))
 #29
-print("NGC3646 totalmag",SAna.Isophote.cal_SB_mag(R_1,pix_1,29/0.4,e_1),
-      'right answer',11.07) #11.07 # no cov
+#print("NGC3646 totalmag",SAna.Isophote.cal_SB_mag(R_1,pix_1,29/0.4,e_1),
+#      'right answer',11.07) #11.07 # no cov
 #print("NGC3646 totalmag",SAna.Isophote.cal_SB_mag(xnew_1,f2_1(xnew_1),38.0/0.4,np.nan_to_num(ef_1(xnew_1)),step = 0.1),
 #      'right answer', 11.07) #11.54 # no cov 11.4695
 
@@ -106,8 +106,8 @@ f2_2 = interp1d(R_2, mu_2, kind='cubic')
 xnew_2 = np.linspace(0, max(R_2), num=5*len(R_2), endpoint=True)
 
 #42
-print("NGC5382 totalmag",SAna.Isophote.cal_SB_mag(R_2,pix_2,42.0/0.4,e_2),
-      'right answer', 11.54) #11.54 # no cov 11.4695
+#print("NGC5382 totalmag",SAna.Isophote.cal_SB_mag(R_2,pix_2,42.0/0.4,e_2),
+#      'right answer', 11.54) #11.54 # no cov 11.4695
 
 #print("NGC5382 totalmag",SAna.Isophote.cal_SB_mag(xnew_2,f2_2(xnew_2),42.0/0.4,np.nan_to_num(ef_2(xnew_2)),step=0.1),
 #      'right answer', 11.54) #11.54 # no cov 11.4695
@@ -117,13 +117,13 @@ y = mu_2 #np.cos(-x**2/9.0)
 f = interp1d(x, y)
 f2 = interp1d(x, y, kind='cubic')
 
-print(len(x))
+#print(len(x))
 
 xnew = np.linspace(0, max(x), num=800, endpoint=True)
 
 fig = plt.figure()
 
-print(len(xnew))
+#print(len(xnew))
 #omg num=800 is right
 plt.plot(x, y, 'o', xnew, f(xnew), '-', xnew, f2(xnew), '--')
 plt.legend(['data', 'linear', 'cubic'], loc='best')
@@ -135,7 +135,7 @@ plt.show()
 nxt = 2
 extsize = nxt*len(x)
 xx = np.array(np.linspace(x[0],1.*nxt*x[len(x)-1],extsize))
-print(len(xx))
+#print(len(xx))
 
 
 ##
@@ -161,14 +161,30 @@ def list_prof_mag():
                                dtype='str')    
     
     name = geom_file[:,0]
-
     total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi")
     
     for i in range(len(name)):
         print(name[i],total_mag[i])
         
+def list_mu0():
+    outlist = SRead.read_table("/home/dexter/result/stat/completeness/gal_output_list_all.dat",
+                               dtype='str')
+    geom_file = SRead.read_table("/home/dexter/result/stat/completeness/gal_geom_all.dat")
+    geom_file_n = SRead.read_table("/home/dexter/result/stat/completeness/gal_geom_all.dat",dtype='str')
+
+    name = geom_file_n[:,0]
+
+    for i in range(len(name)):
+        outfile_name  = outlist[i]
+        outfile = SRead.read_table(outfile_name) 
+   
+        pix = outfile[:,1][0]
+        mu0 = SAna.Isophote.pix_val_to_mu(pix)
+        print(name[i],mu0)
+
 #list_centre()
 #list_prof_mag()
+list_mu0()
 
 def run_cal_mag():
     outlist = SRead.read_table("/home/dexter/result/stat/completeness/gal_output_list_all.dat",
@@ -204,6 +220,7 @@ def run_cal_mag():
     total_mag_mine_bag = np.array(total_mag_mine_bag)
     return name, total_mag_prof, total_mag_mine_bag
     
+
 #A = run_cal_mag()
 
 

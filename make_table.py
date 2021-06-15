@@ -4,6 +4,8 @@
 Created on Tue Apr 28 03:02:36 2020
 
 @author: dexter
+
+The script to make the table for host galaxies selection and the spheroids parameters.
 """
 
 
