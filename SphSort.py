@@ -84,6 +84,7 @@ def trim_value(input_array,value):
     temp=np.array(temp)        
     
     return temp
+
 #%% tested
 def replace_value(input_array,value1,value2):
     """
@@ -150,6 +151,7 @@ def str_zipping(list1,list2,zip_symbol=""):
         list_product.append(str(list1[i])+zip_symbol+str(list2[i]))
         
     return list_product
+
 #%%tested
 def str_zipping_generic(*args):
     """
@@ -331,8 +333,9 @@ def outliers(name,input_array,limit, direction="large"):
             
     return {"name":outliers_name, "Dist":outliers}
 
-#%%
-def selection_generic(input_list_x, input_list_y, func, direction="down", axis="y"):
+#%% tested
+def selection_generic(input_list_x, input_list_y, func, 
+                      direction="low", axis="y"):
     """
     A generic method (2D) to select a set of sample base on a cut.
         
@@ -346,12 +349,13 @@ def selection_generic(input_list_x, input_list_y, func, direction="down", axis="
     
     direction: str
         The direction of the selection
-        The options are either "down" or "up".
-        The default is "down".
+        The options are either "low" or "high".
+        The default is "low".
         
     axis: str
-        The axis 
-        
+        The axis of interest.
+        The options are either "x" or "y"
+        The default is "y"
     Returns
     -------
     Bag: Dict
@@ -364,28 +368,108 @@ def selection_generic(input_list_x, input_list_y, func, direction="down", axis="
     match_list_dim(input_list_x, func)
     match_list_dim(input_list_x, input_list_y)
     
-    if direction == "up":
-        for i in range(len(input_list_y)):
-            if input_list_y[i] > func[i]:
+    if axis == "y":
+        if direction == "high":
+            for i in range(len(input_list_y)):
+                if input_list_y[i] > func[i]:
                 
-                index_list.append(i)
-                bag_list_x.append(input_list_x[i])
-                bag_list_y.append(input_list_y[i])
+                    index_list.append(i)
+                    bag_list_x.append(input_list_x[i])
+                    bag_list_y.append(input_list_y[i])
                     
-    elif direction == "down":
-        for i in range(len(input_list_y)):
-            if input_list_y[i] < func[i]:
+        elif direction == "low":
+            for i in range(len(input_list_y)):
+                if input_list_y[i] < func[i]:
                 
-                #print(input_list_y[i], func[i])        
-                index_list.append(i)
-                bag_list_x.append(input_list_x[i])
-                bag_list_y.append(input_list_y[i])
+                    index_list.append(i)
+                    bag_list_x.append(input_list_x[i])
+                    bag_list_y.append(input_list_y[i])  
+                    
+    elif axis == "x":
+        if direction == "high":
+            for i in range(len(input_list_x)):
+                if input_list_x[i] > func[i]:
+                
+                    index_list.append(i)
+                    bag_list_x.append(input_list_x[i])
+                    bag_list_y.append(input_list_y[i])
+                    
+        elif direction == "down":
+            for i in range(len(input_list_x)):
+                if input_list_x[i] < func[i]:
+                
+                    index_list.append(i)
+                    bag_list_x.append(input_list_x[i])
+                    bag_list_y.append(input_list_y[i]) 
         
     Bag = {'index':index_list,
            'bag_x':bag_list_x,
-           'bag_y':bag_list_y,
+           'bag_y':bag_list_y
                }
     return Bag 
+
+#%%
+# need to make zone_in_generic
+# that does not loop every element
+def zone_in_2D(input_matrix,low_bound=None,up_bound=None):
+    """
+    A function to select the sample within 
+    low_bound and up_bound in 2D.
+    
+    This function loop through every elements.
+    
+    Parameters
+    ----------
+    input_matrix : list 
+        The 2D input list.
+    low_bound : list
+        The list of lower bound.
+        This need to be the same length as the 
+        input_matrix.
+        The default is [-1.0*np.inf,...]
+    up_bound : TYPE
+        The list of lower bound.
+        This need to be the same length as the 
+        input_matrix.
+        The default is [-1.0*np.inf,...].
+
+    Returns
+    -------
+    The dictionary that contain the indices, and the data matrix.
+
+    """
+    index_list, bag_list, bag_list_y, bag_list_x=[],[],[], []
+    bag = {}
+    
+    dimension = len(input_matrix)
+    
+    # produce array of inf
+    if low_bound == None:
+        low_bound = np.repeat(-1.0*np.inf,dimension)
+
+    if up_bound == None:
+        up_bound = np.repeat(np.inf,dimension)
+
+    # check if the dimension matches
+    match_list_dim(low_bound, input_matrix)
+    match_list_dim(up_bound, input_matrix)  
+    
+    for j in range(len(input_matrix[0])):
+        if input_matrix[0][j] > low_bound[0] and \
+            input_matrix[1][j] > low_bound[1] and \
+            input_matrix[0][j] < up_bound[0] and \
+                input_matrix[1][j] < up_bound[1]:
+            
+            index_list.append(j)
+            bag_list_x.append(input_matrix[0][j])
+            bag_list_y.append(input_matrix[1][j])
+            
+    bag_list.append(bag_list_x)
+    bag_list.append(bag_list_y)
+    
+    bag["index"] = index_list
+    bag["data"] = bag_list
+    return bag
 
 #%% tested
 def seperator_label_generic(bundle, 
@@ -475,6 +559,7 @@ def seperator_label_generic(bundle,
         new_bundle.append(Dict)
         
     return new_bundle
+
 #%% tested
 def cherry_pick(index_list,parent_list):
     """
@@ -503,7 +588,7 @@ def cherry_pick(index_list,parent_list):
 #%% tested
 def morph_str_selection(index_list,morph_list):
     """
-    Seperate an index list by the morphology type E, S0 or S string indicator.
+    Seperate an index list by the morphology type E, S0, or S string indicator.
 
     Parameters
     ----------
@@ -515,6 +600,10 @@ def morph_str_selection(index_list,morph_list):
     Returns
     -------
     morph_dict: dict
+        example
+        {"E": [index_list[1],index_list[6],index_list[9],...],
+         "S0": [index_list[2],index_list[4],index_list[8],...],
+         "S": [index_list[3],index_list[6],index_list[10],...] }
 
     """
     morph_dict = {}
@@ -532,6 +621,7 @@ def morph_str_selection(index_list,morph_list):
     morph_dict["S"] = S_list
 
     return morph_dict
+
 #%% tested
 def cpt_seperator_demo(input_list_name): 
     """
@@ -960,6 +1050,7 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
         pickle.dump(sample, f)
         
     return sample
+
 #%%
 def bundle_creation(obj_list,equvi=False,override_list=[]):
     """
@@ -996,7 +1087,6 @@ def bundle_creation(obj_list,equvi=False,override_list=[]):
                         'Gal_bundle_equvi_bin2_cpt',override_list)
     os.remove("gal_temp")
     return bundle    
-
 
 #%% tested
 def plus_minus_seperator(name,input_array,limit):
@@ -1157,10 +1247,6 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     with open(output_list_name, 'wb') as f:
         pickle.dump(output, f)
     return output
-
-
-#%%
- 
     
 #%% Under Construction no one allow in
     

@@ -909,12 +909,9 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         else:
             vol = volume
             
-
         # the number density, default volume to be 1 Mpc^{-3} dex^{-1}
-        
         dex_factor = np.array([(box[j][1]-box[j][0]) for j in range(len(box))])
         dex_factor=np.average(dex_factor)
-        
         
         # The number of sample within each bin
         N = [np.size(master_bin[j]) for j in range(len(master_bin))]
@@ -973,6 +970,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             raise Exception("You need to decide either show plot or not")
         return nu_dens, mid_pt
 
+    # messy need clean up
     def cpt_to_total_by_type_plot(bundle, morph_name, morph, cpt=["Bulge","CoreBulge"], 
                                   show_plot=True, 
                                   mode="average",AX=plt):
@@ -983,13 +981,16 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         ----------
         bundle : str
             The name of the input galaxy bundle.
+        morph_name: list
+            The list that contain the galaxy name in the morphology file
         morph : TYPE
-            DESCRIPTION.
+            The list of morphology corresponds to the galaxies in morph_name.
         cpt : str, optional
             DESCRIPTION. The default is "Bulge".
         show_plot : bol, optional
             DESCRIPTION. The default is True.
-
+        mode : str, optional
+            The default is "average".
         Returns
         -------
         The dictionary sortted by morphology.
@@ -1003,9 +1004,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         # calculate flux ratio
         mag_ratio = 10**((cpt_mag-total_mag) / -2.5)
         
-        
         #mag_ratio = 10**(cpt_mag)/10**total_mag
-
         mag_ratio = np.log10(mag_ratio)
         # check name alignment
         if len(morph_name) == len(name):
@@ -1017,15 +1016,12 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 else:
                     raise Exception("name doesn't match!")
                 
-        
         # Bin by morphology
         type_dict = ["E","0","S"]
         morph_list = ["EAS","EABS","EBS","SA0","SAB0","SB0","SA","SAB","SB"]
-        
         gal_bin = []
         
         # loop for morphology type
-
         for morph_name in morph_list:
             morph_bin =[] # bin that store based on morph type
             for i in range(len(morph)):
@@ -1038,11 +1034,11 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         
         mag_dict={"EAS": gal_bin[0], "EABS": gal_bin[1], "EBS": gal_bin[2],
                   "SA0": gal_bin[3],"SAB0": gal_bin[4],"SB0": gal_bin[5],
-                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]
-                  }
+                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]}
                                    
         average_bin, std_bin = [], []        
         
+        # calculate the average and std in each type
         if mode=="average":
             for i in range(len(morph_list)):
                 #print(morph_list[i])
@@ -1053,7 +1049,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 average_bin.append(np.log10(avg_ratio))
                 std_bin.append(np.log10(std_ratio))
                 
-                
                 print(list(mag_dict.keys())[i], 10**average_bin[i]) 
                       
                 if len(gal_bin[i]) > 1 :
@@ -1062,16 +1057,14 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                     pass
         else:
             pass
-        
+        # store the average and std value into numpy arrays
         average_bin = np.array(average_bin)
         std_bin = np.array(std_bin)
         
         print('average_bin',average_bin,'std_bin',std_bin)
         
         # plot it        
-        
         x_index =[]
-        
         
         for i in range(len(mag_dict.keys())):
             b = [i+1]*len(gal_bin[i])
@@ -1129,16 +1122,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         print("S0:", np.average(S0))
         print("S:",np.average(S))
 
-        print()
-
         return mag_dict
-        
-    def n_Re_plot():
-        return None
-    def mu0_Re_plot():
-        return None
-    def z_Re_plot():
-        return None
         
 #%% tested Structurally
 class ShowcaseCompare2(ShowcaseIndi):
@@ -1665,12 +1649,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         plt.subplots_adjust(wspace = 0)
         plt.yticks(index, name)
         
-        ##################
-        #make the decision making on the right
-        ##################
         axs0.set_xlabel(r"$\rm Distance/ \, M p c$",fontsize=22)
         axs0.legend(loc='upper left')
-
 
         return fig, axs0   
     
@@ -1847,14 +1827,10 @@ class ShowcaseCompare2(ShowcaseIndi):
         fig, ax = plt.subplots()
         
         index = np.linspace(0,len(para1),len(para1))
-        
-
-        
         min_index, max_index = min(index), max(index)
         
         avg_para1, std_para1 = np.average(para1), np.std(para1)
         avg_para2, std_para2 = np.average(para2), np.std(para2)
-
 
         range_can = [avg_para1+std_para1, avg_para1-std_para1, 
                      avg_para2+std_para2, avg_para2-std_para2]
@@ -1864,12 +1840,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         #for i in range(len(index)):
         #    ax.hlines(index, 2*min(para), 2*max(para), linestyle="dashed", linewidth = 0.2, color= 'k')
         
-        
-        
         ax.plot(para1,index,'o',color = colour1, label=label[0])
         ax.plot(para2,index,'o',color = colour2, label=label[1])
-
-
 
         ax.vlines(limit,min_index,max_index,linestyle="dashed",
                   linewidth=3, color="black", label= "limit")
@@ -2191,7 +2163,6 @@ class ShowcaseCompare2(ShowcaseIndi):
         return plot
 
 #%%
-#Mass_Re_plot_hist
 
 #hist_4plot
 #hist_4plot_norm
@@ -2235,6 +2206,7 @@ class Plot2D(object):
         data = np.array(hdul[0].data)
         return data
     
+    # Maybe not edge detection, I can just put the image on a bigger blank page
     def edge_evaluation():
         return None
     
@@ -2349,11 +2321,11 @@ class Plot2D(object):
 
         Parameters
         ----------
-        file_name : TYPE
-            DESCRIPTION.
-        showplot : TYPE, optional
+        file_name : str
+            The file name of the image FITS file.
+        showplot : Bol, optional
             Control fr showing the plot. The default is False.
-        saveplot : TYPE, optional
+        saveplot : Bol, optional
             Control for saving the plot. The default is True.
 
         Returns
@@ -2401,7 +2373,7 @@ class Plot2D(object):
         print(file_name, n[peaks], bins[peaks])
         return n[peaks]
 
-    
+    #wip
     def plot_galaxy(data,val_min,val_max, centre):    
         """
         Plot a single galaxy image
@@ -2424,7 +2396,6 @@ class Plot2D(object):
         """
         ## mode to centre on the average value
         
-        
         avg_data, s_data = np.average(data),np.std(data)
         a =15
         data_log = np.log(a*data+1) / np.log(a)
@@ -2444,7 +2415,7 @@ class Plot2D(object):
         plt.xlabel(r"$\rm arcsec$")
         plt.ylabel(r"$\rm arcsec$")
         plt.show()
-        
+    #wip
     def plot_galaxy_3plot(file_name,md_file_name, res_file_name,
                          centre,r_max=400, alp=15):
         """
@@ -2621,8 +2592,6 @@ res= "/home/dexter/result/image_plot/fit_example/res1_NGC2872.fits"
 
 # need to fix the edge problem
 #%%
-
-
 # new criteria 
 # look at the number of Sersic/Ferrer/Exp profile -> check which one are bulge/extended disk-> select
 # what to compare major vs equvi
@@ -2658,29 +2627,6 @@ res= "/home/dexter/result/image_plot/fit_example/res1_NGC2872.fits"
 
 
 #%%
-#plot old area
-#
-def n_Re_plot(x,y, name ,colour,legend):
-    ax.plot(x,y,"%s"%(colour) ,label="%s" %(legend) )
-
-    #for i in range(np.size(name)):
-
-    #    ax.text(x[i],y[i], name[i],fontsize=12)
-    plt.ylabel("n",fontsize=16)
-    plt.xlabel("$Mass$ / $Mass_{sun}$",fontsize=16)
-    plt.xscale( 'log' )
-    plt.legend()
-
-def z_Re_plot(x,y, name ,colour,legend):
-    ax.plot(x,y,"%s"%(colour) ,label="%s" %(legend) )
-
-    #for i in range(np.size(name)):
-
-    #    ax.text(x[i],y[i], name[i],fontsize=12)
-    plt.xlabel("z",fontsize=16)
-    plt.ylabel("$R_e$ (kpc)",fontsize=16)
-
-    plt.legend()
 
 def Mass_Re_plot_hist(x,y,name):
     x_edge,y_edge= [0,0,2,2], [7e10,2.5e11,2.5e11,7e10]
@@ -2975,47 +2921,4 @@ def hist_4plot_cum_KS(local_pop,distant_pop,bins, selection, out_median, median_
         ax.label_outer()
     plt.show()
     
-# %% 
-    
-def selection_distant_Mass(Mass_list,Re_list,z_list):
-    z_list_1, Re_list_1 = np.array([]), np.array([])
-    z_list_2, Re_list_2 = np.array([]), np.array([])
-    z_list_3, Re_list_3 = np.array([]), np.array([])
-    z_list_4, Re_list_4 = np.array([]), np.array([])
-    i=0
-    for i in range(np.size(z_list)):
-
-        if Mass_list[i] <  6e10 and  Mass_list[i] > 4e10:
-            z_list_1 = np.append(z_list_1,z_list[i])
-            Re_list_1 = np.append(Re_list_1,Re_list[i])
-
-        elif Mass_list[i] < 8e10 and Mass_list[i] > 6e10 :
-            z_list_2 = np.append(z_list_2,z_list[i])
-            Re_list_2 = np.append(Re_list_2,Re_list[i])
-
-        elif Mass_list[i] < 1e11 and Mass_list[i] > 8e10 :
-            z_list_3 = np.append(z_list_3,z_list[i])
-            Re_list_3 = np.append(Re_list_3,Re_list[i])
-
-        elif Mass_list[i] < 2e11 and Mass_list[i] > 1e11:
-            z_list_4 = np.append(z_list_4,z_list[i])
-            Re_list_4 = np.append(Re_list_4,Re_list[i])
-
-        i=i+1
-
-    distant_pop_Re, distant_pop_z=[],[]
-    distant_pop_Re.append(Re_list_1)
-    distant_pop_Re.append(Re_list_2)
-    distant_pop_Re.append(Re_list_3)
-    distant_pop_Re.append(Re_list_4)
-
-    distant_pop_z.append(z_list_1)
-    distant_pop_z.append(z_list_2)
-    distant_pop_z.append(z_list_3)
-    distant_pop_z.append(z_list_4)
-
-    distant_pop_Re,    distant_pop_z = np.array(distant_pop_Re), np.array(distant_pop_z)
-    return {"Re":distant_pop_Re,"z":distant_pop_z}
-
-
 ################################
