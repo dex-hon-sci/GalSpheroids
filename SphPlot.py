@@ -11,6 +11,8 @@ import packages
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
 from astropy.io import ascii
 import pandas as pd
 import matplotlib.gridspec as gridspec
@@ -25,6 +27,10 @@ import matplotlib.image as mpimg
 
 import SphRead as SRead
 import SphSort as SSort
+
+
+plt.style.use('classic')
+mpl.rcParams['grid.linewidth'] = 1.0
 
 # Class declaration
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
@@ -2181,12 +2187,12 @@ class PlotHist(ShowcaseCompare2, ShowcaseIndi):
     #    self.file = file
         
     def A(mass, d, colour, legend):
-        vdis_mass_plot(mass, d, colour, legend)
+        return None
 
 #%%
 class Plot2D(object):
     """
-    
+    A class containing all the essential function of plotting 2D images
     """
     def __init__(self, file):
         self.file = file    
@@ -2200,6 +2206,10 @@ class Plot2D(object):
         ----------
         file : str
             The 2D file name.
+        
+        Returns
+        -------
+        2D matrix
         """
         hdul = fits.open(file)
         #hdul.info()
@@ -2240,8 +2250,9 @@ class Plot2D(object):
     
     def flatten2D(data,condition = 0, value = 1):
         """
-        Normalize the image base on some condition
-        
+        Normalize the image base on some condition.
+        The default mode is if the pixel value is not equal to 0,
+        return 1.
     
         Parameters
         ----------
@@ -2372,7 +2383,40 @@ class Plot2D(object):
         #print(K, KK)
         print(file_name, n[peaks], bins[peaks])
         return n[peaks]
+    
+    #tested
+    def paste_on_blankcanvas(data,canvas_dim=[4000,4000]):
+        """
+        Put the image onto a blank canvas.
+        The "canvas" is a matrix with all the elements at zero.
+        
+        This function transfer the data image at the centre of the vanvas
 
+        Parameters
+        ----------
+        data : numpy array
+            The image matrix.
+        canvas_dim : list, optional
+            A two element list. 
+            It contains the dimension of the canvas [x,y]
+            The default is [10000,10000].
+
+        Returns
+        -------
+        The matrix where the image is in the centre of the canvas.
+
+        """
+        
+        canvas = np.array(np.zeros((canvas_dim[0],canvas_dim[1])))
+        # centring
+        half_x, half_y = len(data[0]) / 2, len(data)/2  # the half length of the canvas x-axis
+        start_x, end_x = int(canvas_dim[1] / 2  - half_x),int(canvas_dim[1] / 2  + half_x)
+        start_y, end_y = int(canvas_dim[0] / 2  - half_y),int(canvas_dim[0] / 2  + half_y)
+        # copy the image onto the canvas, row by row
+        for i in range(len(data)):
+            canvas[start_y:end_y][i][start_x:end_x] = data[i]
+            
+        return canvas
     #wip
     def plot_galaxy(data,val_min,val_max, centre):    
         """
@@ -2381,13 +2425,13 @@ class Plot2D(object):
         (x y inversion)
 
         ----------
-        file : str
+        data : list
                                     
         val_min, val_max: float
             
             
         centre: tuple
-           
+               
         
         Return
         ------
@@ -2405,7 +2449,6 @@ class Plot2D(object):
         new_scale = np.array([format(new_scale[x], '.2f') for x in range(
             len(new_scale))])
 
-                
         plt.imshow(data_log,cmap=cmr.heat, vmin= val_min, vmax = val_max)
 
 
@@ -2415,9 +2458,10 @@ class Plot2D(object):
         plt.xlabel(r"$\rm arcsec$")
         plt.ylabel(r"$\rm arcsec$")
         plt.show()
+        
     #wip
     def plot_galaxy_3plot(file_name,md_file_name, res_file_name,
-                         centre,r_max=400, alp=15):
+                         centre,r_max=400,name="", alp=15):
         """
         Plot individual galaxy in three column., two row
         
@@ -2427,7 +2471,7 @@ class Plot2D(object):
         From left tot right: original image, the cmodel image, 
         and the residual image. 
         ----------
-        file_name : str
+        file_name : str or 2D numpy array
             The fits file of the original galaxy image 
             
         md_file_name: str
@@ -2435,7 +2479,7 @@ class Plot2D(object):
 
         res_file_name: str
         
-        centre_x: tuple
+        centre: tuple
             
         Optional
         ---------
@@ -2450,13 +2494,44 @@ class Plot2D(object):
         
         """
         x0,y0 = centre[0],centre[1]
+        
+        if type(file_name) == str:
+            data0_0 = Plot2D.read_fits_img(file_name)   
+            data1_0 = Plot2D.read_fits_img(md_file_name)        
+            data2_0 = Plot2D.read_fits_img(res_file_name)   
+        
+        elif type(file_name) == np.ndarray:
+            data0_0 = file_name  
+            data1_0 = md_file_name
+            data2_0 = res_file_name 
+        
+        # copy and paste on canvas    
+        
+        #data0 = data0_0
+        #data1 = data1_0
+        #data2 = data2_0
+        
+        canvas_dim=[2500,3500]
+        
+        data0 = Plot2D.paste_on_blankcanvas(data0_0,canvas_dim=[2500,3500])#
+        data1 = Plot2D.paste_on_blankcanvas(data1_0,canvas_dim=[2500,3500])#
+        data2 = Plot2D.paste_on_blankcanvas(data2_0,canvas_dim=[2500,3500])#
 
-        data0 = Plot2D.read_fits_img(file_name)   
-        data1 = Plot2D.read_fits_img(md_file_name)        
-        data2 = Plot2D.read_fits_img(res_file_name)    
+        #calculate new centre
+        
+        half_x, half_y = len(data0_0[0]) / 2, len(data0_0)/2  # the half length of the canvas x-axis
+        start_x, end_x = int(canvas_dim[1] / 2  - half_x),int(canvas_dim[1] / 2  + half_x)
+        start_y, end_y = int(canvas_dim[0] / 2  - half_y),int(canvas_dim[0] / 2  + half_y)
+        
+        
+        print(half_x, half_y)
+        print(start_x, end_x)
+        print(start_y,end_y)
+        centre = [int(centre[0]+start_x),int(centre[1]+start_y)]
+
+        #truncation. make a window for the image
         
         index = np.linspace(0,len(data0[:,0]),len(data0[:,0]))
-
 
         data_trunk0 = Plot2D.trunk_window(data0,centre,r_max)
         data_log0 = np.log(alp*data_trunk0+1) / np.log(alp)
@@ -2478,12 +2553,14 @@ class Plot2D(object):
         ################
 
         l= len(data_trunk0[:,0])
-                
-        a,b,c,d,e = 0, int((l-1)/2)-int((l-1)/4),int((l-1)/2),\
-                        int((l-1)/2)+int((l-1)/4),l-1 
-        C=np.array([a,b,c,d,e])
         
-        B=(C-np.full(5,c))*0.4
+        # calculate the 5 ticks for the x,y axis
+        a,b,c,d,e = 30, int((l-1)/2)-int((l-1)/4),int((l-1)/2),\
+                        int((l-1)/2)+int((l-1)/4),l-30
+        C = np.array([a,b,c,d,e])
+        
+        # turn pixels into arcsec
+        B = (C-np.full(5,c))*0.4
         B = np.array([format(B[x], '.2f') for x in range(len(B))])    
         
         index_x0 = np.linspace(0,len(data_log0[:,0]),len(data_log0[:,0]))
@@ -2499,25 +2576,26 @@ class Plot2D(object):
         
         val_min0, val_max0 =  avg_data0 , avg_data0+1.5*std_data0
         
-            
+        # Plotting
         fig = plt.figure()
-
-        gs = gridspec.GridSpec(ncols=3, nrows=2,height_ratios=[1,3], 
-                               hspace=0, wspace=0.05)
-    
+        gs = gridspec.GridSpec(ncols=3, nrows=2,height_ratios=[0.5,3.5], 
+                               hspace=-0.55, wspace=0.05)
+        # Left column
         ax_main0 = fig.add_subplot(gs[3])      
         ax_xDist0 = fig.add_subplot(gs[0])
-
+        # middle column
         ax_main1 = fig.add_subplot(gs[4])      
         ax_xDist1 = fig.add_subplot(gs[1])
-        
+        # right column
         ax_main2 = fig.add_subplot(gs[5])      
         ax_xDist2 = fig.add_subplot(gs[2])
 
-
+        # Left column
         ax_main0.imshow(data_log0, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
+        ax_main0.text(C[0]+13,C[0]+13,name,color='w',fontsize=15,
+                      bbox={'facecolor': '#089411', 'alpha': 1.0, 'pad': 3})
         #ax_main0.set_xlabel("arcsec",fontsize=16)
-        ax_main0.set_ylabel(r"$\rm arcsec$",fontsize=24)
+        ax_main0.set_ylabel(r"$\rm arcsec$",fontsize=18)
         ax_main0.set_xticks([])
         ax_main0.set_yticks(C)
         ax_main0.set_yticklabels(B,fontsize=12)
@@ -2526,13 +2604,15 @@ class Plot2D(object):
         #ax_xDist0.hlines(avg_data0,0,len(index_x0),linestyle="dashed") 
         #ax_xDist0.hlines(0,0,len(index_x0),linestyle="dashed")        
 
-        ax_xDist0.set_ylabel(r'$\rm count$',fontsize=24)
+        ax_xDist0.set_ylabel(r'$\rm $',fontsize=18)
         ax_xDist0.set_xticks([])
-        ax_xDist0.set_ylim(bottom=0, top=val_max0)    
+        ax_xDist0.set_yticks([])
+        ax_xDist0.set_ylim(bottom=-0.1, top=val_max0)    
         #ax_xDist0.set_yticklabels(,fontsize=18)
 
         #val_min0-0.3*std_data0
 
+        # Middle column
         ax_main1.imshow(data_log1, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
         ax_main1.set_yticks([])
         ax_main1.set_xticks([])
@@ -2545,6 +2625,8 @@ class Plot2D(object):
         ax_xDist1.set_yticks([])
         ax_xDist1.set_ylim(bottom=0, top=val_max0)       
 #val_min0-0.3*std_data0
+
+        # Right column
         ax_main2.imshow(data_log2, cmap=cmr.heat, vmin=val_min0, vmax=val_max0)
         ax_main2.set_yticks([])
         ax_main2.set_xticks([])
@@ -2552,15 +2634,13 @@ class Plot2D(object):
         ax_xDist2.plot(index_x2,Plot2D.x_average(data_trunk2))
         #ax_xDist2.hlines(avg_data2,0,len(index_x2),linestyle="dashed")   
         #ax_xDist2.hlines(0,0,len(index_x2),linestyle="dashed")        
-
         ax_xDist2.set_xticks([])
         ax_xDist2.set_yticks([])
-
         ax_xDist2.set_ylim(bottom=0, top=val_max0)       
-#
+
 #val_min0-0.3*std_data0
         
-        plt.savefig("%s.pdf"%file_name, dpi=200)
+        plt.savefig("%s.pdf" %file_name, dpi=200)
         return fig
     
     def plot2_import_profiler(image1,image2):
@@ -2569,9 +2649,6 @@ class Plot2D(object):
     
     def res_analysis():
         return None
-
-
-
 
 img ="/home/dexter/result/image_plot/fit_example/NGC2872.fits"
 md = "/home/dexter/result/image_plot/fit_example/md1_NGC2872.fits"

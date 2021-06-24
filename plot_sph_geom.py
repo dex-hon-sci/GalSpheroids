@@ -9,6 +9,7 @@ This is a script dedicated to
 visualise the spheroid parameters.
 
 This script produce the following plots:
+0) stacked radial profile, as well as listing the Sersic mu0 (Done) 
 1) mu_0 - n plots (Done) 
 2) mu_0 - Re plots (Done)
 3) size-mass plot with curved fit
@@ -17,6 +18,7 @@ This script produce the following plots:
 6) Seperation between E,S0, S (Done)
 7) Tree arrangement, E,S0,S then core and Sersic
 8) Tree arrangement nuclear cpt and broken disk
+    
 """
 import SphSort as SSort
 import SphRead as SRead
@@ -62,9 +64,6 @@ mu_e = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["Bulge","CoreBulge"], 0)
 core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["CoreBulge"], 0)
 
 total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt")
-
-# extrapolate the central surface brightness
-R_gen = np.linspace(0,300,300*2)
 
 # Get the distance from the parent sample
 D0_all_table = SRead.read_table(
@@ -397,26 +396,48 @@ Q4 = SSort.zone_in_2D([Sersic_n_S0,Abs_sph_mag_S0],[0,-18],[1,-16])
 
 print(Q4,name[Q4["index"]])
 ############End reading 
+
 #%%
 def plot_stack_surface_brightness_profile(r):
     bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_cpt"
     bundle=SRead.read_list(bundle_name)
+    name = SRead.grab_name(bundle_name)
     
     fig = plt.figure()
-
+    new_mu_list = []
+    
     #plot individual curve
     for i in range(len(bundle)):        
         for j in range(len(bundle[i])):
             identifier = bundle[i][j]
-            if identifier == "Bulge":
+            if identifier == "Bulge": #if the spheroid is a Sersic bulge
+                # Load the Sersic fits parameters
                 para = bundle[i][j+1]
+                
+                #plot the radial SB profile using the Sersic parameters
                 line = SAna.AnalyticFunctions.mu_sersic_func(r,*list(para))
+                
                 plt.plot(r,line,"r--",lw =3)
+                
+                #get b and mu_e
+                mu_e, n = para[0], para[2]
+                b = SAna.get_bn(n) # get_bn is the exact function used in profiler
+                # obtain mu_0 by equ7 from Graham2005
+                new_mu = mu_e-2.5*b/np.log(10)
+                #print(name[i],new_mu) # list mu0
+                new_mu_list.append(new_mu) # save the new mu_0
+                
+                #list name, first element of from the radial SB, and the mu_0 
+                #from equ 7
+                print(name[i],line[0],new_mu) 
                 pass
-            elif identifier == "CoreBulge":
+            elif identifier == "CoreBulge": #if the spheroid is a Core Sersic bulge
                 para = bundle[i][j+1]
                 line = SAna.AnalyticFunctions.mu_core_sersic_func(r,*list(para))
                 plt.plot(r,line,"k-",lw= 3)
+                new_mu_list.append(line[0])
+
+                #print(name[i],line[0]) #list mu0
                 pass
     plt.gca().invert_yaxis()
     #plt.ylim(np.log10(24),np.log(10))
@@ -424,8 +445,16 @@ def plot_stack_surface_brightness_profile(r):
     plt.xlim(0,120)
     plt.show()
     
-    return fig
+    return fig,new_mu_list
+#%%
+def list_mu0_extrapolate(new_mu_list):
+    """
+    List the name and mu0
+    mu0 is an extrapolation to the centre
 
+    """
+    for i in range(len(name)):
+        print(name[i],new_mu_list[i])
 #%%
 def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     """
@@ -505,6 +534,7 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     plt.gca().invert_yaxis()
     plt.show()
     return (fig,*popt_n,*popt_mu)
+
 #%%
 xlim = [3e8,1.3e12]
 ylim = [0.08,167]
@@ -527,6 +557,12 @@ def plot_dexter_sample_T11(mass, size, size_err,mass_err,
     
 #%% Execution Area
 
+# extrapolate the central surface brightness
+R_gen = np.linspace(0,300,300*2)
+
+# produce the stacked radial profile figure, as well as the mu0 
+stack = plot_stack_surface_brightness_profile(R_gen)
+list_mu0_extrapolate(stack[1])
 # plot the Mag vs n and mu0 plot
 #plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[r"$type~1$",r"$type~2$"])
 
@@ -544,7 +580,6 @@ C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
 D = plot_n_mu0_Mag_2plot(n_combine_ELtype,mu0_combine_ELtype,
                      Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
 
-#plot_stack_surface_brightness_profile(R_gen)
 fig = plt.figure()
 ax0 = plt.subplot()
 #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)

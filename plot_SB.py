@@ -166,11 +166,15 @@ def list_prof_mag():
     for i in range(len(name)):
         print(name[i],total_mag[i])
         
+#  listing mu0 from the first elemnt in the output file
 def list_mu0():
-    outlist = SRead.read_table("/home/dexter/result/stat/completeness/gal_output_list_all.dat",
+    outlist = SRead.read_table(
+        "/home/dexter/result/stat/completeness/gal_output_list_all.dat",
                                dtype='str')
-    geom_file = SRead.read_table("/home/dexter/result/stat/completeness/gal_geom_all.dat")
-    geom_file_n = SRead.read_table("/home/dexter/result/stat/completeness/gal_geom_all.dat",dtype='str')
+    geom_file = SRead.read_table(
+        "/home/dexter/result/stat/completeness/gal_geom_all.dat")
+    geom_file_n = SRead.read_table(
+        "/home/dexter/result/stat/completeness/gal_geom_all.dat",dtype='str')
 
     name = geom_file_n[:,0]
 
