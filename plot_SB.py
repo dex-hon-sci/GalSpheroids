@@ -10,8 +10,11 @@ analyzing the surface brightness (SB) profile of galaxies
 
 This script will produce the following data:
 1) The various radius for the spheroids
-
+2) Plot the stack SB profile and shape matching
+3) Plot the ellipitcity of each galaxy
+    
 This script also plot:
+    
 1) The illustration of percentage covered by the calculation
 
 

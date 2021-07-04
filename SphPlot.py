@@ -141,11 +141,32 @@ class MassCalculation(MLRelationIband):
         
         return M_gal
 
+    def dust_correction_Driver08(self,abs_mag,elle):
+        """
+        The dust correction equation from Driver et al. 2008
+        i-band
+
+        Parameters
+        ----------
+        elle : 1D numpy array
+            The ellipiticity of the extended disk.
+
+        Returns
+        -------
+        Corr_abs_mag: 1D numpy array
+            The corrected absoulte magnitude.
+
+        """
+        b1, b2, b3 = 0.48, 1.35, 1.84
+        i = np.arccos(1-elle)
+        Corr_abs_mag = abs_mag- b1- b2*(1-np.cos(i))**b3
+        return Corr_abs_mag
+
     def cal_Mass(self,ML_ratio):
         """
         A method to calculate the stellar mass of a galaxy
         
-        Parameters
+        Parameters_m_gal-25-5*np.log10(self.dist)  
         ----------
         ML_ratio : float
             The mass-light ratio of the galaxy given by the class
@@ -2640,7 +2661,7 @@ class Plot2D(object):
 
 #val_min0-0.3*std_data0
         
-        plt.savefig("%s.pdf" %file_name, dpi=200)
+        plt.savefig("%s.png" %file_name, dpi=200)
         return fig
     
     def plot2_import_profiler(image1,image2):

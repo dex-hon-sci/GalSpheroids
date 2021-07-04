@@ -9,7 +9,8 @@ This is a script dedicated to
 visualise the spheroid parameters.
 
 This script produce the following plots:
-0) stacked radial profile, as well as listing the Sersic mu0 (Done) 
+0-1) stacked radial profile, as well as listing the Sersic mu0 (Done) 
+0-2) Plot the average ellipticity of each galaxy
 1) mu_0 - n plots (Done) 
 2) mu_0 - Re plots (Done)
 3) size-mass plot with curved fit
@@ -65,28 +66,38 @@ core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["CoreBulge"],
 
 total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt")
 
-# Get the distance from the parent sample
+# Get the distance from the parent samplecompleteness
 D0_all_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
 D0_all_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt",
     dtype = "str")
 
 K_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin_all_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin_all_Kcorr_byName.dat")
 
 mag_g, mag_i = D0_all_table[:,11], D0_all_table[:,10] #*Galaxy colours
 mag_g_kcorr, mag_i_kcorr = K_table[:,19], K_table[:,18] #Galaxy colours with K correction
 
 D, D_lerr, D_uerr = D0_all_table[:,29], D0_all_table[:,30], D0_all_table[:,31]
 
-morph = D0_all_table_n[:,-1]
+morph = D0_all_table_n[:,-4] 
+
+elle = geom_file[:,7] #extended disk ellipicity
 
 # Calculate the absoulte magnitude and the stellar mass
 ML_select_T11 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Taylor11_MassRatio
 M = SPlot.MassCalculation(sph_mag, D, 4.53,mag_g_kcorr,mag_i_kcorr)
 Abs_sph_mag = M.cal_abs_mag()
+
+# calculate the dust corrected version of abs mag for ALL sample 
+# E and S0 does not require that but I calculate them nonethesless
+Abs_sph_mag_dustCorr = M.dust_correction_Driver08(Abs_sph_mag,elle)
+
 E_T11_K = M.cal_Mass(ML_select_T11)
+
+# calculate the dust corrected version of stellar mass for ALL sample 
+E_T11_K_dustCorr = ML_select_T11*(10**((4.53-Abs_sph_mag_dustCorr)/2.5))
 
 # Calculate the error of the Re and stellar mass
 MLR = ML_select_T11
@@ -158,6 +169,8 @@ total_mag_corebulge = list(SRead.grab_total_mag(S[1]["CoreBulge"]))
 # cherry pick info based on the index list (output list)
 name_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], name)
 mu0_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mu0)
+
+print(name_corebulge[12],name_corebulge[14])
 
 mag_g_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mag_g)
 mag_i_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mag_i)
@@ -254,9 +267,17 @@ Abs_sph_mag_E = SSort.cherry_pick(morph_dict['E'], Abs_sph_mag)
 Abs_sph_mag_S0 = SSort.cherry_pick(morph_dict['S0'], Abs_sph_mag)
 Abs_sph_mag_S = SSort.cherry_pick(morph_dict['S'], Abs_sph_mag)
 
+elle_S = SSort.cherry_pick(morph_dict['S'],elle)
+Abs_sph_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'],Abs_sph_mag_dustCorr)
+
 E_T11_K_E = SSort.cherry_pick(morph_dict['E'], E_T11_K)
 E_T11_K_S0 = SSort.cherry_pick(morph_dict['S0'], E_T11_K)
 E_T11_K_S = SSort.cherry_pick(morph_dict['S'], E_T11_K)
+
+E_T11_K_dustcorr_E = SSort.cherry_pick(morph_dict['E'], E_T11_K_dustCorr)
+E_T11_K_dustcorr_S0 = SSort.cherry_pick(morph_dict['S0'], E_T11_K_dustCorr)
+E_T11_K_dustcorr_S = SSort.cherry_pick(morph_dict['S'], E_T11_K_dustCorr)
+
 
 MLR_E = SSort.cherry_pick(morph_dict['E'], MLR)
 MLR_S0 = SSort.cherry_pick(morph_dict['S0'], MLR)
@@ -265,6 +286,7 @@ MLR_S = SSort.cherry_pick(morph_dict['S'], MLR)
 mass_uerr_E = SSort.cherry_pick(morph_dict['E'], mass_uerr)
 mass_uerr_S0 = SSort.cherry_pick(morph_dict['S0'], mass_uerr)
 mass_uerr_S = SSort.cherry_pick(morph_dict['S'], mass_uerr)
+
 mass_err_E = np.array(mass_uerr_E)
 mass_err_S0 = np.array(mass_uerr_S0)
 mass_err_S = np.array(mass_uerr_S)
@@ -272,6 +294,7 @@ mass_err_S = np.array(mass_uerr_S)
 scale_E = np.array(D_E)*ars
 scale_S0 = np.array(D_S0)*ars
 scale_S = np.array(D_S)*ars
+
 scale_lerr_E, scale_uerr_E = (np.array(D_E)-np.array(D_lerr_E))*ars, (np.array(D_E)+np.array(D_uerr_E))*ars
 scale_lerr_S0, scale_uerr_S0 = (np.array(D_S0)-np.array(D_lerr_S0))*ars, (np.array(D_S0)+np.array(D_uerr_S0))*ars
 scale_lerr_S, scale_uerr_S = (np.array(D_S)-np.array(D_lerr_S))*ars, (np.array(D_S)+np.array(D_uerr_S))*ars
@@ -374,15 +397,31 @@ Mag_combine_ELtype = np.array([Abs_sph_mag_ETG,Abs_sph_mag_LTG])
 # investigation
 # M_i > -20
 # weird core-Sersic gal, NGC4382, NGC4636
-# COre+ disk nothing special??
+# Core+ disk nothing special??
 Q = SSort.selection_generic(name_corebulge, Abs_sph_mag_corebulge, np.repeat(-20,len(name_corebulge)),
                             direction="high")
+
+print(len(sph_corebulge_mag),len(Abs_sph_mag_corebulge))
 Q2 = SSort.selection_generic(sph_corebulge_mag, Abs_sph_mag_corebulge, np.repeat(-20,len(name_corebulge)),
                             direction="high")
-print(Q,Q2)
+print(Q,Q2) #show the core spheroid magnitude
 
-print(D[12],D[14])
+print(D_corebulge[12],D_corebulge[14]) # show the distance
 
+print(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,0,0).cal_abs_mag())
+print(SPlot.MassCalculation(10.05999, D_corebulge[14], 4.53,0,0).cal_abs_mag())
+
+ML_T11 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Taylor11_MassRatio
+ML_RC15 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Roediger15BC03_MassRatio
+ML_IP13 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Into13_MassRatio
+
+
+print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
+                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_T11)))
+print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
+                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_RC15)))
+print(np.log10(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,
+                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_IP13)))
 # Find 3.2,4.6, 4e10 5.2e10 S0
 
 # weird S gal, high bugle size and mass NGC3270, paticular high size. nuclear cpt
@@ -429,7 +468,7 @@ def plot_stack_surface_brightness_profile(r):
                 
                 #list name, first element of from the radial SB, and the mu_0 
                 #from equ 7
-                print(name[i],line[0],new_mu) 
+                #print(name[i],line[0],new_mu) 
                 pass
             elif identifier == "CoreBulge": #if the spheroid is a Core Sersic bulge
                 para = bundle[i][j+1]
@@ -533,20 +572,21 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     plt.ylim(-25.5,-15)
     plt.gca().invert_yaxis()
     plt.show()
-    return (fig,*popt_n,*popt_mu)
+    return (fig)#,*popt_n,*popt_mu)
 
 #%%
 xlim = [3e8,1.3e12]
 ylim = [0.08,167]
 # plot size-mass diagram
 def plot_dexter_sample_T11(mass, size, size_err,mass_err, 
-                           A, scale='log',alpha=0.65,colour='#a5200b',label="This work"):
+                           A, scale='log',alpha=0.65,
+                           colour='#a5200b',label="This work",marker='o'):
     A.scatter(mass, size,marker='o',c=colour,label=label, 
               s =70, alpha=0.7)
     A.errorbar(mass, size, yerr = size_err, 
                   xerr = mass_err*mass, ls='none',linewidth=4, 
                   color = colour,
-                  ecolor= colour, capsize=0, alpha=alpha, marker='o')
+                  ecolor= colour, capsize=0, alpha=alpha, marker=marker)
 
     
     A.set_xlim(left = xlim[0], right = xlim[1])
@@ -562,7 +602,8 @@ R_gen = np.linspace(0,300,300*2)
 
 # produce the stacked radial profile figure, as well as the mu0 
 stack = plot_stack_surface_brightness_profile(R_gen)
-list_mu0_extrapolate(stack[1])
+#list_mu0_extrapolate(stack[1])
+
 # plot the Mag vs n and mu0 plot
 #plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[r"$type~1$",r"$type~2$"])
 
@@ -580,13 +621,14 @@ C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
 D = plot_n_mu0_Mag_2plot(n_combine_ELtype,mu0_combine_ELtype,
                      Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
 
+#
 fig = plt.figure()
 ax0 = plt.subplot()
 #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
 plot_dexter_sample_T11(E_T11_K_bulge, Re_kpc_bulge,Re_kpc_err_bulge,mass_err_bulge,ax0,colour='k',label=r"$\rm S\'{e}rsic$")
 plot_dexter_sample_T11(E_T11_K_corebulge, Re_kpc_corebulge,Re_kpc_err_corebulge,mass_err_corebulge,ax0,label=r"$\rm Core-S\'{e}rsic$")
-ax0.set_ylabel("$ R_{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} $", fontsize=16)
+ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
 plt.legend(loc="lower right")
 plt.show()
 
@@ -597,8 +639,34 @@ ax0 = plt.subplot()
 plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
 plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
 plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
-ax0.set_ylabel("$ R_{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} $", fontsize=16)
+plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
+
+ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
+plt.legend(loc="lower right")
+plt.show()
+
+fig = plt.figure()
+ax0 = plt.subplot()
+#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
+plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
+plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
+plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
+
+ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
+plt.legend(loc="lower right")
+plt.show()
+
+fig = plt.figure()
+ax0 = plt.subplot()
+#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
+plot_dexter_sample_T11(E_T11_K_dustcorr_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
+plot_dexter_sample_T11(E_T11_K_dustcorr_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
+plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
+
+ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
 plt.legend(loc="lower right")
 plt.show()
 
@@ -607,7 +675,7 @@ ax0 = plt.subplot()
 #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
 plot_dexter_sample_T11(E_T11_K_ETG, Re_kpc_ETG,Re_kpc_err_ETG,mass_err_ETG,ax0,colour='k',label = "ETG")
 plot_dexter_sample_T11(E_T11_K_LTG, Re_kpc_LTG,Re_kpc_err_LTG,mass_err_LTG,ax0,colour='r',label="LTG")
-ax0.set_ylabel("$ R_{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} $", fontsize=16)
+ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
 plt.legend(loc="lower right")
 plt.show()

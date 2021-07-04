@@ -28,8 +28,11 @@ import matplotlib.gridspec as gridspec
 Input area
 """
 # Read the name of the ISOFIT output from a list
-outlist = SRead.read_table(
-    "/home/dexter/result/stat/completeness/gal_output_list_all.dat",
+img_list = SRead.read_table("/home/dexter/result/stat/completeness/gal_img_list.txt",
+                               dtype='str')
+md_list = SRead.read_table("/home/dexter/result/stat/completeness/gal_md_list.txt",
+                               dtype='str')
+res_list = SRead.read_table("/home/dexter/result/stat/completeness/gal_res_list.txt",
                                dtype='str')
 
 # Read the geometry file for the sample
@@ -38,41 +41,13 @@ geom_file = SRead.read_table(
 geom_file_n = SRead.read_table(
     "/home/dexter/result/stat/completeness/gal_geom_all.dat",dtype='str')
 
-bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_cpt"
-bundle = SRead.read_list(bundle_name)
 
 
-
-image_list = "/media/dexter/My Passport/Ozstar_back/NGC3665.fits"
-md_list= "/media/dexter/My Passport/Ozstar_back/md5_NGC3665.fits"
-res_list = "/media/dexter/My Passport/Ozstar_back/res5_NGC3665.fits"
-
-B = SPlot.Plot2D.read_fits_img(image_list)
-B2 = SPlot.Plot2D.read_fits_img(md_list)
-B3 = SPlot.Plot2D.read_fits_img(res_list)
-
-avg_data0, std_data0 = np.average(B), np.std(B)
-val_min0, val_max0 =  avg_data0 , avg_data0+1.5*std_data0
-
-
-img ="/home/dexter/result/image_plot/fit_example/NGC2872.fits"
-md = "/home/dexter/result/image_plot/fit_example/md1_NGC2872.fits"
-res= "/home/dexter/result/image_plot/fit_example/res1_NGC2872.fits"
-
-
-SPlot.Plot2D.plot_galaxy_3plot(img,md, res, (252, 432), r_max=350, 
-                               name = r"$\rm NGC~2872$",alp =15)
-plt.show() #2872
-
-centre = (179, 776)
-
-
-SPlot.Plot2D.plot_galaxy_3plot(image_list,md_list, res_list, centre, r_max=650, 
-                               name = r"$\rm NGC~3665$",alp =10)
-plt.show() #2872
 #SPlot.Plot2D.plot_galaxy_3plot(image_list,md_list, res_list, 
 #                               centre,r_max=400, alp=15)
 
+
+print(img_list)
 """
 Plotting
 """
@@ -82,4 +57,57 @@ def plot_all_gal_3plot():
     A function to plot all galaxy image,model,residual 3 plots
     
     """
+    name = geom_file_n[:,0]
+    centre_x, centre_y = geom_file[:,3], geom_file[:,4]
+    R_max = geom_file[:,1]
+    
+    for i in range(len(name)):
+        centre = (centre_x[i],centre_y[i])    
+        r_max = int(R_max[i]/0.4+50)
+        
+        img = str(img_list[i])
+        md = str(md_list[i])
+        res = str(res_list[i])       
+        
+        nam = name[i]
+        
+        SPlot.Plot2D.plot_galaxy_3plot(img,md, res, 
+                               centre,r_max=r_max, name= nam, alp=15)
+        plt.ioff()
     return None
+
+#plot_all_gal_3plot()
+
+# list all CF3 distance 
+
+import pycf3
+
+table = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_2.txt")
+table_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_2.txt",
+    dtype=str)
+name = table_n[:,0]
+ra, dec = table[:,1], table[:,2]
+vel = table[:,-1]#helio
+dist = table[:,24]
+
+
+def cal_CF3_distance_list():
+    cf3 = pycf3.CF3() 
+    NAM = pycf3.NAM()
+    
+    for i in range(len(name)):
+      ## or nam = pycf3.NAM()
+      if vel[i] > 2400:
+          result = cf3.calculate_distance(velocity=vel[i], ra=ra[i], dec=dec[i])
+          print(name[i], dist[i], result.observed_distance_)
+
+      elif vel[i] <2400:
+          result = NAM.calculate_distance(velocity=vel[i], ra=ra[i], dec=dec[i])
+          print(name[i], dist[i], result.observed_distance_)
+    return None
+
+
+cal_CF3_distance_list()
+
