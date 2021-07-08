@@ -141,25 +141,48 @@ class MassCalculation(MLRelationIband):
         
         return M_gal
 
-    def dust_correction_Driver08(self,abs_mag,elle):
+    def dust_correction_Driver08(self,mag,elle,struc = "Bulge", band = "i"):
         """
         The dust correction equation from Driver et al. 2008
         i-band
 
         Parameters
         ----------
+        mag : 1D numpy array
+            The magnitude array
+            
         elle : 1D numpy array
             The ellipiticity of the extended disk.
-
+        struc : str
+            The structure type. Acceptable input are "Bulge" and "Disk".
+            The default is "Bulge".
+        band : str
+            The band of the mangitude. 
+            The default is "i".
         Returns
         -------
         Corr_abs_mag: 1D numpy array
             The corrected absoulte magnitude.
 
         """
-        b1, b2, b3 = 0.48, 1.35, 1.84
+        coeff_dict = {
+            "u": [1.10,  0.95,  2.18,  0.45,  2.31,  3.42],
+            "B": [0.89,  1.27,  1.73,  0.24,  1.20,  2.73],
+            "g": [0.83,  1.29,  1.71,  0.22,  1.18,  2.74],
+            "r": [0.63,  1.33,  1.73,  0.16,  1.10,  2.80],
+            "i": [0.48, 1.35, 1.84, 0.11, 1.03, 2.89],
+            "z": [0.38,  1.35,  1.84,  0.09,  0.96,  2.98],
+            "J": [0.25,  1.22,  2.26,  0.06,  0.80,  3.21],
+            "H": [0.18,  1.02,  2.43,  0.05,  0.64,  3.51],
+            "K": [0.11,  0.79,  2.77,  0.04,  0.46,  4.23]}
+        
+        if struc == "Bulge":
+                b1, b2, b3 = coeff_dict[band][0], coeff_dict[band][1], coeff_dict[band][2]
+        elif struc == "Disk":
+                b1, b2, b3 = coeff_dict[band][3], coeff_dict[band][4], coeff_dict[band][5]
+            
         i = np.arccos(1-elle)
-        Corr_abs_mag = abs_mag- b1- b2*(1-np.cos(i))**b3
+        Corr_abs_mag = mag- b1- b2*(1-np.cos(i))**b3
         return Corr_abs_mag
 
     def cal_Mass(self,ML_ratio):

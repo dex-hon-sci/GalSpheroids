@@ -38,6 +38,7 @@ def closest(lst, K):
     lst = np.asarray(lst)
     idx = (np.abs(lst - K)).argmin()
     return lst[idx]
+
 #%% The two function from Profiler. For the sake of consistency I do not attempt to write my own functions
 def gammadif(a, x):
     out = gammainc(a, x) - 0.5
@@ -105,6 +106,15 @@ class AnalyticFunctions(object):
         """
         b_n = get_bn(n_Ser)
         return (mu_e + 1.0857362*b_n*((r / r_e)**(1.0/n_Ser)-1))
+    def simple_mu_core_sersic(r, mu_p, r_e, n_ser, r_b, al, ga):
+        
+        b_n = get_bn(n_ser)
+
+        mu =  -1.0 * (mu_p - 2.5 * ga / al * np.log10(1.0 + (r_b / r) ** al) + 
+                      1.0857362 * b_n * ((r ** al + r_b ** al) / r_e ** al) ** 
+                      (1 / (n_ser * al)))
+        
+        return -1.0 * mu
     
     def mu_core_sersic_func(r, mu_p, r_e, n_ser, r_b, al, ga):
         """

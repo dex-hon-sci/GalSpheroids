@@ -53,6 +53,9 @@ geom_file_n = SRead.read_table(
 bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_cpt"
 bundle = SRead.read_list(bundle_name)
 
+bundle_BD_name = "/home/dexter/SphProject/F_Gal_bundle_BD_equvi_V_cpt"
+bundle_BD = SRead.read_list(bundle_BD_name)
+
 name = geom_file_n[:,0]
 mu0 = geom_file[:,6]
 
@@ -85,24 +88,76 @@ morph = D0_all_table_n[:,-4]
 
 elle = geom_file[:,7] #extended disk ellipicity
 
+# Read the data from the galaxy BD bundle for dust correction later
+sph_mag_i_BD = SRead.grab_mag(bundle_BD_name, ["Bulge"])
+disc_mag_i_BD = SRead.grab_mag(bundle_BD_name, ["Disk"])
+
+Abs_sph_mag_i_BD = sph_mag_i_BD-25-5*np.log10(D) 
+Abs_disc_mag_i_BD = disc_mag_i_BD-25-5*np.log10(D)
+
 # Calculate the absoulte magnitude and the stellar mass
 ML_select_T11 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Taylor11_MassRatio
+ML_select_RC15 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Roediger15BC03_MassRatio
+ML_select_Z09 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Zibetti09_MassRatio
+ML_select_IP13 =  SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Into13_MassRatio
+
 M = SPlot.MassCalculation(sph_mag, D, 4.53,mag_g_kcorr,mag_i_kcorr)
 Abs_sph_mag = M.cal_abs_mag()
 
-# calculate the dust corrected version of abs mag for ALL sample 
+# Calculate the dust corrected version of abs mag for ALL sample 
 # E and S0 does not require that but I calculate them nonethesless
 Abs_sph_mag_dustCorr = M.dust_correction_Driver08(Abs_sph_mag,elle)
 
-E_T11_K = M.cal_Mass(ML_select_T11)
+# Calculate the dust corrected version of i-band galaxy total mag for ALL sample 
+sph_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_sph_mag_i_BD,elle,struc = "Bulge", band = "i")
+disc_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_disc_mag_i_BD,elle,struc = "Disk", band = "i")
 
-# calculate the dust corrected version of stellar mass for ALL sample 
-E_T11_K_dustCorr = ML_select_T11*(10**((4.53-Abs_sph_mag_dustCorr)/2.5))
+#The total magnitude of the dust corrected, total i-band galaxy magnitude
+mag_i_dustcorr = -2.5*np.log10(10**(sph_mag_i_BD_dustcorr/-2.5) + 10**(disc_mag_i_BD_dustcorr/-2.5))
+
+# assume B/T ratio to be the same in g-band, apply the same dust correction on g-band
+B_D_ratio_i = 10**((sph_mag_i_BD_dustcorr-disc_mag_i_BD_dustcorr)/(-2.5))
+B_T_ratio_i = (1+B_D_ratio_i**-1)**-1
+
+#Calculate the dust corrected version of g-band galaxy total mag for ALL sample 
+L_gal_g = 10**(mag_g_kcorr/-2.5)
+L_sph_g = L_gal_g * B_T_ratio_i
+L_disc_g = L_gal_g * (1-B_T_ratio_i)
+
+sph_mag_g_BD = -2.5*np.log10(L_sph_g)
+disc_mag_g_BD = -2.5*np.log10(L_disc_g)
+
+sph_mag_g_BD_dustcorr = M.dust_correction_Driver08(sph_mag_g_BD,elle,struc = "Bulge", band = "g")
+disc_mag_g_BD_dustcorr = M.dust_correction_Driver08(disc_mag_g_BD,elle,struc = "Disk", band = "g")
+
+#The total magnitude of the dust corrected, total g-band galaxy magnitude
+mag_g_dustcorr = -2.5*np.log10(10**(sph_mag_g_BD_dustcorr/-2.5) + 10**(disc_mag_g_BD_dustcorr/-2.5))
+
+
+M_dustcorr = SPlot.MassCalculation(Abs_sph_mag_dustCorr, D, 4.53,mag_g_dustcorr,mag_i_dustcorr)
+Abs_sph_mag_dustcorr = M_dustcorr.cal_abs_mag()
+
+# Calculate the absoulte magnitude and the stellar mass
+ML_select_T11_dustcorr = SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).Taylor11_MassRatio
+ML_select_RC15_dustcorr = SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).Roediger15BC03_MassRatio
+ML_select_Z09_dustcorr = SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).Zibetti09_MassRatio
+ML_select_IP13_dustcorr =  SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).Into13_MassRatio
 
 # Calculate the error of the Re and stellar mass
-MLR = ML_select_T11
+MLR = ML_select_RC15
+MLR_dust = ML_select_RC15_dustcorr
 MLR_e = 10**0.1    
 mag_e = 0.3 #magnitude error
+
+# Calculate the stellar mass, without dust correction
+E_T11_K = M.cal_Mass(MLR)
+
+# Calculate the dust corrected version of stellar mass for ALL sample 
+E_T11_K_dustCorr = MLR_dust*(10**((4.53-Abs_sph_mag_dustCorr)/2.5))
+
+#print(MLR_dust,MLR)
+
+E_T11_K_dustCorr_old = MLR*(10**((4.53-Abs_sph_mag_dustCorr)/2.5))
 
 mass_uerr = np.sqrt(((mag_e/2.5)**2)+((2*D_uerr/(D*np.log(10)))**2)+((MLR_e/(MLR*np.log(10)))**2))
 mass_err = mass_uerr
@@ -278,6 +333,9 @@ E_T11_K_dustcorr_E = SSort.cherry_pick(morph_dict['E'], E_T11_K_dustCorr)
 E_T11_K_dustcorr_S0 = SSort.cherry_pick(morph_dict['S0'], E_T11_K_dustCorr)
 E_T11_K_dustcorr_S = SSort.cherry_pick(morph_dict['S'], E_T11_K_dustCorr)
 
+E_T11_K_dustcorr_E_old = SSort.cherry_pick(morph_dict['E'], E_T11_K_dustCorr_old)
+E_T11_K_dustcorr_S0_old = SSort.cherry_pick(morph_dict['S0'], E_T11_K_dustCorr_old)
+E_T11_K_dustcorr_S_old = SSort.cherry_pick(morph_dict['S'], E_T11_K_dustCorr_old)
 
 MLR_E = SSort.cherry_pick(morph_dict['E'], MLR)
 MLR_S0 = SSort.cherry_pick(morph_dict['S0'], MLR)
@@ -468,11 +526,16 @@ def plot_stack_surface_brightness_profile(r):
                 
                 #list name, first element of from the radial SB, and the mu_0 
                 #from equ 7
-                #print(name[i],line[0],new_mu) 
+                #print(name[i],line[0])#, new_mu
                 pass
             elif identifier == "CoreBulge": #if the spheroid is a Core Sersic bulge
                 para = bundle[i][j+1]
-                line = SAna.AnalyticFunctions.mu_core_sersic_func(r,*list(para))
+                
+                # calculate the mu_e of the core Sersic funtion
+                mu_e = SAna.AnalyticFunctions.simple_mu_core_sersic(para[1],*list(para))
+                
+                # put in the core Sersic fit parameter mu_e, r_e , n_ser
+                line = SAna.AnalyticFunctions.mu_sersic_func(r,mu_e,para[1],para[2])
                 plt.plot(r,line,"k-",lw= 3)
                 new_mu_list.append(line[0])
 
@@ -566,7 +629,7 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     
     axt1.legend(loc="lower right")
     axt1.set_xlabel(r"$ \mu_\mathrm{0,i}$", fontsize=22)
-    axt1.set_xlim(19.2,12.2)
+    axt1.set_xlim(19.2,-0.5)
 
     plt.setp(axt1.get_yticklabels(), visible=False)
     plt.ylim(-25.5,-15)
@@ -595,87 +658,70 @@ def plot_dexter_sample_T11(mass, size, size_err,mass_err,
     A.set_xscale(scale)
     A.set_yscale(scale)
     
+#%%
+def plot_sizemass_Sersic_vs_core():
+    fig = plt.figure()
+    ax0 = plt.subplot()
+    #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
+    plot_dexter_sample_T11(E_T11_K_bulge, Re_kpc_bulge,Re_kpc_err_bulge,mass_err_bulge,ax0,colour='k',label=r"$\rm S\'{e}rsic$")
+    plot_dexter_sample_T11(E_T11_K_corebulge, Re_kpc_corebulge,Re_kpc_err_corebulge,mass_err_corebulge,ax0,label=r"$\rm Core-S\'{e}rsic$")
+    ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
+    plt.legend(loc="lower right")
+    plt.show()
+    
+def plot_sizemass_morph():
+    fig = plt.figure()
+    ax0 = plt.subplot()
+    #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
+    plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
+    plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
+    #plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
+    #plot_dexter_sample_T11(E_T11_K_dustcorr_S_old, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='g',label="S_dustcorr_old",marker='s')
+    plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
+
+    ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (RC15)$", fontsize=16)
+    plt.legend(loc="lower right")
+    plt.show()
+    
+def plot_sizemass_LTGETG(): 
+    fig = plt.figure()
+    ax0 = plt.subplot() 
+    #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
+    plot_dexter_sample_T11(E_T11_K_ETG, Re_kpc_ETG,Re_kpc_err_ETG,mass_err_ETG,ax0,colour='k',label = "ETG")
+    plot_dexter_sample_T11(E_T11_K_LTG, Re_kpc_LTG,Re_kpc_err_LTG,mass_err_LTG,ax0,colour='r',label="LTG")
+    ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
+    plt.legend(loc="lower right")
+    plt.show()
+
 #%% Execution Area
 
 # extrapolate the central surface brightness
 R_gen = np.linspace(0,300,300*2)
 
 # produce the stacked radial profile figure, as well as the mu0 
-stack = plot_stack_surface_brightness_profile(R_gen)
+##stack = plot_stack_surface_brightness_profile(R_gen)
 #list_mu0_extrapolate(stack[1])
 
 # plot the Mag vs n and mu0 plot
 #plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[r"$type~1$",r"$type~2$"])
 
 #plot_n_mu0_Mag_2plot(Sersic_n,mu0,Abs_sph_mag)
-B = plot_n_mu0_Mag_2plot(n_combine,mu0_combine,
-                     Mag_combine,label=[r"$\rm S\'{e}rsic$",
-                                        r"$\rm Core-S\'{e}rsic$"])
-#,label=[r"$type~1$",r"$type~2$"])
+#B = plot_n_mu0_Mag_2plot(n_combine,mu0_combine,
+#                     Mag_combine,label=[r"$\rm S\'{e}rsic$",
+#                                        r"$\rm Core-S\'{e}rsic$"])
 
 
-C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
-                     Mag_combine_morph,label=[r"$\rm E$",
-                                        r"$\rm S0$", r"$\rm S$"])
+#C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
+#                     Mag_combine_morph,label=[r"$\rm E$",
+#                                        r"$\rm S0$", r"$\rm S$"])
 
-D = plot_n_mu0_Mag_2plot(n_combine_ELtype,mu0_combine_ELtype,
-                     Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
-
-#
-fig = plt.figure()
-ax0 = plt.subplot()
-#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
-plot_dexter_sample_T11(E_T11_K_bulge, Re_kpc_bulge,Re_kpc_err_bulge,mass_err_bulge,ax0,colour='k',label=r"$\rm S\'{e}rsic$")
-plot_dexter_sample_T11(E_T11_K_corebulge, Re_kpc_corebulge,Re_kpc_err_corebulge,mass_err_corebulge,ax0,label=r"$\rm Core-S\'{e}rsic$")
-ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
-plt.legend(loc="lower right")
-plt.show()
+# D = plot_n_mu0_Mag_2plot(n_combine_ELtype,mu0_combine_ELtype,
+#                     Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
 
 
-fig = plt.figure()
-ax0 = plt.subplot()
-#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
-plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
-plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
-plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
-plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
 
-ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
-plt.legend(loc="lower right")
-plt.show()
 
-fig = plt.figure()
-ax0 = plt.subplot()
-#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
-plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
-plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
-plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
-
-ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
-plt.legend(loc="lower right")
-plt.show()
-
-fig = plt.figure()
-ax0 = plt.subplot()
-#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
-plot_dexter_sample_T11(E_T11_K_dustcorr_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
-plot_dexter_sample_T11(E_T11_K_dustcorr_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
-plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
-
-ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
-plt.legend(loc="lower right")
-plt.show()
-
-fig = plt.figure()
-ax0 = plt.subplot()
-#plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
-plot_dexter_sample_T11(E_T11_K_ETG, Re_kpc_ETG,Re_kpc_err_ETG,mass_err_ETG,ax0,colour='k',label = "ETG")
-plot_dexter_sample_T11(E_T11_K_LTG, Re_kpc_LTG,Re_kpc_err_LTG,mass_err_LTG,ax0,colour='r',label="LTG")
-ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
-plt.legend(loc="lower right")
-plt.show()
+plot_sizemass_morph()

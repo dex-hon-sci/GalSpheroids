@@ -80,9 +80,9 @@ ddc1_err = D0_Bin1_table[:,28]
 ddc2_err = D0_Bin2_table[:,28]
 ddc3_err = D0_Bin3_table[:,28]
 
-g1 , i1 = D0_Bin1_table[:,12], D0_Bin1_table[:,11]
-g2 , i2 = D0_Bin2_table[:,12], D0_Bin2_table[:,11]
-g3 , i3 = D0_Bin3_table[:,12], D0_Bin3_table[:,11]
+g1 , i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
+g2 , i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
+g3 , i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 
 corr_dist1, corr_E1 = D0_Bin1_table[:,12],  D0_Bin1_table[:,13]
 corr_dist2, corr_E2 = D0_Bin2_table[:,12],  D0_Bin2_table[:,13]
@@ -287,28 +287,43 @@ def look_for_ultramassive():
 import statistics
 import matplotlib.gridspec as gridspec
 
-fig = plt.figure()
 
-gs = gridspec.GridSpec(2,1) 
 
-axs1 = plt.subplot(gs[1])
-axs0 = plt.subplot(gs[0])
+Bin1_limit = np.repeat(5e11,len(E1))
+Bin2_limit = np.repeat(2e11,len(E2))
+Bin3_limit = np.repeat(1e11,len(E3))
 
+
+key_delta_Bin1 = np.log10((10**E1)-Bin1_limit)
+key_delta_Bin2 = np.log10((10**E2)-Bin2_limit)
+key_delta_Bin3 = np.log10((10**E3)-Bin3_limit)
 
 delta_E_ET11, s_E_ET11 = np.median(np.nan_to_num(abs(E-E_T11))),np.std(np.nan_to_num(abs(E-E_T11)))
 delta_E_EZ09, s_E_EZ09 =  np.median(np.nan_to_num(abs(E-E_Z09))),np.std(np.nan_to_num(abs(E-E_Z09)))
 delta_E_ERC15, s_E_ERC15 = np.median(np.nan_to_num(abs(E-E_RC15))),np.std(np.nan_to_num(abs(E-E_RC15)))
 
 
-print("delta(E-E_T11)", np.log10(delta_E_ET11), np.log10(s_E_ET11))
-print("delta(E-E_TZ09)", np.log10(delta_E_EZ09), np.log10(s_E_EZ09))
-print("delta(E-E_TRC15)", np.log10(delta_E_ERC15), np.log10(s_E_ERC15))
+print('============')
+print(E1_T11-key_delta_Bin1)
+print(E2_T11-key_delta_Bin2)
+print(E3_T11-key_delta_Bin3)
+print('============')
+print(np.std(E1_T11-key_delta_Bin1))
+print(np.std(E2_T11-key_delta_Bin2))
+print(np.std(E3_T11-key_delta_Bin3))
+print('============')
+print(np.average(E1_T11-key_delta_Bin1))
+print(np.average(E2_T11-key_delta_Bin2))
+print(np.average(E3_T11-key_delta_Bin3))
+print('============')
+#print("delta(E-E_T11)", np.log10(delta_E_ET11), np.log10(s_E_ET11))
+#print("delta(E-E_TZ09)", np.log10(delta_E_EZ09), np.log10(s_E_EZ09))
+#print("delta(E-E_TRC15)", np.log10(delta_E_ERC15), np.log10(s_E_ERC15))
 
 
-print("Bin1:", "T11",5e11-delta_E_ET11, "Z09", 5e11-delta_E_EZ09,"IP13", 5e11-delta_E_ERC15)
-print("Bin2:", "T11",2e11-delta_E_ET11, "Z09", 2e11-delta_E_EZ09,"IP13", 2e11-delta_E_ERC15)
-print("Bin3:", "T11",1e11-delta_E_ET11,"Z09", 1e11-delta_E_EZ09,"IP13", 1e11-delta_E_ERC15)
-
+#print("Bin1:", "T11",5e11-delta_E_ET11, "Z09", 5e11-delta_E_EZ09,"IP13", 5e11-delta_E_ERC15)
+#print("Bin2:", "T11",2e11-delta_E_ET11, "Z09", 2e11-delta_E_EZ09,"IP13", 2e11-delta_E_ERC15)
+#print("Bin3:", "T11",1e11-delta_E_ET11,"Z09", 1e11-delta_E_EZ09,"IP13", 1e11-delta_E_ERC15)
 
 delta_E1_ET11, s_E1_ET11 = np.median(np.nan_to_num(abs(E1-E1_T11))),np.std(np.nan_to_num(abs(E1-E1_T11)))
 delta_E1_EZ09, s_E1_EZ09 =  np.median(np.nan_to_num(abs(E1-E1_Z09))),np.std(np.nan_to_num(abs(E1-E1_Z09)))
@@ -344,6 +359,12 @@ print("Bin3:", "T11",1e11-delta_E3_ET11,"Z09", 1e11-delta_E3_EZ09,"IP13", 1e11-d
 #SPlot.ShowcaseIndi.show_name(DD1,E,name_b,A=axs1)
 
 def mass_distance_2plots():
+    fig = plt.figure()
+    gs = gridspec.GridSpec(2,1) 
+
+    axs1 = plt.subplot(gs[1])
+    axs0 = plt.subplot(gs[0])
+    
     max_mass = 5e13
 
     #axs1.hlines(2e12,0,110,linestyle="solid")
@@ -379,7 +400,11 @@ def mass_distance_2plots():
     axs1.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
     axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
     axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
-
+    
+    axs1.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
+    axs1.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
+    axs1.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+    
     axs1.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
          linewidth=2)
@@ -408,4 +433,76 @@ def mass_distance_2plots():
     axs1.legend(loc=4)
     plt.show()
 
-mass_distance_2plots()
+#mass_distance_2plots()
+
+def mass_distance_bin_compare():
+    
+    fig = plt.figure()
+
+    gs = gridspec.GridSpec(1,1) 
+
+    axs0 = plt.subplot(gs[0])
+    max_mass = 5e13
+
+    #axs1.hlines(2e12,0,110,linestyle="solid")
+    axs0.hlines(5e11,75,110,linestyle="solid")
+    axs0.hlines(2e11,45,75,linestyle="solid")
+    axs0.hlines(1e11,0,45,linestyle="solid")
+
+    q1 = np.log10(5e11)-np.average(E1_T11-key_delta_Bin1)-np.std(E1_T11-key_delta_Bin1)
+    q2 = np.log10(2e11)-np.average(E2_T11-key_delta_Bin2)-np.std(E2_T11-key_delta_Bin2)
+    q3 = np.log10(1e11)-np.average(E3_T11-key_delta_Bin3)-np.std(E3_T11-key_delta_Bin3)
+    #q1 = np.log10(5e11)-np.average(E1_T11-key_delta_Bin1)
+    #q2 = np.log10(2e11)-np.average(E2_T11-key_delta_Bin2)
+    #q3 = np.log10(1e11)-np.average(E3_T11-key_delta_Bin3)
+    
+    print("q1 , q2, q3", q1 , q2, q3)
+    axs0.hlines(10**q1,75,110,linestyle="solid")
+    axs0.hlines(10**q2,45,75,linestyle="solid")
+    axs0.hlines(10**q3,0,45,linestyle="solid")
+
+    axs0.vlines(110,5e11,max_mass,linestyle="solid")
+    axs0.vlines(75,2e11,max_mass,linestyle="solid")
+    axs0.vlines(45,1e11,max_mass,linestyle="solid")
+
+    x_edge1,y_edge1= [75,75,110,110], [5e11,max_mass,max_mass,5e11]
+    x_edge2,y_edge2= [45,45,75,75], [2e11,max_mass,max_mass,2e11]
+    x_edge3,y_edge3= [0,0,45,45], [1e11,max_mass,max_mass,1e11]
+
+    axs0.plot(DD1,E,'x',color='#a51a74', alpha=0.8, label='New Distance IP13')
+    axs0.plot(DD1,E_T11,'x',color='g', alpha=0.8, label='T11')
+    #axs1.plot(DD1,E_Z09,'x',color='b', alpha=0.8, label='Z09')
+    #axs1.plot(DD1,E_RC15,'x',color='k', alpha=0.8, label='RC15')
+
+    axs0.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+    axs0.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+    axs0.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
+    
+    axs0.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
+    axs0.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
+    axs0.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+    
+    axs0.plot(dc, SPlot.SelectionCut(initial_mass, dc).
+         parent_sample_cut(),linestyle="solid", color="blue",
+         linewidth=2)
+    axs0.vlines(115,4.17e11,1e15,linestyle="solid", color="blue",
+           linewidth=2)
+
+    axs0.fill(x_edge1,y_edge1, alpha=0.3, color='green')
+    axs0.fill(x_edge2,y_edge2, alpha=0.2, color='green')
+    axs0.fill(x_edge3,y_edge3, alpha=0.1, color='green')
+
+    axs0.set_ylim(top =5e12 , bottom = 1e9)
+    axs0.set_xlim(left=0, right = 120)
+
+    axs0.set_ylabel(r"$ M_*/ \rm M_\odot(IP13)$",fontsize=22)
+    axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=22)
+    axs0.set_yscale( 'log' )
+
+    axs0.set_ylim(top =5e13 , bottom = 1e10)
+    axs0.set_xlim(left=0, right = 120)
+
+    axs0.legend(loc=4)
+    plt.show()
+    
+mass_distance_bin_compare()

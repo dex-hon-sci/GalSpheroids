@@ -42,27 +42,27 @@ print("5/V", 5/V1, 5/V2, 5/V3)
 
 ##Read input file by bins
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_3.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_3.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3.txt")
 
 D0_all_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_3.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_3.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
 
 # The apparant magnitude of the galaxy in g- and i-band.
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
@@ -73,6 +73,11 @@ mag_g3, mag_i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:,31]
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
+
+#extended disk ellipicity
+elle1 = D0_Bin1_table[:,-1] 
+elle2 = D0_Bin2_table[:,-1] 
+elle3 = D0_Bin3_table[:,-1] 
 
 # calculate the ellipticity of the Sersic 2D fit
 b_a_1 = D0_Bin1_table[:,34]
@@ -100,9 +105,9 @@ morph2 = D0_Bin2_table_n[:,17]
 morph3 = D0_Bin3_table_n[:,17]
 
 # Get the new morphology given by us 
-morph1_new = D0_Bin1_table_n[:,39]
-morph2_new = D0_Bin2_table_n[:,39]
-morph3_new = D0_Bin3_table_n[:,39]
+morph1_new = D0_Bin1_table_n[:,-2]
+morph2_new = D0_Bin2_table_n[:,-2]
+morph3_new = D0_Bin3_table_n[:,-2]
 
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
@@ -187,7 +192,6 @@ for i in range(len(name1)):
 
 
 ############# calculating spheroid mass
-
 ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
 ML_select1_R15BC = SPlot.MLRelationIband(mag_g1,mag_i1).Roediger15BC03_MassRatio
 ML_select1_Z09 = SPlot.MLRelationIband(mag_g1,mag_i1).Zibetti09_MassRatio
@@ -296,6 +300,7 @@ E3_T11_K = M3_K.cal_Mass(ML_select3_T11_K)
 
 #####################
 
+#stich the Bins together
 E_R15BC_K = np.concatenate((E1_R15BC_K,E2_R15BC_K, E3_R15BC_K))
 E_T11_K = np.concatenate((E1_T11_K,E2_T11_K, E3_T11_K))
 
@@ -392,6 +397,7 @@ mass_uerr3 = np.sqrt(((mag_e/2.5)**2)+((2*D3_uerr/(D3*np.log(10)))**2)+((MLR_e3/
 mass_err1 = mass_uerr1
 mass_err2 = mass_uerr2
 mass_err3 = mass_uerr3
+
 ##########################################
 # read NSA-Sloan catalog
 nsa = SRead.read_table('/home/dexter/result/stat/completeness/nsa_sizemass.dat')
@@ -438,6 +444,191 @@ mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
 
 
 ################################
+# The three ES are at 7 and 17 in Bin1 and at 4 in Bin2
+E_R15BC_K_ES = np.array([E1_R15BC_K[7],E1_R15BC_K[17],E2_R15BC_K[4]])
+Re_kpc_ES = np.array([Re_1_kpc[7],Re_1_kpc[17],Re_2_kpc[4]])
+Re_kpc_major_ES = np.array([Re_1_kpc_major[7],Re_1_kpc_major[17],Re_2_kpc_major[4]])
+
+ES_index = [33,70,93]
+
+# Dust Correction and morph seperation
+
+# correct for galaxies g and i in bulge+Disk
+
+# Calculate the absoulte magnitude and the stellar mass
+Abs_sph_mag1 = M1_K.cal_abs_mag()
+Abs_sph_mag2 = M2_K.cal_abs_mag()
+Abs_sph_mag3 = M3_K.cal_abs_mag()
+
+# calculate the dust corrected version of abs mag for ALL sample 
+# E and S0 does not require that but I calculate them nonethesless
+Abs_sph_mag1_dustCorr = M1_K.dust_correction_Driver08(Abs_sph_mag1,elle1)
+Abs_sph_mag2_dustCorr = M2_K.dust_correction_Driver08(Abs_sph_mag2,elle2)
+Abs_sph_mag3_dustCorr = M3_K.dust_correction_Driver08(Abs_sph_mag3,elle3)
+
+# calculate the dust corrected version of stellar mass for ALL sample 
+E1_R15BC_K_dustCorr = MLR1*(10**((4.53-Abs_sph_mag1_dustCorr)/2.5))
+E2_R15BC_K_dustCorr = MLR2*(10**((4.53-Abs_sph_mag2_dustCorr)/2.5))
+E3_R15BC_K_dustCorr = MLR3*(10**((4.53-Abs_sph_mag3_dustCorr)/2.5))
+
+#Seperate the sample into E, S0, S
+index1 = np.arange(len(Abs_sph_mag1))
+index2 = np.arange(len(Abs_sph_mag2))
+index3 = np.arange(len(Abs_sph_mag3))
+
+morph_dict1 = SSort.morph_str_selection(index1, morph1_new)
+morph_dict2 = SSort.morph_str_selection(index2, morph2_new)
+morph_dict3 = SSort.morph_str_selection(index3, morph3_new)
+
+#cherry pick the distance in each bin by morphology
+D1_E = SSort.cherry_pick(morph_dict1['E'], D1)
+D1_S0 = SSort.cherry_pick(morph_dict1['S0'], D1)
+D1_S = SSort.cherry_pick(morph_dict1['S'], D1)
+
+D2_E = SSort.cherry_pick(morph_dict2['E'], D2)
+D2_S0 = SSort.cherry_pick(morph_dict2['S0'], D2)
+D2_S = SSort.cherry_pick(morph_dict2['S'], D2)
+
+D3_E = SSort.cherry_pick(morph_dict3['E'], D3)
+D3_S0 = SSort.cherry_pick(morph_dict3['S0'], D3)
+D3_S = SSort.cherry_pick(morph_dict3['S'], D3)
+
+# Stich the distance together
+D1_reshp = np.concatenate((D1_E, D1_S0, D1_S))
+D2_reshp = np.concatenate((D2_E, D2_S0, D2_S))
+D3_reshp = np.concatenate((D3_E, D3_S0, D3_S))
+
+#cherry pick the sph mag in each bin by morphology
+E1_R15BC_K_E = SSort.cherry_pick(morph_dict1['E'], E1_R15BC_K)
+E1_R15BC_K_S0 = SSort.cherry_pick(morph_dict1['S0'], E1_R15BC_K)
+E1_R15BC_K_dustCorr_S = SSort.cherry_pick(morph_dict1['S'], E1_R15BC_K_dustCorr)
+
+E2_R15BC_K_E = SSort.cherry_pick(morph_dict2['E'], E2_R15BC_K)
+E2_R15BC_K_S0 = SSort.cherry_pick(morph_dict2['S0'], E2_R15BC_K)
+E2_R15BC_K_dustCorr_S = SSort.cherry_pick(morph_dict2['S'], E2_R15BC_K_dustCorr)
+
+E3_R15BC_K_E = SSort.cherry_pick(morph_dict3['E'], E3_R15BC_K)
+E3_R15BC_K_S0 = SSort.cherry_pick(morph_dict3['S0'], E3_R15BC_K)
+E3_R15BC_K_dustCorr_S = SSort.cherry_pick(morph_dict3['S'], E3_R15BC_K_dustCorr)
+
+mass_err1_E = SSort.cherry_pick(morph_dict1['E'], mass_err1)
+mass_err1_S0 = SSort.cherry_pick(morph_dict1['S0'], mass_err1)
+mass_err1_S = SSort.cherry_pick(morph_dict1['S'], mass_err1)
+
+mass_err2_E = SSort.cherry_pick(morph_dict2['E'], mass_err2)
+mass_err2_S0 = SSort.cherry_pick(morph_dict2['S0'], mass_err2)
+mass_err2_S = SSort.cherry_pick(morph_dict2['S'], mass_err2)
+
+mass_err3_E = SSort.cherry_pick(morph_dict3['E'], mass_err3)
+mass_err3_S0 = SSort.cherry_pick(morph_dict3['S0'], mass_err3)
+mass_err3_S = SSort.cherry_pick(morph_dict3['S'], mass_err3) 
+
+# Stich the mass together, E,S0 no dust correction, S with dust correction
+# stellar mass reshape
+E1_R15BC_K_dustCorr_reshp = np.concatenate((E1_R15BC_K_E, E1_R15BC_K_S0, E1_R15BC_K_dustCorr_S))
+E2_R15BC_K_dustCorr_reshp = np.concatenate((E2_R15BC_K_E, E2_R15BC_K_S0, E2_R15BC_K_dustCorr_S))
+E3_R15BC_K_dustCorr_reshp = np.concatenate((E3_R15BC_K_E, E3_R15BC_K_S0, E3_R15BC_K_dustCorr_S))
+
+mass_err1_reshp = np.concatenate((mass_err1_E, mass_err1_S0, mass_err1_S))
+mass_err2_reshp = np.concatenate((mass_err2_E, mass_err2_S0, mass_err2_S))
+mass_err3_reshp = np.concatenate((mass_err3_E, mass_err3_S0, mass_err3_S))
+
+#cherry pick the Re in equvi in each bin by morphology
+Re_1_kpc_E = SSort.cherry_pick(morph_dict1['E'], Re_1_kpc)
+Re_1_kpc_S0 = SSort.cherry_pick(morph_dict1['S0'], Re_1_kpc)
+Re_1_kpc_S = SSort.cherry_pick(morph_dict1['S'], Re_1_kpc)
+
+Re_2_kpc_E = SSort.cherry_pick(morph_dict2['E'], Re_2_kpc)
+Re_2_kpc_S0 = SSort.cherry_pick(morph_dict2['S0'], Re_2_kpc)
+Re_2_kpc_S = SSort.cherry_pick(morph_dict2['S'], Re_2_kpc)
+
+Re_3_kpc_E = SSort.cherry_pick(morph_dict3['E'], Re_3_kpc)
+Re_3_kpc_S0 = SSort.cherry_pick(morph_dict3['S0'], Re_3_kpc)
+Re_3_kpc_S = SSort.cherry_pick(morph_dict3['S'], Re_3_kpc)
+
+# Stich the Re together
+# Re reshape
+Re_1_kpc_reshp = np.concatenate((Re_1_kpc_E, Re_1_kpc_S0, Re_1_kpc_S))
+Re_2_kpc_reshp = np.concatenate((Re_2_kpc_E, Re_2_kpc_S0, Re_2_kpc_S))
+Re_3_kpc_reshp = np.concatenate((Re_3_kpc_E, Re_3_kpc_S0, Re_3_kpc_S))
+
+#cherry pick the Re in major in each bin by morphology
+Re_1_kpc_major_E = SSort.cherry_pick(morph_dict1['E'], Re_1_kpc_major)
+Re_1_kpc_major_S0 = SSort.cherry_pick(morph_dict1['S0'], Re_1_kpc_major)
+Re_1_kpc_major_S = SSort.cherry_pick(morph_dict1['S'], Re_1_kpc_major)
+
+Re_2_kpc_major_E = SSort.cherry_pick(morph_dict2['E'], Re_2_kpc_major)
+Re_2_kpc_major_S0 = SSort.cherry_pick(morph_dict2['S0'], Re_2_kpc_major)
+Re_2_kpc_major_S = SSort.cherry_pick(morph_dict2['S'], Re_2_kpc_major)
+
+Re_3_kpc_major_E = SSort.cherry_pick(morph_dict3['E'], Re_3_kpc_major)
+Re_3_kpc_major_S0 = SSort.cherry_pick(morph_dict3['S0'], Re_3_kpc_major)
+Re_3_kpc_major_S = SSort.cherry_pick(morph_dict3['S'], Re_3_kpc_major)
+
+# Stich the Re in major together
+# Re reshape in major
+Re_1_kpc_major_reshp = np.concatenate((Re_1_kpc_major_E, Re_1_kpc_major_S0, Re_1_kpc_major_S))
+Re_2_kpc_major_reshp = np.concatenate((Re_2_kpc_major_E, Re_2_kpc_major_S0, Re_2_kpc_major_S))
+Re_3_kpc_major_reshp = np.concatenate((Re_3_kpc_major_E, Re_3_kpc_major_S0, Re_3_kpc_major_S))
+
+
+Re_1_kpc_lerr_E,  Re_1_kpc_uerr_E = SSort.cherry_pick(morph_dict1['E'], Re_1_kpc_lerr), SSort.cherry_pick(morph_dict1['E'], Re_1_kpc_uerr)
+Re_1_kpc_lerr_S0,  Re_1_kpc_uerr_S0 = SSort.cherry_pick(morph_dict1['S0'], Re_1_kpc_lerr), SSort.cherry_pick(morph_dict1['S0'], Re_1_kpc_uerr)
+Re_1_kpc_lerr_S,  Re_1_kpc_uerr_S = SSort.cherry_pick(morph_dict1['S'], Re_1_kpc_lerr), SSort.cherry_pick(morph_dict1['S'], Re_1_kpc_uerr)
+
+Re_2_kpc_lerr_E,  Re_2_kpc_uerr_E = SSort.cherry_pick(morph_dict2['E'], Re_2_kpc_lerr), SSort.cherry_pick(morph_dict2['E'], Re_2_kpc_uerr)
+Re_2_kpc_lerr_S0,  Re_2_kpc_uerr_S0 = SSort.cherry_pick(morph_dict2['S0'], Re_2_kpc_lerr), SSort.cherry_pick(morph_dict2['S0'], Re_2_kpc_uerr)
+Re_2_kpc_lerr_S,  Re_2_kpc_uerr_S = SSort.cherry_pick(morph_dict2['S'], Re_2_kpc_lerr), SSort.cherry_pick(morph_dict2['S'], Re_2_kpc_uerr)
+
+Re_3_kpc_lerr_E,  Re_3_kpc_uerr_E = SSort.cherry_pick(morph_dict3['E'], Re_3_kpc_lerr), SSort.cherry_pick(morph_dict3['E'], Re_3_kpc_uerr)
+Re_3_kpc_lerr_S0,  Re_3_kpc_uerr_S0 = SSort.cherry_pick(morph_dict3['S0'], Re_3_kpc_lerr), SSort.cherry_pick(morph_dict3['S0'], Re_3_kpc_uerr)
+Re_3_kpc_lerr_S,  Re_3_kpc_uerr_S = SSort.cherry_pick(morph_dict3['S'], Re_3_kpc_lerr), SSort.cherry_pick(morph_dict3['S'], Re_3_kpc_uerr)
+
+
+Re_1_kpc_lerr_reshp = np.concatenate((Re_1_kpc_lerr_E, Re_1_kpc_lerr_S0, Re_1_kpc_lerr_S))
+Re_2_kpc_lerr_reshp = np.concatenate((Re_2_kpc_lerr_E, Re_2_kpc_lerr_S0, Re_2_kpc_lerr_S))
+Re_3_kpc_lerr_reshp = np.concatenate((Re_3_kpc_lerr_E, Re_3_kpc_lerr_S0, Re_3_kpc_lerr_S))
+
+Re_1_kpc_uerr_reshp = np.concatenate((Re_1_kpc_uerr_E, Re_1_kpc_uerr_S0, Re_1_kpc_uerr_S))
+Re_2_kpc_uerr_reshp = np.concatenate((Re_2_kpc_uerr_E, Re_2_kpc_uerr_S0, Re_2_kpc_uerr_S))
+Re_3_kpc_uerr_reshp = np.concatenate((Re_3_kpc_uerr_E, Re_3_kpc_uerr_S0, Re_3_kpc_uerr_S))
+
+#reenter into the same entry
+D1 = D1_reshp
+D2 = D2_reshp
+D3 = D3_reshp
+
+mass1 = E1_R15BC_K_dustCorr_reshp 
+mass2 = E2_R15BC_K_dustCorr_reshp 
+mass3 = E3_R15BC_K_dustCorr_reshp
+
+mass_err1 = mass_err1_reshp
+mass_err2 = mass_err2_reshp
+mass_err3 = mass_err3_reshp
+
+Re_1_kpc = Re_1_kpc_reshp
+Re_2_kpc = Re_2_kpc_reshp
+Re_3_kpc = Re_3_kpc_reshp
+
+Re_1_kpc_major = Re_1_kpc_major_reshp
+Re_2_kpc_major = Re_2_kpc_major_reshp
+Re_3_kpc_major = Re_3_kpc_major_reshp
+
+print(len(Re_1_kpc_lerr_reshp),len(Re_1_kpc_uerr_reshp))
+print(len(Re_2_kpc_lerr_reshp),len(Re_2_kpc_uerr_reshp))
+print(len(Re_3_kpc_lerr_reshp),len(Re_3_kpc_uerr_reshp))
+
+Re_1_kpc_err =[Re_1_kpc_lerr_reshp, Re_1_kpc_uerr_reshp]
+Re_2_kpc_err =[Re_2_kpc_lerr_reshp, Re_2_kpc_uerr_reshp]
+Re_3_kpc_err =[Re_3_kpc_lerr_reshp, Re_3_kpc_uerr_reshp]
+
+# The mass, and size of E galaxies
+E_R15BC_K_E = np.concatenate((E1_R15BC_K_E,E2_R15BC_K_E,E3_R15BC_K_E))
+Re_kpc_E = np.concatenate((Re_1_kpc_E,Re_2_kpc_E,Re_3_kpc_E))
+Re_kpc_major_E = np.concatenate((Re_1_kpc_major_E,Re_2_kpc_major_E,Re_3_kpc_major_E))
+
+
+################################
 # Define ploting in RDJ15
 def plot_dexter_sample_Bin():
     
@@ -445,35 +636,37 @@ def plot_dexter_sample_Bin():
     SPlot.ShowcaseIndi.Mass_Re_plot(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
                                 xerr = mass_err1*mass1,
                                 colour = '#a5200b',
-                                name=name1,legend='Bin1',ms=8,alpha0 = 0.2, lw=3)
+                                legend='Bin1',ms=8,alpha0 = 0.2, lw=3)
 
     SPlot.ShowcaseIndi.Mass_Re_plot(mass2, Re_2_kpc, yerr = Re_2_kpc_err, 
                                 xerr = mass_err2*mass2,
                                 colour = '#0b5786',
-                                name=name2,legend='Bin2',ms=8,alpha0 = 0.2, lw=3)
+                                legend='Bin2',ms=8,alpha0 = 0.2, lw=3)
     SPlot.ShowcaseIndi.Mass_Re_plot(mass3, Re_3_kpc, yerr = Re_3_kpc_err, 
                                 xerr = mass_err3*mass3,
                                 colour='#2a3236',
-                                name=name1,legend='Bin3',ms=8,alpha0 = 0.2, lw=3)
+                                legend='Bin3',ms=8,alpha0 = 0.2, lw=3)
     
 def plot_dexter_sample_all():
     
     SPlot.ShowcaseIndi.Mass_Re_plot(mass1, Re_1_kpc, yerr = Re_1_kpc_err,
                                 xerr = mass_err1*mass1,
                                 colour = '#a5200b',
-                                name=name1,legend='This work',ms=8,alpha0 = 0.4, lw=3)
+                                legend='spheroids',ms=8,alpha0 = 0.4, lw=3)
 
     SPlot.ShowcaseIndi.Mass_Re_plot(mass2, Re_2_kpc, yerr = Re_2_kpc_err,
                                 xerr = mass_err2*mass2,
                                 colour = '#a5200b',
-                                name=name2,legend='',ms=8,alpha0 = 0.4, lw=3)
+                                legend='',ms=8,alpha0 = 0.4, lw=3)
 
     SPlot.ShowcaseIndi.Mass_Re_plot(mass3, Re_3_kpc, yerr = Re_3_kpc_err,
                                 xerr = mass_err3*mass3,
                                 colour='#a5200b',
-                                name=name1,legend='',ms=8,alpha0 = 0.4,lw=3 )
+                                legend='',ms=8,alpha0 = 0.4,lw=3 )
     
-    
+
+
+
 txsep1 = 40#10*5.5
 txsep2 = 65#10*6.0
 txsep3 = 80#10*6.5
@@ -482,6 +675,7 @@ x,y = 8.6e8,100
 
 circle_size = 310
 
+# The cutting board
 def plot_Barro_cut_all(AX):
     
     Bcut1 = SPlot.SelectionCut(mass1, D1).Barro13_cut()
@@ -583,7 +777,6 @@ def plot_Damjanov_cut_all(AX):
     AX.scatter(S3["bag_x"],S3["bag_y"], facecolors='none', edgecolors='b', s = circle_size)
     
 def plot_Cassata_cut_all(AX):
-    
 
     Cascut1 = SPlot.SelectionCut(mass1, D1).Cassata11_cut()
     Cascut2 = SPlot.SelectionCut(mass2, D2).Cassata11_cut()
@@ -646,6 +839,7 @@ def plot_SDSS_hist():
 
     plt.show()
 
+# Plotting size-mass diagram
 def plot_sizemass_SDSS_mine():
     fig1, ax1 = plt.subplots()        
 
@@ -742,27 +936,28 @@ def plot_dexter_sample_Bin2(A):
               label = "SDSS galaxies",
                                 s = 16,alpha = 0.65)
     #Bin1
-    A.scatter(E1_R15BC, Re_1_kpc,marker='o',c='#a5200b',label='Bin1', 
+    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='Bin1', 
               s =70, alpha=0.7)
-    A.errorbar(E1_R15BC, Re_1_kpc, yerr = Re_1_kpc_err, 
-                  xerr = mass_err1*E1_R15BC, ls='none',linewidth=4, 
+    A.errorbar(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
+                  xerr = mass_err1*mass1, ls='none',linewidth=4, 
                   color ='#a5200b',
                   ecolor='#a5200b', capsize=0, alpha=0.65, marker='o')
     #Bin2
-    A.scatter(E2_R15BC, Re_2_kpc,marker='o',c='#0b5786',label='Bin2', 
+    A.scatter(mass2, Re_2_kpc,marker='o',c='#0b5786',label='Bin2', 
               s =70,alpha=0.71)
-    A.errorbar(E2_R15BC, Re_2_kpc, yerr = Re_2_kpc_err, 
-                  xerr = mass_err2*E2_R15BC,ls='none',linewidth=4,
+    A.errorbar(mass2, Re_2_kpc, yerr = Re_2_kpc_err, 
+                  xerr = mass_err2*mass2,ls='none',linewidth=4,
                   color = '#0b5786',
                   ecolor='#0b5786',capsize=0, alpha=0.65, marker='o')
     #Bin3
-    A.scatter(E3_R15BC, Re_3_kpc,marker='o',c='#2a3236',label='Bin3', 
+    A.scatter(mass3, Re_3_kpc,marker='o',c='#2a3236',label='Bin3', 
               s =70, alpha=0.7)
-    A.errorbar(E3_R15BC, Re_3_kpc, yerr = Re_3_kpc_err, 
-                  xerr = mass_err3*E3_R15BC,ls='none',linewidth=4,
+    A.errorbar(mass3, Re_3_kpc, yerr = Re_3_kpc_err, 
+                  xerr = mass_err3*mass3,ls='none',linewidth=4,
                   color = '#2a3236',
                   ecolor='#2a3236',capsize=0,
                   alpha=0.65, marker='o')   
+    
     
     A.set_ylim(ylim[0],ylim[1])
     A.set_xlim(xlim[0],xlim[1])
@@ -771,8 +966,16 @@ def plot_dexter_sample_Bin2(A):
     A.set_yscale( 'log' )    
 
 def plot_dexter_sample_all2(A,alpha=0.65):
+    
+    # Plot E galaxies
+    A.plot(E_R15BC_K_E, Re_kpc_E ,marker='s',color='#1b872a',label='E', 
+              ms =10, alpha=1.0,linestyle="None")   
+    # Plot ES galaxies
+    A.plot(E_R15BC_K_ES, Re_kpc_ES,marker='s',color='#ccab05',label='ES', 
+              ms =10, alpha=1.0,linestyle="None")
+    
     #Bin1
-    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='This work', 
+    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='Spheroids', 
               s =70, alpha=0.1)
     A.errorbar(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
@@ -793,7 +996,7 @@ def plot_dexter_sample_all2(A,alpha=0.65):
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0,
                   alpha=alpha, marker='o')   
-
+    
     
     A.set_xlim(left = xlim[0], right = xlim[1])
     A.set_ylim(bottom = ylim[0], top = ylim[1])
@@ -801,43 +1004,17 @@ def plot_dexter_sample_all2(A,alpha=0.65):
     A.set_xscale( 'log' )
     A.set_yscale( 'log' )
     
-    
-    
-def plot_dexter_sample_all2_T11(A,scale='log',alpha=0.65):
-    #Bin1
-    A.scatter(E1_T11, Re_1_kpc,marker='o',c='#a5200b',label='This work', 
-              s =70, alpha=0.7)
-    A.errorbar(E1_T11, Re_1_kpc, yerr = Re_1_kpc_err, 
-                  xerr = mass_err1*E1_T11, ls='none',linewidth=4, 
-                  color ='#a5200b',
-                  ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
-    #Bin2
-    A.scatter(E2_T11, Re_2_kpc,marker='o',c='#a5200b',label='', 
-              s =70,alpha=0.71)
-    A.errorbar(E2_T11, Re_2_kpc, yerr = Re_2_kpc_err, 
-                  xerr = mass_err2*E2_T11,ls='none',linewidth=4,
-                  color = '#a5200b',
-                  ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
-    #Bin3
-    A.scatter(E3_T11, Re_3_kpc,marker='o',c='#a5200b',label='', 
-              s =70, alpha=0.7)
-    A.errorbar(E3_T11, Re_3_kpc, yerr = Re_3_kpc_err, 
-                  xerr = mass_err3*E3_T11,ls='none',linewidth=4,
-                  color = '#a5200b',
-                  ecolor='#a5200b',capsize=0,
-                  alpha=alpha, marker='o')   
-
-    
-    A.set_xlim(left = xlim[0], right = xlim[1])
-    A.set_ylim(bottom = ylim[0], top = ylim[1])
-       
-    A.set_xscale(scale)
-    A.set_yscale(scale)
-
 
 def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
+    # Plot E galaxies
+    A.plot(E_R15BC_K_E, Re_kpc_major_E ,marker='s',color='#1b872a',label='E', 
+              ms =10, alpha=1.0,linestyle="None")   
+    # Plot ES galaxies
+    A.plot(E_R15BC_K_ES, Re_kpc_major_ES,marker='s',color='#ccab05',label='ES', 
+              ms =10, alpha=1.0,linestyle="None")
+    
     #Bin1
-    A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label='This work', 
+    A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label='Spheroids', 
               s =70, alpha=0.7)
     A.errorbar(mass1, Re_1_kpc_major, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
@@ -858,6 +1035,7 @@ def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0,
                   alpha=alpha, marker='o')   
+    
 
     
     A.set_xlim(left = xlim[0], right = xlim[1])
@@ -893,7 +1071,7 @@ def plot_sizemass_6plot():
     axs0 = plt.subplot(gs[0])
     plot_dexter_sample_Bin2(axs0)
     axs0.legend(loc=2)
-    axs0.set_ylabel("$R_{e,sph}$ (kpc)",fontsize=16)
+    axs0.set_ylabel(r"$R_{e,sph} \rm~(kpc)$",fontsize=16)
     #axs0.grid(True)
 
     #plot Panel (2)
@@ -916,7 +1094,7 @@ def plot_sizemass_6plot():
     axs2 = plt.subplot(gs[2])
     plot_sizemass_BarroCut_mine(axs2)
     axs2.legend(loc=4)
-    axs2.set_ylabel("$R_{e,sph}$ (kpc)",fontsize=16)
+    axs2.set_ylabel(r"$R_{e,sph} \rm~(kpc)$",fontsize=16)
     #axs2.grid(True)
     
     #plot Panel (4)
@@ -931,7 +1109,7 @@ def plot_sizemass_6plot():
     axs4 = plt.subplot(gs[4])
     plot_sizemass_vdWelCut_mine(axs4)
     axs4.legend(loc=4)
-    axs4.set_ylabel("$ R_{e,sph}$ (kpc)", fontsize=16)
+    axs4.set_ylabel(r"$ R_{e,sph} \rm~(kpc)$", fontsize=16)
     axs4.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axs4.grid(True)
    
@@ -1162,7 +1340,7 @@ def graham_equ(mass, B):
 
 ss = graham_equ
 
-print(len(E_T11),len(Re_kpc))
+#print(len(E_T11),len(Re_kpc))
 
 ##fitting
 #popt,pcov = curve_fit(s, E_T11, Re_kpc)
@@ -1232,485 +1410,3 @@ def plot_sizemass_z0comparison():
 
 
 ########################
-
-
-import matplotlib.patches as mpatches
-
-def count_gal(x,y,x1,x2,y1,y2):
-    # quick function to count how many sph live within x1,x2,y1,y2 boundary
-    # x ,y are 1D arrays
-    count =0
-    for i in range(len(x)):
-        if x[i] < x2 and x[i] >x1 and y[i] < y2 and y[i] > y1:
-            count = count +1 
-        else:
-            pass
-    print('count',count)
-
-count_gal(E_R15BC_K,Re_kpc_mine, 1e10,2.5e11,0.4,6.0)
-
-def add_arrow(A,x0,y0,x1,y1):
-    N = len(x0)
-
-    i=0
-    for i in range(N):
-        #A.arrow(x0[i], y0[i], x1[i], y1[i],
-        #        head_width=0.05, head_length=0.1, fc='k', ec='k')
-        arrow = mpatches.FancyArrowPatch((x0[i],y0[i]), ((x1[i]),(y1[i])),
-                                         lw = 2,
-                                         mutation_scale=30, arrowstyle="-|>")
-        A.add_patch(arrow)
-    
-
-
-def plot_sizemass_trans(A, mass_old, R_old, mass_new, R_new,
-                        label_old = None, label_new=None):
-
-    #Bin1
-    A.scatter(mass_new, R_new,marker='o',c='#a5200b',label=label_new, 
-              s =120, alpha=0.7)
-    
-    #A.scatter(E1_R15BC_K_SE_prof, Re_1_kpc,marker='x',c='#a5200b',label='Bin1', 
-     #         s =70, alpha=0.7)
-    
-    A.scatter(mass_old, R_old,marker='x',c='g',label=label_old, 
-              s =70, alpha=0.0)
-    
-    
-import matplotlib.image as mpimg
-from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
-
-
-def add_morph_marker(A,x,y):
-    E0_img = mpimg.imread('./morph/E0.png')    
-
-    imagebox = OffsetImage(E0_img, zoom=0.1)
-                           
-
-    N = len(x)
-    for i in range(N):
-        ab = AnnotationBbox(imagebox, (x[i], y[i]), 
-                            bboxprops =dict(edgecolor='None'))
-
-        A.add_artist(ab)
-
-
-#########plot transition##############
-
-xlim_mo = [4.8e9,1.24e12]
-ylim_mo = [0.28,44]
-#plot morphology based selection
-text_location=[1.61e10,10]
-delta_text = 3
-
-
-def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=None,
-                               xo_1=None,yo_1=None,xn_1=None,yn_1=None, name1=None,
-                               xo_2=None,yo_2=None,xn_2=None,yn_2=None, name2=None,
-                               xo_3=None,yo_3=None,xn_3=None,yn_3=None, name3=None,
-                               xo_4=None,yo_4=None,xn_4=None,yn_4=None, name4=None,
-                               xo_5=None,yo_5=None,xn_5=None,yn_5=None, name5=None,
-                               xo_6=None,yo_6=None,xn_6=None,yn_6=None, name6=None,
-                               xo_7=None,yo_7=None,xn_7=None,yn_7=None, name7=None,
-                               xo_8=None,yo_8=None,xn_8=None,yn_8=None, name8=None):
-    fig = plt.figure()
-    gs = gridspec.GridSpec(ncols=3, nrows=3,
-                               hspace=0, wspace=0.0) 
-
-    axt0 = plt.subplot(gs[0])
-
-    plot_sizemass_trans(axt0,xo_0,yo_0,xn_0,yn_0)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      "", 
-                                                      alpha0=0,AX=axt0)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      "", 
-                                                      alpha0=0,AX=axt0)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      "", 
-                                                      alpha0=0,AX=axt0)             
-    
-    add_arrow(axt0,xo_0,yo_0,xn_0,yn_0)
-    
-    SPlot.ShowcaseIndi.show_name(xo_0,yo_0, name0, A=axt0,size=16)
-
-    axt0.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b")    
-    axt0.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
-    
-    axt0.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt0.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt0.set_xscale( 'log' )
-    axt0.set_yscale( 'log' )
-    
-    axt0.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
-    axt0.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
-    
-    
-    #axt0.legend(loc=4)
-    #axt0.grid(True)
-
-    axt1 = plt.subplot(gs[1],sharey=axt0)
-
-    plot_sizemass_trans(axt1,xo_1,yo_1,xn_1,yn_1)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt1)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt1)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt1)
-    add_arrow(axt1,xo_1,yo_1,xn_1,yn_1)
-
-    SPlot.ShowcaseIndi.show_name(xo_1,yo_1, name1, A=axt1,size=16)
-    
-    axt1.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b") 
-    axt1.text(text_location[0],text_location[1]-delta_text,r"$\rm S0 -> E$",fontsize=22,color="k")    
-    
-    axt1.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt1.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt1.set_xscale( 'log' )
-    axt1.set_yscale( 'log' )
-    
-    axt1.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
-    #axt1.legend(loc=4)
-    #axt1.grid(True)
-    plt.setp(axt1.get_yticklabels(), visible=False)
-    
-    axt2 = plt.subplot(gs[2],sharey=axt0)
-
-    plot_sizemass_trans(axt2,xo_2,yo_2,xn_2,yn_2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    add_arrow(axt2,xo_2,yo_2,xn_2,yn_2)
-       
-    #add_morph_marker(axt2,E3_R15BC,Re_3_kpc)
-    #add_arrow(axt2,E3_R15BC_K_SE_SDSS,Sersic2D_50rad_3_kpc,E3_R15BC,Re_3_kpc)
-    SPlot.ShowcaseIndi.show_name(xo_2,yo_2, name2, A=axt2,size=16)
-    
-    axt2.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b") 
-    axt2.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-    
-    axt2.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt2.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt2.set_xscale( 'log' )
-    axt2.set_yscale( 'log' )
-        
-    axt2.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
-    #axt2.legend(loc=4)
-    #axt2.grid(True)
-    plt.setp(axt2.get_yticklabels(), visible=False)
-
-
-    axt3 = plt.subplot(gs[3])
-    plot_sizemass_trans(axt3,xo_3,yo_3,xn_3,yn_3)
-    SPlot.ShowcaseIndi.show_name(xo_3,yo_3, name3, A=axt3,size=16)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)    
-    add_arrow(axt3,xo_3,yo_3,xn_3,yn_3)
-
-    axt3.text(text_location[0],text_location[1],r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
-    axt3.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
-   
-    axt3.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt3.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt3.set_xscale( 'log' )
-    axt3.set_yscale( 'log' )
-        
-    axt3.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
-    #axt3.legend(loc=4)
-    #axt3.grid(True)
-    plt.setp(axt3.get_xticklabels(), visible=False)
-    
-    axt4 = plt.subplot(gs[4])
-    
-    plot_sizemass_trans(axt4,xo_4,yo_4,xn_4,yn_4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)    
-    add_arrow(axt4,xo_4,yo_4,xn_4,yn_4)
-    SPlot.ShowcaseIndi.show_name(xo_4,yo_4, name4, A=axt4,size=16)
-
-    axt4.text(text_location[0],text_location[1],
-              r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
-    axt4.text(text_location[0],text_location[1]-delta_text,
-              r"$\rm S0 -> E$",fontsize=22,color="k")    
-
-    axt4.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt4.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt4.set_xscale( 'log' )
-    axt4.set_yscale( 'log' )
-        
-    #axt4.legend(loc=4)
-    #axt4.grid(True)
-    plt.setp(axt4.get_yticklabels(), visible=False)
-
-    axt5 = plt.subplot(gs[5])
-    
-    plot_sizemass_trans(axt5,xo_5,yo_5,xn_5,yn_5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    add_arrow(axt5,xo_5,yo_5,xn_5,yn_5)
-    SPlot.ShowcaseIndi.show_name(xo_5,yo_5, name5, A=axt5,size=16)
-
-    axt5.text(text_location[0],text_location[1],r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
-    axt5.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-    
-    axt5.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt5.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt5.set_xscale( 'log' )
-    axt5.set_yscale( 'log' )
-        
-    #axt5.legend(loc=4)
-    #axt5.grid(True)
-    plt.setp(axt5.get_yticklabels(), visible=False)
-
-    axt6 = plt.subplot(gs[6])
-    
-    plot_sizemass_trans(axt6,xo_6,yo_6,xn_6,yn_6,label_new="Spheroids")
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      "Barro et al. 2013", 
-                                                      alpha0=0,AX=axt6)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      "van der Wel et al. 2014", 
-                                                      alpha0=0,AX=axt6)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      "van Dokkum et al. 2015", 
-                                                      alpha0=0,AX=axt6)      
-    add_arrow(axt6,xo_6,yo_6,xn_6,yn_6)
-    SPlot.ShowcaseIndi.show_name(xo_6,yo_6, name6, A=axt6,size=16)
-
-    axt6.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
-    axt6.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
-
-    axt6.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt6.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt6.set_xscale( 'log' )
-    axt6.set_yscale( 'log' )
-        
-    axt6.legend(loc=3)
-    #axt6.grid(True)
-    axt6.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
-    axt6.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)    
-
-
-    axt7 = plt.subplot(gs[7])
-      
-    plot_sizemass_trans(axt7,xo_7,yo_7,xn_7,yn_7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)     
-    #add_morph_marker(axt2,E3_R15BC,Re_3_kpc)
-    add_arrow(axt7,xo_7,yo_7,xn_7,yn_7)
-    SPlot.ShowcaseIndi.show_name(xo_7,yo_7, name7, A=axt7,size=16)
-
-    axt7.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
-    axt7.text(text_location[0],text_location[1]-delta_text,r"$\rm S0 -> E$",fontsize=22,color="k")    
-
-    
-    axt7.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt7.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt7.set_xscale( 'log' )
-    axt7.set_yscale( 'log' )
-        
-    axt7.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
-    #axt7.legend(loc=4)
-    #axt7.grid(True)
-    plt.setp(axt7.get_yticklabels(), visible=False)
-
-    axt8 = plt.subplot(gs[8])
-    plot_sizemass_trans(axt8,xo_8,yo_8,xn_8,yn_8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)    
-    #add_morph_marker(axt2,E3_R15BC,Re_3_kpc)
-    add_arrow(axt8,xo_8,yo_8,xn_8,yn_8)
-    SPlot.ShowcaseIndi.show_name(xo_8,yo_8, name8, A=axt8,size=18)
-
-    axt8.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
-    axt8.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-
-    
-    axt8.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt8.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt8.set_xscale( 'log' )
-    axt8.set_yscale( 'log' )
-        
-    axt8.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
-    #axt8.legend(loc=4)
-    #axt8.grid(True)
-    plt.setp(axt8.get_yticklabels(), visible=False)
-    plt.show()
-
-
-# Apply Barro cut, select the subsample
-Bcut1 = SPlot.SelectionCut(mass1, D1).Barro13_cut()
-Bcut2 = SPlot.SelectionCut(mass2, D2).Barro13_cut()
-Bcut3 = SPlot.SelectionCut(mass3, D3).Barro13_cut()
-
-S1 = SSort.selection_generic(mass1, Re_1_kpc, Bcut1)
-S2 = SSort.selection_generic(mass2, Re_2_kpc, Bcut2)
-S3 = SSort.selection_generic(mass3, Re_3_kpc, Bcut3)
-
-#select the morphology of the host that passes the selection
-morph1_sub = SSort.cherry_pick(S1['index'], morph1_new)
-morph2_sub = SSort.cherry_pick(S2['index'], morph2_new)
-morph3_sub = SSort.cherry_pick(S3['index'], morph3_new)
-
-# Bin1 size and mass
-
-index_Bin1_E = SSort.morph_str_selection(S1['index'], morph1_sub)["E"]
-index_Bin1_S0 = SSort.morph_str_selection(S1['index'], morph1_sub)["S0"]
-index_Bin1_S = SSort.morph_str_selection(S1['index'], morph1_sub)["S"]
-
-morph_Bin1_E = SSort.cherry_pick(index_Bin1_E, morph1_new)
-morph_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, morph1_new)
-morph_Bin1_S = SSort.cherry_pick(index_Bin1_S, morph1_new)
-
-E_host_Bin1_E = SSort.cherry_pick(index_Bin1_E, E1_R15BC_K_SE_SDSS)
-R_host_Bin1_E = SSort.cherry_pick(index_Bin1_E, Sersic2D_50rad_1_kpc)
-E_sph_Bin1_E = SSort.cherry_pick(index_Bin1_E, E1_R15BC)
-R_sph_Bin1_E = SSort.cherry_pick(index_Bin1_E, Re_1_kpc)
-
-E_host_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, E1_R15BC_K_SE_SDSS)
-R_host_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, Sersic2D_50rad_1_kpc)
-E_sph_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, E1_R15BC)
-R_sph_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, Re_1_kpc)
-
-E_host_Bin1_S = SSort.cherry_pick(index_Bin1_S, E1_R15BC_K_SE_SDSS)
-R_host_Bin1_S = SSort.cherry_pick(index_Bin1_S, Sersic2D_50rad_1_kpc)
-E_sph_Bin1_S = SSort.cherry_pick(index_Bin1_S, E1_R15BC)
-R_sph_Bin1_S = SSort.cherry_pick(index_Bin1_S, Re_1_kpc)
- 
-#Bin2 size and mass
-index_Bin2_E = SSort.morph_str_selection(S2['index'], morph2_sub)["E"]
-index_Bin2_S0 = SSort.morph_str_selection(S2['index'], morph2_sub)["S0"]
-index_Bin2_S = SSort.morph_str_selection(S2['index'], morph2_sub)["S"]
-
-morph_Bin2_E = SSort.cherry_pick(index_Bin2_E, morph2_new)
-morph_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, morph2_new)
-morph_Bin2_S = SSort.cherry_pick(index_Bin2_S, morph2_new)
-
-E_host_Bin2_E = SSort.cherry_pick(index_Bin2_E, E2_R15BC_K_SE_SDSS)
-R_host_Bin2_E = SSort.cherry_pick(index_Bin2_E, Sersic2D_50rad_2_kpc)
-E_sph_Bin2_E = SSort.cherry_pick(index_Bin2_E, E2_R15BC)
-R_sph_Bin2_E = SSort.cherry_pick(index_Bin2_E, Re_2_kpc)
-
-E_host_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, E2_R15BC_K_SE_SDSS)
-R_host_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, Sersic2D_50rad_2_kpc)
-E_sph_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, E2_R15BC)
-R_sph_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, Re_2_kpc)
-
-E_host_Bin2_S = SSort.cherry_pick(index_Bin2_S, E2_R15BC_K_SE_SDSS)
-R_host_Bin2_S = SSort.cherry_pick(index_Bin2_S, Sersic2D_50rad_2_kpc)
-E_sph_Bin2_S =  SSort.cherry_pick(index_Bin2_S, E2_R15BC)
-R_sph_Bin2_S = SSort.cherry_pick(index_Bin2_S, Re_2_kpc)
-
-# Bin3 size and mass
-index_Bin3_E = SSort.morph_str_selection(S3['index'], morph3_sub)["E"]
-index_Bin3_S0 = SSort.morph_str_selection(S3['index'], morph3_sub)["S0"]
-index_Bin3_S = SSort.morph_str_selection(S3['index'], morph3_sub)["S"]
-
-morph_Bin3_E = SSort.cherry_pick(index_Bin3_E, morph3_new)
-morph_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, morph3_new)
-morph_Bin3_S = SSort.cherry_pick(index_Bin3_S, morph3_new)
-
-E_host_Bin3_E = SSort.cherry_pick(index_Bin3_E, E3_R15BC_K_SE_SDSS)
-R_host_Bin3_E = SSort.cherry_pick(index_Bin3_E, Sersic2D_50rad_3_kpc)
-E_sph_Bin3_E = SSort.cherry_pick(index_Bin3_E, E3_R15BC)
-R_sph_Bin3_E = SSort.cherry_pick(index_Bin3_E, Re_3_kpc)
-
-E_host_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, E3_R15BC_K_SE_SDSS)
-R_host_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, Sersic2D_50rad_3_kpc)
-E_sph_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, E3_R15BC)
-R_sph_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, Re_3_kpc)
-
-E_host_Bin3_S = SSort.cherry_pick(index_Bin3_S, E3_R15BC_K_SE_SDSS)
-R_host_Bin3_S = SSort.cherry_pick(index_Bin3_S, Sersic2D_50rad_3_kpc)
-E_sph_Bin3_S =  SSort.cherry_pick(index_Bin3_S, E3_R15BC)
-R_sph_Bin3_S = SSort.cherry_pick(index_Bin3_S, Re_3_kpc)
-
-# plot the comaprison
-#plot_sizemass_trans_3plots(xo_0 = E_host_Bin1_E, yo_0 = R_host_Bin1_E, xn_0 = E_sph_Bin1_E, yn_0 = R_sph_Bin1_E, name0 = morph_Bin1_E, 
-#                           xo_1 = E_host_Bin1_S0, yo_1 = R_host_Bin1_S0, xn_1 = E_sph_Bin1_S0, yn_1 = R_sph_Bin1_S0, name1 = morph_Bin1_S0,
-#                           xo_2 = E_host_Bin1_S, yo_2= R_host_Bin1_S, xn_2 = E_sph_Bin1_S, yn_2 = R_sph_Bin1_S, name2 = morph_Bin1_S,
-#                           xo_3 = E_host_Bin2_E, yo_3 = R_host_Bin2_E, xn_3 = E_sph_Bin2_E, yn_3 = R_sph_Bin2_E, name3 = morph_Bin2_E,
-#                           xo_4 = E_host_Bin2_S0, yo_4 = R_host_Bin2_S0, xn_4 = E_sph_Bin2_S0, yn_4 = R_sph_Bin2_S0, name4 = morph_Bin2_S0,
-#                           xo_5 = E_host_Bin2_S, yo_5 = R_host_Bin2_S, xn_5 = E_sph_Bin2_S, yn_5 = R_sph_Bin2_S, name5 = morph_Bin2_S,
-#                           xo_6 = E_host_Bin3_E, yo_6 = R_host_Bin3_E, xn_6 = E_sph_Bin3_E, yn_6 = R_sph_Bin3_E, name6 = morph_Bin3_E,
-#                           xo_7 = E_host_Bin3_S0, yo_7 = R_host_Bin3_S0, xn_7 = E_sph_Bin3_S0, yn_7 = R_sph_Bin3_S0, name7 = morph_Bin3_S0,
-#                           xo_8 = E_host_Bin3_S, yo_8 = R_host_Bin3_S, xn_8 = E_sph_Bin3_S, yn_8 = R_sph_Bin3_S, name8 = morph_Bin3_S)
-
-#reserve
-#
-#fig, ax = plt.subplots()        
-##SPlot.SelectionCut(mass0,Dist0).plot_cut()
-#SPlot.ShowcaseIndi.Mass_Re_plot(Benzanson2015_mass,Benzanson2015_Re, colour = '#4277cf',
- #                               legend='Benzanson et al. 2015',ms=8,alpha0 = 0.2, lw=3, marker = "^")
-
-#SPlot.ShowcaseIndi.Mass_Re_plot(Zahid2015_mass,Zahid2015_Re, colour = '#c17dd5',
-#                                legend='Zahid et al. 2015',ms=8,alpha0 = 0.2, lw=3, marker = "^")
-
-#plot_dexter_sample_all()
-#
-#plt.ylim(ylim[0],ylim[1])
-#plt.xlim(xlim[0],xlim[1])
-#plt.show()
-#
-#
-#fig, ax = plt.subplots()        
-#plt.plot(E1_R15BC,mag_g1-mag_i1,'o')
-#plt.plot(E2_R15BC,mag_g2-mag_i2,'o')
-#plt.plot(E3_R15BC,mag_g3-mag_i3,'o')
-#
-#plt.show()
-

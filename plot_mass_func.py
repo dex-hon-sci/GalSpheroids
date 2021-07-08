@@ -168,9 +168,9 @@ print(array1_2kpc)
 print(np.size(array1_2kpc),np.size(array2_2kpc),np.size(array3_2kpc))
 print(np.size(Re_1_kpc),np.size(Re_2_kpc),np.size(Re_3_kpc))
 
-mass1 = np.log10(E1_IP13)
-mass2 = np.log10(E2_IP13)
-mass3 = np.log10(E3_IP13)
+mass1 = np.log10(E1_R15BC)
+mass2 = np.log10(E2_R15BC)
+mass3 = np.log10(E3_R15BC)
 
 E1_2kpc = SSort.selection_generic(10**mass1, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
 E2_2kpc = SSort.selection_generic(10**mass2, Re_2_kpc, array2_2kpc, direction="down")['bag_x']

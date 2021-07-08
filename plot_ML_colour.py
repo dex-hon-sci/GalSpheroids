@@ -89,7 +89,7 @@ popt_Z09,pcov_Z09 = curve_fit(SAna.AnalyticFunctions.linear_func_1D,
 popt_RC15,pcov_RC15 = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
                                 E_RC15n, ML_select_RC15n)
 popt_IP13,pcov_IP13 = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
-                                E_IP13n, ML_select_IP13n)
+                                E_IP13n, ML_select_IP13n, p0=[6.23, 1.2])
 
 print(E_IP13n,ML_select_IP13n)
 print(*popt_IP13, *pcov_IP13)
@@ -138,3 +138,26 @@ def plot_ML_mass(x,y):
     return fig
 
 plot_ML_mass(E_T11,ML_select_T11)
+
+
+def plot_ML_gi():
+    fig = plt.figure()
+    ax0 = plt.subplot()   
+    
+    ax0.plot(mag_g-mag_i,ML_select_T11,'o',ms=8, color = "r", alpha = 0.4,label='$\mathrm{T11}$')
+    ax0.plot(mag_g-mag_i,ML_select_Z09,'o',ms=8, color = "b", alpha = 0.4,label='$\mathrm{Z09}$')
+    ax0.plot(mag_g-mag_i,ML_select_RC15,'o',ms=8, color = "k", alpha = 0.4, label='$\mathrm{RC15}$')
+    ax0.plot(mag_g-mag_i,ML_select_IP13,'o',ms=8, color = "g", alpha = 0.4, label='$\mathrm{IP13}$')
+    
+    ax0.set_ylabel("$ M_*/L$", fontsize=16)
+    ax0.set_xlabel(r"$ (g-i)~\rm(mag)$", fontsize=16)
+    ax0.set_ylim(0.5,6)
+    ax0.set_xlim(0.3,2.0)
+    
+    
+    ax0.set_yscale('log')
+
+    ax0.legend(loc="lower right")
+    
+    plt.show()
+plot_ML_gi()
