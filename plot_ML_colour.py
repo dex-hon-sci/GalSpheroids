@@ -20,6 +20,10 @@ import matplotlib as mpl
 import matplotlib.gridspec as gridspec
 
 
+plt.style.use('classic')
+
+mpl.rcParams['grid.linewidth'] = 1.0
+
 """
 Input file
 
@@ -59,7 +63,7 @@ DD1_err = D["Dist_err"]
 scale1 = D["Scale"]
 
 
-mag_g, mag_i = broad_cut[:,10],broad_cut[:,9]
+mag_g, mag_i = np.nan_to_num(broad_cut[:,10],neginf=0),np.nan_to_num(broad_cut[:,9],neginf=0)
 
 ML_select_T11= SPlot.MLRelationIband(mag_g,mag_i).Taylor11_MassRatio
 ML_select_Z09= SPlot.MLRelationIband(mag_g,mag_i).Zibetti09_MassRatio
@@ -91,8 +95,17 @@ popt_RC15,pcov_RC15 = curve_fit(SAna.AnalyticFunctions.linear_func_1D,
 popt_IP13,pcov_IP13 = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
                                 E_IP13n, ML_select_IP13n, p0=[6.23, 1.2])
 
-print(E_IP13n,ML_select_IP13n)
-print(*popt_IP13, *pcov_IP13)
+colour = mag_g-mag_i
+#colour = np.nan_to_num(list(colour), posinf=0)
+colour[colour > 1.79769313e+308] = 0
+#print(E_IP13n,ML_select_IP13n)
+#print(*popt_IP13, *pcov_IP13)
+print(colour)
+print(min(colour),np.median(colour),max(colour))
+print(np.median(colour)-np.std(colour),np.median(colour),np.median(colour)+np.std(colour))
+print(np.std(colour)/np.sqrt(len(colour)))
+
+
 """
 Plotting
 
@@ -101,7 +114,7 @@ Plotting
 x = np.linspace(0.5e9, 2e13,num=50)
 
 def plot_ML_mass(x,y):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
     ax0 = plt.subplot()
     
     # data points
@@ -133,6 +146,7 @@ def plot_ML_mass(x,y):
     ax0.plot(x,line_IP13,'-', color = "g")   
 
     ax0.legend(loc="lower right")
+    plt.tight_layout()
     
     plt.show()
     return fig
@@ -141,23 +155,24 @@ plot_ML_mass(E_T11,ML_select_T11)
 
 
 def plot_ML_gi():
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
     ax0 = plt.subplot()   
     
-    ax0.plot(mag_g-mag_i,ML_select_T11,'o',ms=8, color = "r", alpha = 0.4,label='$\mathrm{T11}$')
-    ax0.plot(mag_g-mag_i,ML_select_Z09,'o',ms=8, color = "b", alpha = 0.4,label='$\mathrm{Z09}$')
-    ax0.plot(mag_g-mag_i,ML_select_RC15,'o',ms=8, color = "k", alpha = 0.4, label='$\mathrm{RC15}$')
-    ax0.plot(mag_g-mag_i,ML_select_IP13,'o',ms=8, color = "g", alpha = 0.4, label='$\mathrm{IP13}$')
+    ax0.plot(mag_g-mag_i,np.log10(ML_select_T11),'-',lw=3, color = "r", alpha = 0.6,label='$\mathrm{T11}$')
+    ax0.plot(mag_g-mag_i,np.log10(ML_select_Z09),'-',lw=3, color = "b", alpha = 0.6,label='$\mathrm{Z09}$')
+    ax0.plot(mag_g-mag_i,np.log10(ML_select_RC15),'-',lw=3, color = "k", alpha = 0.6, label='$\mathrm{RC15}$')
+    ax0.plot(mag_g-mag_i,np.log10(ML_select_IP13),'-',lw=3, color = "g", alpha = 0.6, label='$\mathrm{IP13}$')
     
-    ax0.set_ylabel("$ M_*/L$", fontsize=16)
+    ax0.set_ylabel("$ log_{10}(M_*/L)$", fontsize=16)
     ax0.set_xlabel(r"$ (g-i)~\rm(mag)$", fontsize=16)
-    ax0.set_ylim(0.5,6)
+    #ax0.set_ylim(0.5,6)
     ax0.set_xlim(0.3,2.0)
-    
-    
-    ax0.set_yscale('log')
+    ax0.set_ylim(-0.5,0.7)
+
+    #ax0.set_yscale('log')
 
     ax0.legend(loc="lower right")
+    plt.tight_layout()
     
     plt.show()
 plot_ML_gi()

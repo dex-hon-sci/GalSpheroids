@@ -86,7 +86,7 @@ def plot_Ierr_R(item_bundle, Rnorm):
 
     """
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
 
     I_dump = []
     for i in range(len(item_bundle)):
@@ -99,7 +99,7 @@ def plot_Ierr_R(item_bundle, Rnorm):
         # dumping all Ierr/I into one list to calculate sigma
         #I_dump = I_dump + list(item_bundle[i][1])
         
-        plt.plot(R,I,'bo',ms=1)
+        plt.plot(R,I,'bo',ms=0.3)
     s_I = np.std(I_dump)
     
     plt.hlines(0, 0, 1) #centre line at y=0
@@ -109,8 +109,10 @@ def plot_Ierr_R(item_bundle, Rnorm):
     plt.ylim(0, 0.05)
     plt.xlim(0, 1.0)
 
-    plt.xlabel(r"$R/\rm R_{max}$", fontsize=22)
-    plt.ylabel(r"$|I_\mathrm{err}|/I$", fontsize=22)    
+    plt.xlabel(r"$R/\rm R_{max}$", fontsize=16)
+    plt.ylabel(r"$|I_\mathrm{err}|/I$", fontsize=16)    
+    
+    plt.tight_layout()
     return None
 
 #print(read_Ierr_R(filelist0))

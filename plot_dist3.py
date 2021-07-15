@@ -84,6 +84,11 @@ g1 , i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 g2 , i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
 g3 , i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 
+
+SPlot.ShowcaseCompare2.plot_compare_generic(g1, i1,para_name="Bin1",label=["g","i"])
+SPlot.ShowcaseCompare2.plot_compare_generic(g2, i2,para_name="Bin1",label=["g","i"])
+SPlot.ShowcaseCompare2.plot_compare_generic(g3, i3,para_name="Bin1",label=["g","i"])
+
 corr_dist1, corr_E1 = D0_Bin1_table[:,12],  D0_Bin1_table[:,13]
 corr_dist2, corr_E2 = D0_Bin2_table[:,12],  D0_Bin2_table[:,13]
 corr_dist3, corr_E3 = D0_Bin3_table[:,12],  D0_Bin3_table[:,13]
@@ -264,18 +269,37 @@ M1 = SPlot.MassCalculation(i1, corr_dist1, 4.53,g1,i1)
 M2 = SPlot.MassCalculation(i2, corr_dist2, 4.53,g2,i2)
 M3 = SPlot.MassCalculation(i3, corr_dist3, 4.53,g3,i3)
 
+# use Cosmicflow-3 distance
+M1_d = SPlot.MassCalculation(i1, d1, 4.53,g1,i1)
+M2_d = SPlot.MassCalculation(i2, d2, 4.53,g2,i2)
+M3_d = SPlot.MassCalculation(i3, d3, 4.53,g3,i3)
+
 E1, E2, E3 = M1.cal_Mass(ML_select1_IP13), M2.cal_Mass(ML_select2_IP13), M3.cal_Mass(ML_select3_IP13)
 E1_T11, E2_T11, E3_T11 = M1.cal_Mass(ML_select1_T11), M2.cal_Mass(ML_select2_T11), M3.cal_Mass(ML_select3_T11)
 E1_Z09, E2_Z09, E3_Z09 = M1.cal_Mass(ML_select1_Z09), M2.cal_Mass(ML_select2_Z09), M3.cal_Mass(ML_select3_Z09)
 E1_RC15, E2_RC15, E3_RC15  = M1.cal_Mass(ML_select1_RC15), M2.cal_Mass(ML_select2_RC15), M3.cal_Mass(ML_select3_RC15)
-
 
 E1, E2, E3 = np.log10(E1),np.log10(E2),np.log10(E3)
 E1_T11, E2_T11, E3_T11 = np.log10(E1_T11),np.log10(E2_T11),np.log10(E3_T11)
 E1_Z09, E2_Z09, E3_Z09 = np.log10(E1_Z09),np.log10(E2_Z09),np.log10(E3_Z09)
 E1_RC15, E2_RC15, E3_RC15  = np.log10(E1_RC15), np.log10(E2_RC15), np.log10(E3_RC15)
 
-# look for ultra-massive sample
+
+E1_d, E2_d, E3_d = M1_d.cal_Mass(ML_select1_IP13), M2_d.cal_Mass(ML_select2_IP13), M3_d.cal_Mass(ML_select3_IP13)
+E1_T11_d, E2_T11_d, E3_T11_d = M1_d.cal_Mass(ML_select1_T11), M2_d.cal_Mass(ML_select2_T11), M3_d.cal_Mass(ML_select3_T11)
+E1_Z09_d, E2_Z09_d, E3_Z09_d = M1_d.cal_Mass(ML_select1_Z09), M2_d.cal_Mass(ML_select2_Z09), M3_d.cal_Mass(ML_select3_Z09)
+E1_RC15_d, E2_RC15_d, E3_RC15_d  = M1_d.cal_Mass(ML_select1_RC15), M2_d.cal_Mass(ML_select2_RC15), M3_d.cal_Mass(ML_select3_RC15)
+
+E1_d, E2_d, E3_d = np.log10(E1_d),np.log10(E2_d),np.log10(E3_d)
+E1_T11_d, E2_T11_d, E3_T11_d = np.log10(E1_T11_d),np.log10(E2_T11_d),np.log10(E3_T11_d)
+E1_Z09_d, E2_Z09_d, E3_Z09_d = np.log10(E1_Z09_d),np.log10(E2_Z09_d),np.log10(E3_Z09_d)
+E1_RC15_d, E2_RC15_d, E3_RC15_d  = np.log10(E1_RC15_d), np.log10(E2_RC15_d), np.log10(E3_RC15_d)
+
+
+print('min',min(E1-E1_T11),min(E1-E1_Z09), min(E1-E1_RC15))
+print('max',max(E1-E1_T11),max(E1-E1_Z09), max(E1-E1_RC15))
+print('delta',max(E1-E1_T11) - min(E1-E1_T11),max(E1-E1_Z09) -min(E1-E1_Z09), max(E1-E1_RC15) - min(E1-E1_RC15))
+        # look for ultra-massive sample
 def look_for_ultramassive():
     print('-----------------------')
     for i in range(len(name1)):
@@ -337,6 +361,19 @@ delta_E3_ET11, s_E3_ET11 = np.median(np.nan_to_num(abs(E3-E3_T11))),np.std(np.na
 delta_E3_EZ09, s_E3_EZ09 =  np.median(np.nan_to_num(abs(E3-E3_Z09))),np.std(np.nan_to_num(abs(E3-E3_Z09)))
 delta_E3_ERC15, s_E3_ERC15 = np.median(np.nan_to_num(abs(E3-E3_RC15))),np.std(np.nan_to_num(abs(E3-E3_RC15)))
 
+
+max_E1_ET11, min_E1_ET11 = max(E1-E1_T11),min(E1-E1_T11)
+max_E1_EZ09, min_E1_EZ09 =  max(E1-E1_Z09),min(E1-E1_Z09)
+max_E1_ERC15, min_E1_ERC15 = max(E1-E1_RC15),min(E1-E1_RC15)
+
+max_E2_ET11, min_E2_ET11 = max(E2-E2_T11),min(E2-E2_T11)
+max_E2_EZ09, min_E2_EZ09 =  max(E2-E2_Z09),min(E2-E2_Z09)
+max_E2_ERC15, min_E2_ERC15 = max(E2-E2_RC15),min(E2-E2_RC15)
+
+max_E3_ET11, min_E3_ET11 = max(E3-E3_T11),min(E3-E3_T11)
+max_E3_EZ09, min_E3_EZ09 =  max(E3-E3_Z09),min(E3-E3_Z09)
+max_E3_ERC15, min_E3_ERC15 = max(E3-E3_RC15),min(E3-E3_RC15)
+
 print('----------------------------')
 print("delta(E-E_T11)_1", (delta_E1_ET11), (s_E1_ET11))
 print("delta(E-E_TZ09)_1", (delta_E1_EZ09), (s_E1_EZ09))
@@ -359,7 +396,7 @@ print("Bin3:", "T11",1e11-delta_E3_ET11,"Z09", 1e11-delta_E3_EZ09,"IP13", 1e11-d
 #SPlot.ShowcaseIndi.show_name(DD1,E,name_b,A=axs1)
 
 def mass_distance_2plots():
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 9.6))
     gs = gridspec.GridSpec(2,1) 
 
     axs1 = plt.subplot(gs[1])
@@ -397,13 +434,16 @@ def mass_distance_2plots():
     #axs1.plot(DD1,E_Z09,'x',color='b', alpha=0.8, label='Z09')
     #axs1.plot(DD1,E_RC15,'x',color='k', alpha=0.8, label='RC15')
 
-    axs1.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
-    axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
-    axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
+    #axs1.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+    #axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+    #axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
     
-    axs1.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
-    axs1.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
-    axs1.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+    axs1.plot(d1,10**E1_d,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+    axs1.plot(d2,10**E2_d,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+    axs1.plot(d3,10**E3_d,'ko',label='Bin3 samples', ms=12,alpha=0.8)    
+    #axs1.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
+    #axs1.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
+    #axs1.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
     
     axs1.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
@@ -418,26 +458,28 @@ def mass_distance_2plots():
     axs0.set_ylim(top =5e12 , bottom = 1e9)
     axs0.set_xlim(left=0, right = 120)
 
-    axs0.set_ylabel(r"$  M_*/\rm M_\odot(IP13)$",fontsize=22)
-    axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=22)
+    axs0.set_ylabel(r"$  M_*/\rm M_\odot(IP13)$",fontsize=16)
+    axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=16)
     axs0.set_yscale( 'log' )
 
-    axs1.set_ylabel(r"$ M_*/ \rm M_\odot(IP13)$",fontsize=22)
-    axs1.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=22)
+    axs1.set_ylabel(r"$ M_*/ \rm M_\odot(IP13)$",fontsize=16)
+    axs1.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=16)
     axs1.set_yscale( 'log' )
 
-    axs1.set_ylim(top =5e13 , bottom = 1e10)
+    axs1.set_ylim(top =2e12 , bottom = 1e10)
     axs1.set_xlim(left=0, right = 120)
 
-    axs0.legend(loc=4)
-    axs1.legend(loc=4)
+    axs0.legend(loc=4,fontsize=10)
+    axs1.legend(loc=4, fontsize=10)
+    plt.tight_layout()
+
     plt.show()
 
-#mass_distance_2plots()
+mass_distance_2plots()
 
 def mass_distance_bin_compare():
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
 
     gs = gridspec.GridSpec(1,1) 
 
@@ -449,13 +491,33 @@ def mass_distance_bin_compare():
     axs0.hlines(2e11,45,75,linestyle="solid")
     axs0.hlines(1e11,0,45,linestyle="solid")
 
-    q1 = np.log10(5e11)-np.average(E1_T11-key_delta_Bin1)-np.std(E1_T11-key_delta_Bin1)
-    q2 = np.log10(2e11)-np.average(E2_T11-key_delta_Bin2)-np.std(E2_T11-key_delta_Bin2)
-    q3 = np.log10(1e11)-np.average(E3_T11-key_delta_Bin3)-np.std(E3_T11-key_delta_Bin3)
+    #q1 = np.log10(5e11)-np.average(E1_T11-key_delta_Bin1)-0.5*np.std(E1_T11-key_delta_Bin1)
+    #q2 = np.log10(2e11)-np.average(E2_T11-key_delta_Bin2)-0.5*np.std(E2_T11-key_delta_Bin2)
+    #q3 = np.log10(1e11)-np.average(E3_T11-key_delta_Bin3)-0.5*np.std(E3_T11-key_delta_Bin3)
+    
+    #q1 = np.log10(5e11)-np.average(E1_Z09-key_delta_Bin1)-0*np.std(E1_Z09-key_delta_Bin1)
+    #q2 = np.log10(2e11)-np.average(E2_Z09-key_delta_Bin2)-0*np.std(E2_Z09-key_delta_Bin2)
+    #q3 = np.log10(1e11)-np.average(E3_Z09-key_delta_Bin3)-0*np.std(E3_Z09-key_delta_Bin3)
+    
+    #q1 = np.log10(5e11)-0.45*np.average(E1_RC15-key_delta_Bin1)-0*np.std(E1_Z09-key_delta_Bin1)
+    #q2 = np.log10(2e11)-0.45*np.average(E2_RC15-key_delta_Bin2)-0*np.std(E2_Z09-key_delta_Bin2)
+    #q3 = np.log10(1e11)-0.45*np.average(E3_RC15-key_delta_Bin3)-0*np.std(E3_Z09-key_delta_Bin3)
+    
     #q1 = np.log10(5e11)-np.average(E1_T11-key_delta_Bin1)
     #q2 = np.log10(2e11)-np.average(E2_T11-key_delta_Bin2)
     #q3 = np.log10(1e11)-np.average(E3_T11-key_delta_Bin3)
     
+    #q1 = np.log10(5e11)-max_E1_ERC15
+    #q2 = np.log10(2e11)-max_E2_ERC15
+    #q3 = np.log10(1e11)-max_E3_ERC15
+    
+    #q1 = np.log10(5e11)-max_E1_EZ09
+    #q2 = np.log10(2e11)-max_E2_EZ09
+    #q3 = np.log10(1e11)-max_E3_EZ09
+    
+    q1 = np.log10(5e11)-max_E1_ET11
+    q2 = np.log10(2e11)-max_E2_ET11
+    q3 = np.log10(1e11)-max_E3_ET11   
     print("q1 , q2, q3", q1 , q2, q3)
     axs0.hlines(10**q1,75,110,linestyle="solid")
     axs0.hlines(10**q2,45,75,linestyle="solid")
@@ -477,10 +539,18 @@ def mass_distance_bin_compare():
     axs0.plot(corr_dist1,corr_E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
     axs0.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
     axs0.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
-    
+        
     axs0.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
     axs0.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
     axs0.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+
+    #axs0.plot(corr_dist1,10**E1_Z09,'rs',label='Bin1 samples', ms=12,alpha=0.8)
+    #axs0.plot(corr_dist2,10**E2_Z09,'bs',label='Bin2 samples', ms=12,alpha=0.8)
+    #axs0.plot(corr_dist3,10**E3_Z09,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+    
+    #axs0.plot(corr_dist1,10**E1_RC15,'rs',label='Bin1 samples', ms=12,alpha=0.8)
+    #axs0.plot(corr_dist2,10**E2_RC15,'bs',label='Bin2 samples', ms=12,alpha=0.8)
+    #axs0.plot(corr_dist3,10**E3_RC15,'ks',label='Bin3 samples', ms=12,alpha=0.8)
     
     axs0.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
@@ -495,14 +565,16 @@ def mass_distance_bin_compare():
     axs0.set_ylim(top =5e12 , bottom = 1e9)
     axs0.set_xlim(left=0, right = 120)
 
-    axs0.set_ylabel(r"$ M_*/ \rm M_\odot(IP13)$",fontsize=22)
-    axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=22)
+    axs0.set_ylabel(r"$ M_*/ \rm M_\odot(IP13)$",fontsize=16)
+    axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=16)
     axs0.set_yscale( 'log' )
 
     axs0.set_ylim(top =5e13 , bottom = 1e10)
     axs0.set_xlim(left=0, right = 120)
 
-    axs0.legend(loc=4)
+    axs0.legend(loc=4,fontsize=10)
+    plt.tight_layout()
+
     plt.show()
     
 mass_distance_bin_compare()

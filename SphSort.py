@@ -25,6 +25,8 @@ __all__ = ["remove_value","trim_value","replace_value",
 
 __author__="Dexter S.H. Hon"
 
+#%%
+
 #%% tested
 def remove_value(input_array,value_list):
     """
@@ -288,7 +290,42 @@ def add_item(parent_list_name, target_list_name, keyword_list):
     with open(target_list_name, 'wb') as f:
         pickle.dump(target_sample, f)
     return target_sample
+#%% maybe useless
+def sum_cpt_mag(input_list_name, sum_range="all"):
+    """
+    A method to sum up the magnitude of each component of a galaxy.
 
+    Parameters
+    ----------
+    input_list_name : str
+        The name of the galaxy bundle.
+    sum_range : str or list , optional
+        The range to sum up. The default is "all".
+        e.g. [1,5], sum up the magnitude from elemnet 1 to 5
+        
+
+    Returns
+    -------
+    mag_list.
+        The magnitude list.
+    """
+    parent_sample = read_list(parent_list_name)
+    
+    mag_list = []
+    
+    for i in range(len(parent_sample)):
+        L=0 # The luminosity
+        
+        j= 4 # The first magnitude in a bundle is at position 4
+        while j < len(parent_sample[i]):
+            mag_cpt = parent_sample[i][j]# define the magnitude of the cpt
+            L = L+10**(mag_cpt/-2.5) #update the luminosity
+            j+3
+            
+        mag = -2.5*np.log10(L)
+        
+        mag_list.append(mag)
+    return mag_list
 #%%
 def outliers(name,input_array,limit, direction="large"):
     """
@@ -1161,7 +1198,8 @@ def LTG_ETG_seperator(input_list_name,output_list_name_LTG,
         pickle.dump(output["LTG"], f)
     with open(output_list_name_ETG, 'wb') as f:
         pickle.dump(output["ETG"], f)
-    return output    
+    return output 
+   
 #%% tested
 def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     """

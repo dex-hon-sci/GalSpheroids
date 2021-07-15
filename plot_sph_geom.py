@@ -109,20 +109,37 @@ Abs_sph_mag = M.cal_abs_mag()
 Abs_sph_mag_dustCorr = M.dust_correction_Driver08(Abs_sph_mag,elle)
 
 # Calculate the dust corrected version of i-band galaxy total mag for ALL sample 
-sph_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_sph_mag_i_BD,elle,struc = "Bulge", band = "i")
-disc_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_disc_mag_i_BD,elle,struc = "Disk", band = "i")
+#sph_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_sph_mag_i_BD,elle,struc = "Bulge", band = "i")
+#disc_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_disc_mag_i_BD,elle,struc = "Disk", band = "i")
 
-#The total magnitude of the dust corrected, total i-band galaxy magnitude
-mag_i_dustcorr = -2.5*np.log10(10**(sph_mag_i_BD_dustcorr/-2.5) + 10**(disc_mag_i_BD_dustcorr/-2.5))
+B_T_ratio_i_old = 10**((sph_mag-total_mag)/(-2.5)) #old B/T ratio
+D_B_ratio_i_old = (np.repeat(1,len(B_T_ratio_i_old))-B_T_ratio_i_old)**-1  #old D/B ratio
+B_D_ratio_i_old = D_B_ratio_i_old**-1
+
+print('D_B_ratio_i_old',D_B_ratio_i_old)
+
+disc_mag = sph_mag-2.5*np.log10(D_B_ratio_i_old) #disc_mag based on old D/B ratio
+disc_mag2 = Abs_sph_mag_dustCorr-2.5*np.log10(D_B_ratio_i_old)
+
+
+Abs_disc_mag = disc_mag-25-5*np.log10(D)  
+Abs_disc_mag_dustCorr = M.dust_correction_Driver08(Abs_disc_mag,elle,struc="Disk",band="i")
 
 # assume B/T ratio to be the same in g-band, apply the same dust correction on g-band
-B_D_ratio_i = 10**((sph_mag_i_BD_dustcorr-disc_mag_i_BD_dustcorr)/(-2.5))
+B_D_ratio_i = 10**((Abs_sph_mag_dustCorr-Abs_disc_mag_dustCorr)/(-2.5))
 B_T_ratio_i = (1+B_D_ratio_i**-1)**-1
+
+print(Abs_sph_mag_dustCorr,Abs_disc_mag_dustCorr)
+
+#The total magnitude of the dust corrected, total i-band galaxy magnitude
+#mag_i_dustcorr = -2.5*np.log10(10**(sph_mag_i_BD_dustcorr/-2.5) + 10**(disc_mag_i_BD_dustcorr/-2.5))
+mag_i_dustcorr = -2.5*np.log10(10**(Abs_sph_mag_dustCorr/-2.5) + 10**(Abs_disc_mag_dustCorr/-2.5))
+
 
 #Calculate the dust corrected version of g-band galaxy total mag for ALL sample 
 L_gal_g = 10**(mag_g_kcorr/-2.5)
-L_sph_g = L_gal_g * B_T_ratio_i
-L_disc_g = L_gal_g * (1-B_T_ratio_i)
+L_sph_g = L_gal_g * B_T_ratio_i_old
+L_disc_g = L_gal_g * (np.repeat(1,len(B_T_ratio_i))-B_T_ratio_i_old)
 
 sph_mag_g_BD = -2.5*np.log10(L_sph_g)
 disc_mag_g_BD = -2.5*np.log10(L_disc_g)
@@ -133,9 +150,7 @@ disc_mag_g_BD_dustcorr = M.dust_correction_Driver08(disc_mag_g_BD,elle,struc = "
 #The total magnitude of the dust corrected, total g-band galaxy magnitude
 mag_g_dustcorr = -2.5*np.log10(10**(sph_mag_g_BD_dustcorr/-2.5) + 10**(disc_mag_g_BD_dustcorr/-2.5))
 
-
-M_dustcorr = SPlot.MassCalculation(Abs_sph_mag_dustCorr, D, 4.53,mag_g_dustcorr,mag_i_dustcorr)
-Abs_sph_mag_dustcorr = M_dustcorr.cal_abs_mag()
+print(mag_g_dustcorr,mag_i_dustcorr)
 
 # Calculate the absoulte magnitude and the stellar mass
 ML_select_T11_dustcorr = SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).Taylor11_MassRatio
@@ -147,7 +162,7 @@ ML_select_IP13_dustcorr =  SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).
 MLR = ML_select_RC15
 MLR_dust = ML_select_RC15_dustcorr
 MLR_e = 10**0.1    
-mag_e = 0.3 #magnitude error
+mag_e = 0.3 #magnitude errorNote that the y-axis of (1) is the same range of the x-axis of (2)
 
 # Calculate the stellar mass, without dust correction
 E_T11_K = M.cal_Mass(MLR)
@@ -500,7 +515,7 @@ def plot_stack_surface_brightness_profile(r):
     bundle=SRead.read_list(bundle_name)
     name = SRead.grab_name(bundle_name)
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
     new_mu_list = []
     
     #plot individual curve
@@ -545,6 +560,8 @@ def plot_stack_surface_brightness_profile(r):
     #plt.ylim(np.log10(24),np.log(10))
     plt.ylim(24,12)
     plt.xlim(0,120)
+    
+    plt.tight_layout()
     plt.show()
     
     return fig,new_mu_list
@@ -657,6 +674,8 @@ def plot_dexter_sample_T11(mass, size, size_err,mass_err,
        
     A.set_xscale(scale)
     A.set_yscale(scale)
+    plt.tight_layout()
+
     
 #%%
 def plot_sizemass_Sersic_vs_core():
@@ -668,6 +687,8 @@ def plot_sizemass_Sersic_vs_core():
     ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
     ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
     plt.legend(loc="lower right")
+    plt.tight_layout()
+
     plt.show()
     
 def plot_sizemass_morph():
@@ -696,13 +717,157 @@ def plot_sizemass_LTGETG():
     plt.legend(loc="lower right")
     plt.show()
 
+def plot_dustvsnodust():
+    fig = plt.figure()
+
+    mag_g_dustcorr_S = SSort.cherry_pick(morph_dict['S'], mag_g_dustcorr)
+    mag_i_dustcorr_S = SSort.cherry_pick(morph_dict['S'], mag_i_dustcorr)
+
+    A = np.array(mag_g_dustcorr_S) - np.array(mag_i_dustcorr_S)
+    B = np.array(mag_g_kcorr_S) - np.array(mag_i_kcorr_S)
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$(g-i) \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$(g-i)_\mathrm{DustCorrected} \rm (mag)$", fontsize=16)
+    plt.show()
+
+def plot_dustvsnodust_g():
+    fig = plt.figure()
+
+    mag_g_dustcorr_S = SSort.cherry_pick(morph_dict['S'], mag_g_dustcorr)
+
+    A = np.array(mag_g_dustcorr_S) 
+    B = np.array(mag_g_kcorr_S)
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$g \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$g_\mathrm{DustCorrected} \rm (mag)$", fontsize=16)
+    plt.show()
+    
+def plot_dustvsnodust_i():
+    fig = plt.figure()
+
+    mag_i_dustcorr_S = SSort.cherry_pick(morph_dict['S'], mag_i_dustcorr)
+
+    A = np.array(mag_i_dustcorr_S) 
+    B = np.array(mag_i_kcorr_S)
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$i \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$i_\mathrm{DustCorrected} \rm (mag)$", fontsize=16)
+    plt.show()
+    
+def plot_dustvsnodust_BD_g():
+    fig = plt.figure()
+
+    sph_mag_g_BD_dustcorr_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD_dustcorr)
+    disc_mag_g_BD_dustcorr_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD_dustcorr)
+
+    sph_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD)
+    disc_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD)
+    
+    A = 10**((np.array(sph_mag_g_BD_dustcorr_S)-np.array(disc_mag_g_BD_dustcorr_S))/-2.5)
+    B = 10**((np.array(sph_mag_g_BD_S)-np.array(disc_mag_g_BD_S))/-2.5)
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$B/D (g-band) \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$B/D_\mathrm{DustCorrected} (g-band)  \rm (mag)$", fontsize=16)
+    plt.show()
+    
+def plot_dustvsnodust_BD_i():
+    fig = plt.figure()
+    
+    Abs_sph_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_sph_mag_dustCorr)
+    Abs_disc_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_disc_mag_dustCorr)
+    B_D_ratio_i_old_S =  SSort.cherry_pick(morph_dict['S'], B_D_ratio_i_old)
+    
+    A = 10**((np.array(Abs_sph_mag_dustCorr_S)-np.array(Abs_disc_mag_dustCorr_S))/-2.5)
+    B = B_D_ratio_i_old_S
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$B/D (i-band) \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$B/D_\mathrm{DustCorrected} (i-band) \rm (mag)$", fontsize=16)
+    plt.show()
+    
+
+def plot_dustvsnodust_BD_gi():
+    fig = plt.figure()
+    
+    Abs_disc_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_disc_mag_dustCorr)
+    B_D_ratio_i_S =  SSort.cherry_pick(morph_dict['S'], B_D_ratio_i)
+    
+    sph_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD)
+    disc_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD)
+    
+    
+    A = 10**((np.array(sph_mag_g_BD_S)-np.array(disc_mag_g_BD_S))/-2.5)
+    B = B_D_ratio_i_S
+    
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$B/D (g-band) \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$B/D (i-band) \rm (mag)$", fontsize=16)
+    plt.show()
+    
+    
+def plot_sphmag_g():
+    fig = plt.figure()
+    
+    sph_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD)
+    sph_mag_g_BD_dustcorr_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD_dustcorr)
+    
+    A,B = sph_mag_g_BD_S, sph_mag_g_BD_dustcorr_S
+    
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$g_\mathrm{sph} \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$g_\mathrm{sph,DustCorrected} \rm (mag)$", fontsize=16)
+    plt.show()    
+    
+def plot_discmag_g():
+    fig = plt.figure()
+    
+    disc_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD)
+    disc_mag_g_BD_dustcorr_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD_dustcorr)
+    
+    A,B = disc_mag_g_BD_S, disc_mag_g_BD_dustcorr_S
+    
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$g_\mathrm{disc} \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$g_\mathrm{disc,DustCorrected} \rm (mag)$", fontsize=16)
+    plt.show()    
+    
+
+def plot_sphmag_i():
+    fig = plt.figure()
+    
+    Abs_sph_mag_S = SSort.cherry_pick(morph_dict['S'], Abs_sph_mag)
+    Abs_sph_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_sph_mag_dustCorr)
+
+    A,B = Abs_sph_mag_S, Abs_sph_mag_dustCorr_S
+    
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$i_\mathrm{sph} \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$i_\mathrm{sph,DustCorrected} \rm (mag)$", fontsize=16)
+    
+    plt.tight_layout()
+
+    plt.show()        
+
+def plot_discmag_i():
+    fig = plt.figure()
+    
+    Abs_disc_mag_S = SSort.cherry_pick(morph_dict['S'], Abs_disc_mag)
+    Abs_disc_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_disc_mag_dustCorr)
+
+    A,B = Abs_disc_mag_S, Abs_disc_mag_dustCorr_S
+    
+    plt.plot(A, B,'o', ms =12)
+    plt.ylabel(r"$i_\mathrm{disc} \rm (mag)$", fontsize=16)
+    plt.xlabel(r"$i_\mathrm{disc,DustCorrected} \rm (mag)$", fontsize=16)
+    plt.tight_layout()
+
+    plt.show()    
 #%% Execution Area
 
 # extrapolate the central surface brightness
 R_gen = np.linspace(0,300,300*2)
 
 # produce the stacked radial profile figure, as well as the mu0 
-##stack = plot_stack_surface_brightness_profile(R_gen)
+#stack = plot_stack_surface_brightness_profile(R_gen)
 #list_mu0_extrapolate(stack[1])
 
 # plot the Mag vs n and mu0 plot
@@ -722,6 +887,17 @@ R_gen = np.linspace(0,300,300*2)
 #                     Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
 
 
-
-
 plot_sizemass_morph()
+plot_dustvsnodust()
+plot_dustvsnodust_g()
+plot_dustvsnodust_i()
+plot_dustvsnodust_BD_g()
+plot_dustvsnodust_BD_i()
+
+plot_dustvsnodust_BD_gi()
+
+
+plot_sphmag_g()
+plot_discmag_g()
+plot_sphmag_i()
+plot_discmag_i()

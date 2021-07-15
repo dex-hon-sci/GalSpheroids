@@ -160,6 +160,12 @@ my_nd_oldE_Bin1 = np.array([my_nd_oldE[0],0])
 my_nd_oldE_Bin2 = np.array([my_nd_oldE[1],0])
 my_nd_oldE_Bin3 = np.array([my_nd_oldE[2],0])
 
+peak_RN_Barro = 2.413e-4
+peak_RN_vdWel = 1.692e-4
+peak_RN_vDokkum = 1.458e-4 
+peak_RN_Dam = 10**-3.504
+
+
 ms0 = 12
 
 print(np.sum(my_nd_Barro), np.sum(my_nd_vdWel), np.sum(my_nd_vDokkum))
@@ -206,7 +212,6 @@ def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "", AX=pl
     AX.axhline(nd,xlim[0],xlim[1],linestyle=linestyle, linewidth = 3,
                color=colour , label= label)
     
-
     
 
 def plot_nd_3bins(nd,marker, my_z=my_z,AX=plt):
@@ -410,7 +415,8 @@ def plot_nd_vdWel(AX):
     #AX.legend()
     
     AX.set_ylim(ylim[0],ylim[1])
-    AX.set_xlim(xlim[0],xlim[1])        
+    AX.set_xlim(xlim[0],xlim[1])    
+    
 #############################
 #
 import matplotlib.gridspec as gridspec
@@ -418,7 +424,7 @@ import matplotlib.gridspec as gridspec
 
 def plot_nd_E_3plot():
         
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 4.8))
     gs = gridspec.GridSpec(ncols=1, nrows=4,
                                hspace=0.0, wspace=0.0) 
 
@@ -441,7 +447,7 @@ def plot_nd_E_3plot():
     plot_nd_Barro(axs0)
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
-    axs0.legend(loc=4)
+    axs0.legend(loc=4,fontsize=12)
 
 
     #plot Panel (2)
@@ -461,7 +467,7 @@ def plot_nd_E_3plot():
     plot_nd_vdWel(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
-    axs1.legend(loc=4)
+    axs1.legend(loc=4,fontsize=12)
 
 
     
@@ -483,7 +489,7 @@ def plot_nd_E_3plot():
     plot_nd_vDokkum(axs2)
 
     #axs2.grid(True)
-    axs2.legend(loc=4)
+    axs2.legend(loc=4,fontsize=12)
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
@@ -503,21 +509,22 @@ def plot_nd_E_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=18)
     #axs2.grid(True)
-    axs3.legend(loc=4)
-    
+    axs3.legend(loc=4,fontsize=12)
+    plt.tight_layout()
+
     plt.show()
     
 
 def plot_nd_3plot():
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 14))
     gs = gridspec.GridSpec(ncols=1, nrows=4,
                                hspace=0.0, wspace=0.0) 
 
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])  
     
-    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs0)
+    plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs0)    
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs0)    
 
     axs0.plot(Poggianti_z,Poggianti_nd,'d', lw=5, ms= ms0, color='purple', 
@@ -533,7 +540,7 @@ def plot_nd_3plot():
 
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
-    axs0.legend(loc=4)
+    axs0.legend(loc=4,fontsize=12)
 
     twin0=axs0.twinx()
     
@@ -548,7 +555,7 @@ def plot_nd_3plot():
     plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
-    axs1.legend(loc=4)
+    axs1.legend(loc=4,fontsize=12)
 
     #plot Panel (3)
     axs2 = plt.subplot(gs[2],sharex=axs0)  
@@ -561,7 +568,7 @@ def plot_nd_3plot():
     plt.setp(axs2.get_xticklabels(), visible=False)
     
     #axs2.grid(True)
-    axs2.legend(loc=4)
+    axs2.legend(loc=4,fontsize=12)
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
@@ -575,23 +582,24 @@ def plot_nd_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=20)
     #axs2.grid(True)
-    axs3.legend(loc=4)
+    axs3.legend(loc=4,fontsize=12)
     
-    twin0.scatter([],[],label=r"$\rm c,sph~in~Bin~1 $", color ='#a5200b', 
+    twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~1 $", color ='#a5200b', 
                marker ="o")
-    twin0.scatter([],[],label=r"$\rm c,sph~in~Bin~2 $", color ='#0b5786', 
+    twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~2 $", color ='#0b5786', 
                marker ="o")
-    twin0.scatter([],[],label=r"$\rm c,sph~in~Bin~3 $", color ='#2a3236', 
+    twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~3 $", color ='#2a3236', 
                marker ="o")
 
 
     plot_compact_sum([np.nan], colour='black',label = r"$n_\mathrm{c,Sph}$", AX=twin0)
     plot_compact_sum([np.nan], colour='red',label = r"$n_\mathrm{E+ES}$", AX=twin0) 
 
-    twin0.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
+    twin0.legend(loc='upper center',fontsize=13, bbox_to_anchor=(0.5, 1.3),
           fancybox=True, shadow=False, ncol=3)
     twin0.set_yscale('log')
     plt.setp(twin0.get_yticklabels(), visible=False)
+    plt.tight_layout()
 
     plt.show()
     
@@ -602,23 +610,27 @@ def plot_nd_all_mass():
     xlim_allmass = [-0.2,-0.2,0.2,0.2]
     alpha_allmass = 0.25
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 10.5))
     gs = gridspec.GridSpec(ncols=4, nrows=4,
                                hspace=0.0, wspace=0.1) 
-    
+
     # T11 Barro cut
     axs0 = plt.subplot(gs[0])  
     
     plot_compact_sum(my_nd_Barro_T11, colour='black',label = r"$n_\mathrm{c,Sph}$", 
                      AX=axs0,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"$n_\mathrm{E+ES}$", AX=axs0,nsum = True) 
+    axs0.axhline(peak_RN_Barro,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="g" )
+    axs0.axhline(0,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="k",label=r"$\rm max(n_\mathrm{RN})$" )
     
     plot_nd_3bins(my_nd_Barro_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs0)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs0)
 
     
     #plt.setp(axs0.get_xticklabels(), visible=False)
-    axs0.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+    axs0.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=16)
 
     axs0.set_ylim(0.1e-6,2e-3)
     axs0.set_xlim(-0.2,0.2)
@@ -631,6 +643,8 @@ def plot_nd_all_mass():
 
     plot_compact_sum(my_nd_Barro_Z09, colour='black',label = r"", AX=axs1, nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1,nsum = True) 
+    axs1.axhline(peak_RN_Barro,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="g" ) 
     
     plot_nd_3bins(my_nd_Barro_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs1)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs1)
@@ -650,6 +664,8 @@ def plot_nd_all_mass():
     
     plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs2,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2,nsum = True) 
+    axs2.axhline(peak_RN_Barro,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="g" )
     
     plot_nd_3bins(my_nd_Barro,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs2)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs2)
@@ -668,6 +684,8 @@ def plot_nd_all_mass():
     
     plot_compact_sum(my_nd_Barro_IP13, colour='black',label = r"", AX=axs3,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3,nsum = True) 
+    axs3.axhline(peak_RN_Barro,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="g" )
     
     plot_nd_3bins(my_nd_Barro_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs3)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs3)
@@ -677,7 +695,7 @@ def plot_nd_all_mass():
     axs3.set_yscale('log')
     
     twin3=axs3.twinx()
-    twin3.set_ylabel(r'$\rm Barro~cut$',fontsize=20)
+    twin3.set_ylabel(r'$\rm Barro~cut$',fontsize=16)
     
     axs3.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
     plt.xticks([-0.1, 0.1],[],fontsize=18)
@@ -690,6 +708,8 @@ def plot_nd_all_mass():
     axs4 = plt.subplot(gs[4])  
     plot_compact_sum(my_nd_vdWel_T11, colour='black',label = r"", AX=axs4,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs4,nsum = True) 
+    axs4.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="b" )
     
     plot_nd_3bins(my_nd_vdWel_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs4)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs4)
@@ -699,7 +719,7 @@ def plot_nd_all_mass():
     axs4.set_yscale('log')
 
     #plt.setp(axs4.get_xticklabels(), visible=False)
-    axs4.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+    axs4.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=16)
     
     axs4.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='b')
     plt.xticks([-0.1, 0.1],[],fontsize=18)
@@ -708,6 +728,8 @@ def plot_nd_all_mass():
     axs5 = plt.subplot(gs[5])  
     plot_compact_sum(my_nd_vdWel_Z09, colour='black',label = r"", AX=axs5,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs5,nsum = True) 
+    axs5.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="b" )
     
     plot_nd_3bins(my_nd_vdWel_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs5)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs5)
@@ -727,6 +749,8 @@ def plot_nd_all_mass():
     
     plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs6,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs6,nsum = True)
+    axs6.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="b" )
     
     plot_nd_3bins(my_nd_vdWel,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs6)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs6)
@@ -744,6 +768,8 @@ def plot_nd_all_mass():
     axs7 = plt.subplot(gs[7]) 
     plot_compact_sum(my_nd_vdWel_IP13, colour='black',label = r"", AX=axs7,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs7,nsum = True) 
+    axs7.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="b" )
     
     plot_nd_3bins(my_nd_vdWel_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs7)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs7)
@@ -754,7 +780,7 @@ def plot_nd_all_mass():
         
     twin7 = axs7.twinx()
     #twin7.set_yscale('log')
-    twin7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=20)
+    twin7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
     #axs7.yaxis.tick_right()
     #axs7.yaxis.set_label_position("right")
     #axs7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
@@ -772,6 +798,8 @@ def plot_nd_all_mass():
     
     plot_compact_sum(my_nd_vDokkum_T11, colour='black',label = r"", AX=axs8,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs8,nsum = True) 
+    axs8.axhline(peak_RN_vDokkum,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="#b48f11" )
     
     plot_nd_3bins(my_nd_vDokkum_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs8)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs8)
@@ -783,13 +811,15 @@ def plot_nd_all_mass():
     plt.xticks([-0.1, 0.1],[],fontsize=18)
 
     #plt.setp(axs8.get_xticklabels(), visible=False)
-    axs8.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+    axs8.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=16)
 
     #Z09 vDokkum cut
     axs9 = plt.subplot(gs[9]) 
     
     plot_compact_sum(my_nd_vDokkum_Z09, colour='black',label = r"", AX=axs9,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs9,nsum = True) 
+    axs9.axhline(peak_RN_vDokkum,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="#b48f11" )
     
     plot_nd_3bins(my_nd_vDokkum_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs9)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs9)
@@ -808,6 +838,8 @@ def plot_nd_all_mass():
     axs10 = plt.subplot(gs[10]) 
     plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs10,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs10,nsum = True) 
+    axs10.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="#b48f11" )
     
     plot_nd_3bins(my_nd_vDokkum,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs10)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs10)
@@ -825,6 +857,8 @@ def plot_nd_all_mass():
     axs11 = plt.subplot(gs[11]) 
     plot_compact_sum(my_nd_vDokkum_IP13, colour='black',label = r"", AX=axs11,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs11,nsum = True) 
+    axs11.axhline(peak_RN_vdWel,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="#b48f11" )
     
     plot_nd_3bins(my_nd_vDokkum_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs11)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs11)
@@ -834,7 +868,7 @@ def plot_nd_all_mass():
     axs11.set_yscale('log')
 
     twin11 = axs11.twinx()
-    twin11.set_ylabel(r'$\rm van~Dokkum~cut$',fontsize=20)
+    twin11.set_ylabel(r'$\rm van~Dokkum~cut$',fontsize=14)
     
     axs11.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
     plt.xticks([-0.1, 0.1],[])
@@ -856,12 +890,12 @@ def plot_nd_all_mass():
     axs12.set_xlim(-0.2,0.2)
     axs12.set_yscale('log')
     axs12.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
-    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=16)
+    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=12)
 
     #plt.setp(axs12.get_xticklabels(), visible=False)
 
-    axs12.set_xlabel(r"$\rm T11$",fontsize=20)
-    axs12.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=20)
+    axs12.set_xlabel(r"$\rm T11$",fontsize=16)
+    axs12.set_ylabel(r"$ n (\rm M p c^{-3})$",fontsize=14)
 
     # Z09 Dam cut
     axs13 = plt.subplot(gs[13]) 
@@ -874,14 +908,14 @@ def plot_nd_all_mass():
     axs13.set_ylim(0.1e-6,2e-3)
     axs13.set_xlim(-0.2,0.2)
     axs13.set_yscale('log')
-    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=16)
+    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=12)
 
     plt.setp(axs13.get_yticklabels(), visible=False)
     #plt.setp(axs13.get_xticklabels(), visible=False)
     
     axs13.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
 
-    axs13.set_xlabel(r"$\rm Z09$",fontsize=20)
+    axs13.set_xlabel(r"$\rm Z09$",fontsize=16)
 
 
     # RC15 Dam cut
@@ -896,14 +930,15 @@ def plot_nd_all_mass():
     axs14.set_xlim(-0.2,0.2)
     axs14.set_yscale('log')
     axs14.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
-    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=16)
+    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=12)
 
     
     plt.setp(axs14.get_yticklabels(), visible=False)
     #plt.setp(axs14.get_xticklabels(), visible=False)
-    axs14.set_xlabel(r"$\rm RC15$",fontsize=20)
+    axs14.set_xlabel(r"$\rm RC15$",fontsize=16)
 
-    # IP13 Dam cut
+    # IP13 Dam cut    plt.tight_layout()
+
     axs15 = plt.subplot(gs[15]) 
     plot_compact_sum(my_nd_Dam_IP13, colour='black',label = r"", AX=axs15,nsum = True)
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs15,nsum = True) 
@@ -916,18 +951,18 @@ def plot_nd_all_mass():
     axs15.set_yscale('log')
     
     axs15.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='r')
-    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=16)
+    plt.xticks([-0.1, 0.1],[r'$\rm c,Sph$', r'$\rm E+ES$'],fontsize=12)
 
     twin15 = axs15.twinx()
     #twin15.set_yscale('log')
-    twin15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=20)
+    twin15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=14)
     #axs15.yaxis.tick_right()
     #axs15.set_yticks([])
     #axs15.yaxis.set_label_position("right")
     #axs15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=16)
 
 
-    axs15.set_xlabel(r"$\rm IP13$",fontsize=20)
+    axs15.set_xlabel(r"$\rm IP13$",fontsize=16)
     #twin15.set_xticks([-0.2, 0.2],['c,sph', 'E'])
     plt.setp(axs15.get_yticklabels(), visible=False)
     #plt.setp(axs15.get_xticklabels(), visible=False)  
@@ -942,10 +977,11 @@ def plot_nd_all_mass():
     axs0.scatter([],[],label=r"$\rm E+ES~in~Bin~1 $", color ='#a5200b', marker ="s")
     axs0.scatter([],[],label=r"$\rm E+ES~in~Bin~2 $", color ='#0b5786', marker = "s")
     axs0.scatter([],[],label=r"$\rm E+ES~in~Bin~3 $", color ='#2a3236', marker = "s")
-    axs0.legend(loc='upper center', bbox_to_anchor=(2.2, 1.6),
+    axs0.legend(loc='upper center',fontsize=12, bbox_to_anchor=(2.2, 1.6),
           fancybox=True, shadow=False, ncol=3)
-
-    return None
+    plt.tight_layout()
+    plt.show()
+    return fig
     
 plot_nd_3plot()
 #plot_nd_E_3plot()
