@@ -670,8 +670,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
             file_name =i
 
-        plt.xlabel("$R/ R_{max}$",fontsize=20,fontname = fontname_choice)
-        plt.ylabel("$I_{err}(R)/I$",fontsize=20, fontname = fontname_choice)
+        plt.xlabel(r"$R/ R_{max}$",fontsize=20,fontname = fontname_choice)
+        plt.ylabel(r"$I_{err}(R)/I$",fontsize=20, fontname = fontname_choice)
             #plt.yscale( 'log' )
             #plt.xscale( 'log' )
         plt.xlim(0,1)
@@ -1023,7 +1023,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
     # messy need clean up
     def cpt_to_total_by_type_plot(bundle, morph_name, morph, cpt=["Bulge","CoreBulge"], 
                                   show_plot=True, 
-                                  mode="average",AX=plt):
+                                  mode="median",AX=plt):
         """
         Plotting the magntiude cpt-to-total ratio
 
@@ -1061,7 +1061,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             for i in range(len(name)):
                 #print(morph_name[i],name[i])
                 if morph_name[i] == name[i]:
-                    print(name[i], 10**mag_ratio[i])
+                    print(name[i], 10**mag_ratio[i],mag_ratio[i])
                     pass
                 else:
                     raise Exception("name doesn't match!")
@@ -1082,14 +1082,14 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             gal_bin.append(np.array(morph_bin))
             #gal_bin = np.array(gal_bin)
         
-        mag_dict={"EAS": gal_bin[0], "EABS": gal_bin[1], "EBS": gal_bin[2],
-                  "SA0": gal_bin[3],"SAB0": gal_bin[4],"SB0": gal_bin[5],
-                  "SA" : gal_bin[6], "SAB": gal_bin[7], "SB": gal_bin[8]}
+        mag_dict={r"$\rm EAS$": gal_bin[0], r"$\rm EABS$": gal_bin[1], r"$\rm EBS$": gal_bin[2],
+                  r"$\rm SA0$": gal_bin[3], r"$\rm SAB0$": gal_bin[4],r"$ \rm SB0$": gal_bin[5],
+                  r"$\rm SA$" : gal_bin[6], r"$\rm SAB$": gal_bin[7], r"$ \rm SB$": gal_bin[8]}
                                    
         average_bin, std_bin = [], []        
         
         # calculate the average and std in each type
-        if mode=="average":
+        if mode=="median":
             for i in range(len(morph_list)):
                 #print(morph_list[i])
                 #print(gal_bin[i])
@@ -1102,7 +1102,9 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 print(list(mag_dict.keys())[i], 10**average_bin[i]) 
                       
                 if len(gal_bin[i]) > 1 :
-                    print(min(10**gal_bin[i]), max(10**gal_bin[i]))
+                    print('min',min(10**gal_bin[i]),'max', max(10**gal_bin[i]))
+                    print('median',10**average_bin[i][0],'std', 10**std_bin[i], "({})".format(len(gal_bin[i])))
+                    #print(average_bin,std_bin)
                 else:
                     pass
         else:
@@ -1111,7 +1113,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         average_bin = np.array(average_bin)
         std_bin = np.array(std_bin)
         
-        print('average_bin',average_bin,'std_bin',std_bin)
+        #print('median_bin',average_bin,'std_bin',std_bin)
         
         # plot it        
         x_index =[]
@@ -1139,7 +1141,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             medianprops = dict(linestyle='-', linewidth=3.5, color='r')
             line_props = dict(color="k", alpha=0.9, linewidth = 3.5, 
                               linestyle='solid')
-            flierprops= dict(color="r",marker="^")
+            flierprops= dict(color="k",marker="+")
             
             AX.boxplot(list(gal_bin), widths=0.5, boxprops=bbox_props, 
                        medianprops=medianprops, whiskerprops=line_props,
@@ -1151,7 +1153,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             #         ms = 12, linewidth=5, ls='none',
             #         color='b',zorder=20,mew=1,capsize=3)
         
-            AX.set_ylabel(r"$\rm log_{10}(B/T)$",fontsize=22)
+            AX.set_ylabel(r"$\rm log_{10}(B/T)$",fontsize=16)
         #AX.set_xlabel(r"$ \rm Morphology$",fontsize=18)
         #AX.set_yscale( 'log' )
             AX.set_xlim(-1,10)
@@ -1166,11 +1168,13 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             pass
 
         # S0 and S B/T ratio in general
+        ES = 10**np.concatenate((gal_bin[0], gal_bin[1], gal_bin[2]))
         S0 = 10**np.concatenate((gal_bin[3], gal_bin[4], gal_bin[5]))
         S = 10**np.concatenate((gal_bin[6], gal_bin[7], gal_bin[8]))
         
-        print("S0:", np.average(S0))
-        print("S:",np.average(S))
+        print("ES:", np.median(ES),np.std(ES),"({})".format(len(ES)))
+        print("S0:", np.median(S0),np.std(S0),"({})".format(len(S0)))
+        print("S:",np.median(S),np.std(S),"({})".format(len(S)))
 
         return mag_dict
         
