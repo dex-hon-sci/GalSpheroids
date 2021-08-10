@@ -20,6 +20,8 @@ plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
 
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 ##Define the selection volume
 D = np.array([45,75,110])
 
@@ -188,8 +190,6 @@ for i in range(len(name1)):
     
 for i in range(len(name1)):
     print(name1[i],Sersic2D_50rad_1_kpc[i],Sersic2D_50rad_1[i],scale1[i])
-
-
 
 ############# calculating spheroid mass
 ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
@@ -594,33 +594,33 @@ Re_2_kpc_uerr_reshp = np.concatenate((Re_2_kpc_uerr_E, Re_2_kpc_uerr_S0, Re_2_kp
 Re_3_kpc_uerr_reshp = np.concatenate((Re_3_kpc_uerr_E, Re_3_kpc_uerr_S0, Re_3_kpc_uerr_S))
 
 #reenter into the same entry
-D1 = D1_reshp
-D2 = D2_reshp
-D3 = D3_reshp
+D1 = D1
+D2 = D2
+D3 = D3
 
-mass1 = E1_R15BC_K_dustCorr_reshp 
-mass2 = E2_R15BC_K_dustCorr_reshp 
-mass3 = E3_R15BC_K_dustCorr_reshp
+mass1 = E1_IP13_K
+mass2 = E2_IP13_K
+mass3 = E3_IP13_K
 
-mass_err1 = mass_err1_reshp
-mass_err2 = mass_err2_reshp
-mass_err3 = mass_err3_reshp
+mass_err1 = mass_err1
+mass_err2 = mass_err2
+mass_err3 = mass_err3
 
-Re_1_kpc = Re_1_kpc_reshp
-Re_2_kpc = Re_2_kpc_reshp
-Re_3_kpc = Re_3_kpc_reshp
+Re_1_kpc = Re_1_kpc
+Re_2_kpc = Re_2_kpc
+Re_3_kpc = Re_3_kpc
 
-Re_1_kpc_major = Re_1_kpc_major_reshp
-Re_2_kpc_major = Re_2_kpc_major_reshp
-Re_3_kpc_major = Re_3_kpc_major_reshp
+Re_1_kpc_major = Re_1_kpc_major
+Re_2_kpc_major = Re_2_kpc_major
+Re_3_kpc_major = Re_3_kpc_major
 
-print(len(Re_1_kpc_lerr_reshp),len(Re_1_kpc_uerr_reshp))
-print(len(Re_2_kpc_lerr_reshp),len(Re_2_kpc_uerr_reshp))
-print(len(Re_3_kpc_lerr_reshp),len(Re_3_kpc_uerr_reshp))
+print(len(Re_1_kpc_lerr),len(Re_1_kpc_uerr))
+print(len(Re_2_kpc_lerr),len(Re_2_kpc_uerr))
+print(len(Re_3_kpc_lerr),len(Re_3_kpc_uerr))
 
-Re_1_kpc_err =[Re_1_kpc_lerr_reshp, Re_1_kpc_uerr_reshp]
-Re_2_kpc_err =[Re_2_kpc_lerr_reshp, Re_2_kpc_uerr_reshp]
-Re_3_kpc_err =[Re_3_kpc_lerr_reshp, Re_3_kpc_uerr_reshp]
+Re_1_kpc_err =[Re_1_kpc_lerr, Re_1_kpc_uerr]
+Re_2_kpc_err =[Re_2_kpc_lerr, Re_2_kpc_uerr]
+Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
 
 # The mass, and size of E galaxies
 E_R15BC_K_E = np.concatenate((E1_R15BC_K_E,E2_R15BC_K_E,E3_R15BC_K_E))
@@ -1173,7 +1173,6 @@ Lange2016_E_M1e10 = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.382,0
 Lange2016_ETG_bulge = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.836,0.267)
 
 s = SAnalysis.AnalyticFunctions.size_mass_powerlaw
-
 
 E_T11 = np.concatenate((E1_T11, E2_T11, E3_T11,Savorgnan_mass_T11,Davis_mass_T11,Sahu_mass_T11))
 Re_kpc = np.concatenate((Re_1_kpc, Re_2_kpc, Re_3_kpc,Savorgnan_size_eq_kpc,Davis_size_eq_kpc,Sahu_size_eq_kpc))

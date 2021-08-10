@@ -30,6 +30,7 @@ override_list_equ = \
 
     
 ###############
+#%%
 #Run based on Bins equvi
 SRead.run_list("F_equvi_list_Bin1V.txt","F_Gal_bundle_equvi_Bin1V",True)
 SRead.run_list("F_equvi_list_Bin2V.txt","F_Gal_bundle_equvi_Bin2V",True)
@@ -62,6 +63,7 @@ SSort.cpt_classifier_demo('F_Gal_bundle_1Sersic_equvi_Bin2V',W3,'F_Gal_bundle_1S
 SSort.cpt_classifier_demo('F_Gal_bundle_1Sersic_equvi_Bin3V',W4,'F_Gal_bundle_1Sersic_equvi_Bin3V_cpt',[])
 
 ###############
+#%%
 #Run based on Bins major
 SRead.run_list("F_major_list_Bin1V.txt","F_Gal_bundle_major_Bin1V",False)
 SRead.run_list("F_major_list_Bin2V.txt","F_Gal_bundle_major_Bin2V",False)
@@ -130,3 +132,18 @@ print(len(SRead.grab_name("F_Gal_bundle_equvi_V_cpt")),
       len(SRead.grab_name("F_Gal_bundle_1Sersic_major_V_cpt")),
       len(SRead.grab_name("F_Gal_bundle_1Sersic_equvi_V_cpt"))
       )
+
+
+################
+#%%
+# Run bundle but without the virgo galaxy
+
+SRead.run_list("F_equvi_list_Bin3V_noVirgo.txt","F_Gal_bundle_equvi_Bin3V_noVirgo",True)
+SRead.run_list("F_major_list_Bin3V_noVirgo.txt","F_Gal_bundle_major_Bin3V_noVirgo",False)
+
+noV_e = SSort.cpt_seperator_demo('F_Gal_bundle_equvi_Bin3V_noVirgo')
+noV_m = SSort.cpt_seperator_demo('F_Gal_bundle_major_Bin3V_noVirgo')
+
+SSort.cpt_classifier_demo('F_Gal_bundle_equvi_Bin3V_noVirgo',noV_e,'F_Gal_bundle_equvi_Bin3V_noVirgo_cpt',override_list_equ)
+SSort.cpt_classifier_demo('F_Gal_bundle_major_Bin3V_noVirgo',noV_m,'F_Gal_bundle_major_Bin3V_noVirgo_cpt',override_list_maj)
+

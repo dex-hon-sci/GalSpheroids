@@ -23,7 +23,7 @@ import matplotlib as mpl
 
 cosmo = FlatLambdaCDM(H0=68.0, Om0=0.3)
 
-plt.style.use('classic')
+#plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
 
@@ -429,8 +429,8 @@ def mass_distance_2plots():
     axs0.plot(dc_b,initial_mass_b,'x',color='green', alpha=0.8, label='Broad Selection')
 
 
-    axs1.plot(DD1,E,'x',color='#a51a74', alpha=0.8, label='New Distance IP13')
-    axs1.plot(DD1,E_T11,'x',color='g', alpha=0.8, label='T11')
+    axs1.plot(DD1,E,'x',color='#a51a74', alpha=0.8, label='New Distance')
+    #axs1.plot(DD1,E_T11,'x',color='g', alpha=0.8, label='T11')
     #axs1.plot(DD1,E_Z09,'x',color='b', alpha=0.8, label='Z09')
     #axs1.plot(DD1,E_RC15,'x',color='k', alpha=0.8, label='RC15')
 
@@ -438,12 +438,12 @@ def mass_distance_2plots():
     #axs1.plot(corr_dist2,corr_E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
     #axs1.plot(corr_dist3,corr_E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
     
-    axs1.plot(d1,10**E1_d,'ro',label='Bin1 samples', ms=12,alpha=0.8)
-    axs1.plot(d2,10**E2_d,'bo',label='Bin2 samples', ms=12,alpha=0.8)
-    axs1.plot(d3,10**E3_d,'ko',label='Bin3 samples', ms=12,alpha=0.8)    
-    #axs1.plot(corr_dist1,10**E1_T11,'rs',label='Bin1 samples', ms=12,alpha=0.8)
-    #axs1.plot(corr_dist2,10**E2_T11,'bs',label='Bin2 samples', ms=12,alpha=0.8)
-    #axs1.plot(corr_dist3,10**E3_T11,'ks',label='Bin3 samples', ms=12,alpha=0.8)
+    #axs1.plot(d1,10**E1_d,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+    #axs1.plot(d2,10**E2_d,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+    #axs1.plot(d3,10**E3_d,'ko',label='Bin3 samples', ms=12,alpha=0.8)    
+    axs1.plot(corr_dist1,10**E1,'ro',label='Bin1 samples', ms=12,alpha=0.8)
+    axs1.plot(corr_dist2,10**E2,'bo',label='Bin2 samples', ms=12,alpha=0.8)
+    axs1.plot(corr_dist3,10**E3,'ko',label='Bin3 samples', ms=12,alpha=0.8)
     
     axs1.plot(dc, SPlot.SelectionCut(initial_mass, dc).
          parent_sample_cut(),linestyle="solid", color="blue",
@@ -469,8 +469,8 @@ def mass_distance_2plots():
     axs1.set_ylim(top =2e12 , bottom = 1e10)
     axs1.set_xlim(left=0, right = 120)
 
-    axs0.legend(loc=4,fontsize=10)
-    axs1.legend(loc=4, fontsize=10)
+    axs0.legend(numpoints=1,scatterpoints=1,loc=4,fontsize=10)
+    axs1.legend(numpoints=1,scatterpoints=1,loc=4, fontsize=10)
     plt.tight_layout()
 
     plt.show()
@@ -572,7 +572,7 @@ def mass_distance_bin_compare():
     axs0.set_ylim(top =5e13 , bottom = 1e10)
     axs0.set_xlim(left=0, right = 120)
 
-    axs0.legend(loc=4,fontsize=10)
+    axs0.legend(numpoints=1,scatterpoints=1,loc=4,fontsize=10)
     plt.tight_layout()
 
     plt.show()

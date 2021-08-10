@@ -24,7 +24,8 @@ import matplotlib.gridspec as gridspec
 plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
-
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 
 markers = ["E0","E1","E2","E3","EAS","EABS","EBS","SA0","SAB0", "SB0", "SAa", 
            "SABa", "SBa", "SAb","SABb", "SBb", "SAc","SABc", "SBb","SAc","SABc",

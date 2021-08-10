@@ -46,9 +46,9 @@ def plot_RA_DEC_VCC():
     plt.plot(all_gal_RA, all_gal_DEC,'o', color = "#8e8e8e" ,ms = 1.0, alpha = 0.6, label= r"$\rm All$")
     plt.plot(host_gal_RA, host_gal_DEC,'o', color = "b",  ms =10, label = r"$\rm Host~galaxies$")
     plt.plot(VCC_gal_RA, VCC_gal_DEC,'ro',ms=10, label= r"$\rm Virgo~cluster~host~galaxies$")
-    plt.xlabel(r"$RA~(\rm deg)$", fontsize=16)
-    plt.ylabel(r"$DEC~(\rm deg)$", fontsize=16)    
-    plt.legend(loc=2,fontsize=12)
+    plt.xlabel(r"$R.A.~(\rm deg)$", fontsize=16)
+    plt.ylabel(r"$Dec.~(\rm deg)$", fontsize=16)    
+    plt.legend(numpoints = 1, loc=2,fontsize=12)
     
     plt.xlim(135,216)
     plt.ylim(-5,74)
@@ -118,6 +118,9 @@ Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
 
 ################################
 #Calculate mass with K-correction
+
+# "F_Gal_bundle_equvi_Bin3V_noVirgo_cpt"
+
 K_table3 = SRead.read_table(
     "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat")
 K_table3_n = SRead.read_table(
@@ -151,7 +154,4 @@ mag_e = 0.3 #magnitude error
 mass_uerr3 = np.sqrt(((mag_e/2.5)**2)+((2*D3_uerr/(D3*np.log(10)))**2)+((MLR_e3/(MLR3*np.log(10)))**2))
 
 mass_err3 = mass_uerr3
-
-
-# Take away the VCC gaalxies from Bin3
 

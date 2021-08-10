@@ -159,19 +159,20 @@ E3_R15BC = M3.cal_Mass(ML_select3_R15BC)
 E3_Z09 = M3.cal_Mass(ML_select3_Z09)
 E3_T11 = M3.cal_Mass(ML_select3_T11)
 
-
+# make array of 2 kpc
 array1_2kpc = np.repeat(2.0,len(E1_R15BC))
 array2_2kpc = np.repeat(2.0,len(E2_R15BC))
 array3_2kpc = np.repeat(2.0,len(E3_R15BC))
 
-print(array1_2kpc)
 print(np.size(array1_2kpc),np.size(array2_2kpc),np.size(array3_2kpc))
 print(np.size(Re_1_kpc),np.size(Re_2_kpc),np.size(Re_3_kpc))
 
+# Choose mass
 mass1 = np.log10(E1_R15BC)
 mass2 = np.log10(E2_R15BC)
 mass3 = np.log10(E3_R15BC)
 
+# select for the data pount that has R_e < 2 kpc
 E1_2kpc = SSort.selection_generic(10**mass1, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
 E2_2kpc = SSort.selection_generic(10**mass2, Re_2_kpc, array2_2kpc, direction="down")['bag_x']
 E3_2kpc = SSort.selection_generic(10**mass3, Re_3_kpc, array3_2kpc, direction="down")['bag_x']
@@ -179,7 +180,7 @@ E3_2kpc = SSort.selection_generic(10**mass3, Re_3_kpc, array3_2kpc, direction="d
 print(SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_y']
       , E1_2kpc)
 
-
+# define the mass of data points with R_e < 2 kpc
 mass1_2kpc = np.log10(E1_2kpc)
 mass2_2kpc = np.log10(E2_2kpc)
 mass3_2kpc = np.log10(E3_2kpc)

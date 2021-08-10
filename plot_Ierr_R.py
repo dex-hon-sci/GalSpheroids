@@ -30,6 +30,8 @@ Rmax = SRead.read_table(geomlist)[:,1]
 plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 
 def read_Ierr_R(filelist):
     """

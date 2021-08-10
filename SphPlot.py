@@ -31,7 +31,8 @@ import SphSort as SSort
 
 plt.style.use('classic')
 mpl.rcParams['grid.linewidth'] = 1.0
-
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 # Class declaration
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
          "ShowcaseIndi","ShowcaseCompare2", "PlotHist","Plot2D"]
@@ -170,7 +171,7 @@ class MassCalculation(MLRelationIband):
             "B": [0.89,  1.27,  1.73,  0.24,  1.20,  2.73],
             "g": [0.83,  1.29,  1.71,  0.22,  1.18,  2.74],
             "r": [0.63,  1.33,  1.73,  0.16,  1.10,  2.80],
-            "i": [0.48, 1.35, 1.84, 0.11, 1.03, 2.89],
+            "i": [0.48,  1.35,  1.84,  0.11,  1.03,  2.89],
             "z": [0.38,  1.35,  1.84,  0.09,  0.96,  2.98],
             "J": [0.25,  1.22,  2.26,  0.06,  0.80,  3.21],
             "H": [0.18,  1.02,  2.43,  0.05,  0.64,  3.51],
@@ -480,7 +481,6 @@ class SelectionCut(object):
             
             AX.fill(xedge, yedge, alpha=0.1, color='k')
 
-            
         else:
             raise KeyboardInterrupt 
         
@@ -946,7 +946,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                     pass
             box_bin = np.array(box_bin)
             print(n,'number of sampe in the box', np.size(box_bin))
-
             #if box_bin.size == 0:
             #    master_bin.append(np.array([np.nan]))
             #else:
@@ -977,7 +976,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         mid_pt =  [10**(sum(box[j])/2) for j in range(len(box))]
         mid_pt = np.array(mid_pt)
         
-        #Trim away the zeros, and the corresponding mid_pt
+        # Trim away the zeros, and the corresponding mid_pt
         if trim == True:
             zero_i = [i for i in range(len(list(nu_dens))) if nu_dens[i] == 0]
 
@@ -993,7 +992,6 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         
         # Assume Poisson error sqrt(N)/vol/dex_factor
         nu_dens_err = N_err
-        
         
         N =  [np.sqrt(np.size(master_bin[j])/vol/dex_factor) for j in 
                    range(len(master_bin))]
@@ -1446,25 +1444,25 @@ class ShowcaseCompare2(ShowcaseIndi):
         ms0, lw = 12, 4        
         
         axs0.plot(dc,index, "o", ms = ms0, color="green",
-                  label="Willick et al. 1997")
+                  label=r"$\rm Willick~et~al.~1997$")
         axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='g',zorder=20,mew=1,capsize=ms0)
 
         axs0.plot(DD,index, "o", ms = ms0, color="blue",
-                  label="Mould et al. 2000")
+                  label=r"$\rm Mould~et~al.~2000$")
         axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='b',zorder=20,mew=1,capsize=ms0)
 
 
 
         axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
-                  label="Cosmicflow-3")
+                  label=r"$\rm Cosmicflow-3$")
         axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
         
         
-        axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734" ,
-                  label="z-independent")
+        axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734",
+                  label=r"$\rm z-independent$")
         axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
@@ -1547,7 +1545,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         #make the decision making on the right
         ##################
         axs0.set_xlabel(r"$Distance/ \, M p c$",fontsize=22)
-        axs0.legend(loc='upper left')
+        axs0.legend(numpoints=1,scatterpoints=1,loc=2)
+        plt.tight_layout()
 
 
         return fig, axs0

@@ -37,7 +37,8 @@ from scipy.optimize import curve_fit
 plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
-
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 ## Read in the data, base data#################################################
 # Read the name of the ISOFIT output from a list
 outlist = SRead.read_table(
@@ -69,7 +70,7 @@ core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["CoreBulge"],
 
 total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt")
 
-# Get the distance from the parent samplecompleteness
+# Get the distance from the parent sample completeness
 D0_all_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
 D0_all_table_n = SRead.read_table(
@@ -602,7 +603,7 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
                               np.log10(n[fit_instruc]), Mag[fit_instruc])
   
     #Plotting
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12, 4.8))
     gs = gridspec.GridSpec(ncols=2, nrows=1,
                                hspace=0, wspace=0.0) 
     # Define colour and markers
@@ -611,8 +612,8 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     
     # The Mag vs Sersic n plot
     axt0 = plt.subplot(gs[0])
-    axt0.plot(10**n_line, 
-              SAna.AnalyticFunctions.linear_func_1D(n_line,*popt_n),'b--',lw=4)
+    #axt0.plot(10**n_line, 
+    #          SAna.AnalyticFunctions.linear_func_1D(n_line,*popt_n),'b--',lw=4)
     # Check the dimension of the input array 
     if n.shape[0] != len(label):
         axt0.plot(n,Mag,'ko',ms=10)
@@ -630,8 +631,8 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
    
     # The Mag vs mu_0 plot
     axt1 = plt.subplot(gs[1],sharey=axt0)
-    axt1.plot(mu_line, 
-              SAna.AnalyticFunctions.linear_func_1D(mu_line,*popt_mu),'b--',lw=4)
+    #axt1.plot(mu_line, 
+    #          SAna.AnalyticFunctions.linear_func_1D(mu_line,*popt_mu),'b--',lw=4)
    
     # Check the dimension of the input array  
     if mu0.shape[0] != len(label):
@@ -874,14 +875,14 @@ R_gen = np.linspace(0,300,300*2)
 #plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[r"$type~1$",r"$type~2$"])
 
 #plot_n_mu0_Mag_2plot(Sersic_n,mu0,Abs_sph_mag)
-#B = plot_n_mu0_Mag_2plot(n_combine,mu0_combine,
-#                     Mag_combine,label=[r"$\rm S\'{e}rsic$",
-#                                        r"$\rm Core-S\'{e}rsic$"])
+B = plot_n_mu0_Mag_2plot(n_combine,mu0_combine,
+                     Mag_combine,label=[r"$\rm S\'{e}rsic$",
+                                        r"$\rm Core-S\'{e}rsic$"])
 
 
-#C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
-#                     Mag_combine_morph,label=[r"$\rm E$",
-#                                        r"$\rm S0$", r"$\rm S$"])
+C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
+                     Mag_combine_morph,label=[r"$\rm E+ES$",
+                                        r"$\rm S0$", r"$\rm S$"])
 
 # D = plot_n_mu0_Mag_2plot(n_combine_ELtype,mu0_combine_ELtype,
 #                     Mag_combine_ELtype,label=[r"$\rm ETG$", r"$\rm LTG$"])
