@@ -33,29 +33,29 @@ M_sun = 4.53
 
 
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4.txt")
 
 D0_all_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
-#RA,DEC
+#RA,DEC 
 RA_1,DEC_1 = D0_Bin1_table[:,1], D0_Bin1_table[:,2]
 RA_2,DEC_2 = D0_Bin2_table[:,1], D0_Bin2_table[:,2]
 RA_3,DEC_3 = D0_Bin3_table[:,1], D0_Bin3_table[:,2]
@@ -68,7 +68,7 @@ D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
 
-# calculate the ellipticity of the Sersic 2D fit
+# calculate the ellipticity of the Sersic dist2D fit
 b_a_1 = D0_Bin1_table[:,34]
 b_a_2 = D0_Bin2_table[:,34]
 b_a_3 = D0_Bin3_table[:,34]
@@ -96,9 +96,9 @@ morph1 = D0_Bin1_table_n[:,17]
 morph2 = D0_Bin2_table_n[:,17]
 morph3 = D0_Bin3_table_n[:,17]
 
-morph1_new = D0_Bin1_table_n[:,-1]
-morph2_new = D0_Bin2_table_n[:,-1]
-morph3_new = D0_Bin3_table_n[:,-1]
+morph1_new = D0_Bin1_table_n[:,-2]
+morph2_new = D0_Bin2_table_n[:,-2]
+morph3_new = D0_Bin3_table_n[:,-2]
 
 corr_mass1 = D0_Bin1_table[:,13]
 corr_mass2 = D0_Bin2_table[:,13]
@@ -118,6 +118,10 @@ total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bi
 sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
+
+sph_abs_mag1 = SPlot.MassCalculation(mag_g1, mag_i1,sph_mag1, D1, M_sun).cal_abs_mag()
+sph_abs_mag2 = SPlot.MassCalculation(mag_g2, mag_i2,sph_mag2, D2, M_sun).cal_abs_mag()
+sph_abs_mag3 = SPlot.MassCalculation(mag_g3, mag_i3,sph_mag3, D3, M_sun).cal_abs_mag()
 
 mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) 
 mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) 
@@ -458,7 +462,7 @@ mu_e = mu_e_1
 R_e = Re_1_kpc
 n = n1
 mag_sph =  sph_mag1
-Mag_sph = total_mag1
+Mag_sph = sph_abs_mag1
 
 
 
@@ -566,7 +570,7 @@ mu_e = mu_e_2
 R_e = Re_2_kpc
 n = n2
 mag_sph =  sph_mag2
-Mag_sph = total_mag2
+Mag_sph = sph_abs_mag2
 
 
 Taylor_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E2_T11_K),decimals=2)), 
@@ -671,7 +675,7 @@ mu_e = mu_e_3
 R_e = Re_3_kpc
 n = n3
 mag_sph =  sph_mag3
-Mag_sph = total_mag3
+Mag_sph = sph_abs_mag3
 
 
 Taylor_mass = SSort.str_zipping_generic('$',list(np.around(np.log10(E3_T11_K),decimals=2)), 

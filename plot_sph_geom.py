@@ -72,9 +72,9 @@ total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt
 
 # Get the distance from the parent sample completeness
 D0_all_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 D0_all_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt",
     dtype = "str")
 
 K_table = SRead.read_table(
@@ -85,7 +85,7 @@ mag_g_kcorr, mag_i_kcorr = K_table[:,19], K_table[:,18] #Galaxy colours with K c
 
 D, D_lerr, D_uerr = D0_all_table[:,29], D0_all_table[:,30], D0_all_table[:,31]
 
-morph = D0_all_table_n[:,-4] 
+morph = D0_all_table_n[:,-2] 
 
 elle = geom_file[:,7] #extended disk ellipicity
 
@@ -105,7 +105,14 @@ ML_select_IP13 =  SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Into13_MassRati
 M = SPlot.MassCalculation(sph_mag, D, 4.53,mag_g_kcorr,mag_i_kcorr)
 Abs_sph_mag = M.cal_abs_mag()
 
-# Calculate the dust corrected version of abs mag for ALL sample 
+#establish B/T ratio
+B_T_ratio_i_old = 10**((sph_mag-total_mag)/(-2.5)) #old B/T ratio
+D_B_ratio_i_old = ((B_T_ratio_i_old)**-1)  - np.repeat(1,len(B_T_ratio_i_old))  #old D/B ratio
+B_D_ratio_i_old = D_B_ratio_i_old**-1
+
+print('D_B_ratio_i_old',D_B_ratio_i_old)
+
+# Calculate the dust corrected version of abs mag of sph for ALL sample 
 # E and S0 does not require that but I calculate them nonethesless
 Abs_sph_mag_dustCorr = M.dust_correction_Driver08(Abs_sph_mag,elle)
 
@@ -113,15 +120,10 @@ Abs_sph_mag_dustCorr = M.dust_correction_Driver08(Abs_sph_mag,elle)
 #sph_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_sph_mag_i_BD,elle,struc = "Bulge", band = "i")
 #disc_mag_i_BD_dustcorr = M.dust_correction_Driver08(Abs_disc_mag_i_BD,elle,struc = "Disk", band = "i")
 
-B_T_ratio_i_old = 10**((sph_mag-total_mag)/(-2.5)) #old B/T ratio
-D_B_ratio_i_old = (np.repeat(1,len(B_T_ratio_i_old))-B_T_ratio_i_old)**-1  #old D/B ratio
-B_D_ratio_i_old = D_B_ratio_i_old**-1
-
-print('D_B_ratio_i_old',D_B_ratio_i_old)
-
+#****
 disc_mag = sph_mag-2.5*np.log10(D_B_ratio_i_old) #disc_mag based on old D/B ratio
 disc_mag2 = Abs_sph_mag_dustCorr-2.5*np.log10(D_B_ratio_i_old)
-
+#***
 
 Abs_disc_mag = disc_mag-25-5*np.log10(D)  
 Abs_disc_mag_dustCorr = M.dust_correction_Driver08(Abs_disc_mag,elle,struc="Disk",band="i")
@@ -129,6 +131,7 @@ Abs_disc_mag_dustCorr = M.dust_correction_Driver08(Abs_disc_mag,elle,struc="Disk
 # assume B/T ratio to be the same in g-band, apply the same dust correction on g-band
 B_D_ratio_i = 10**((Abs_sph_mag_dustCorr-Abs_disc_mag_dustCorr)/(-2.5))
 B_T_ratio_i = (1+B_D_ratio_i**-1)**-1
+#B_D_ratio_i = B_D_ratio_i_old
 
 print(Abs_sph_mag_dustCorr,Abs_disc_mag_dustCorr)
 
@@ -140,7 +143,7 @@ mag_i_dustcorr = -2.5*np.log10(10**(Abs_sph_mag_dustCorr/-2.5) + 10**(Abs_disc_m
 #Calculate the dust corrected version of g-band galaxy total mag for ALL sample 
 L_gal_g = 10**(mag_g_kcorr/-2.5)
 L_sph_g = L_gal_g * B_T_ratio_i_old
-L_disc_g = L_gal_g * (np.repeat(1,len(B_T_ratio_i))-B_T_ratio_i_old)
+L_disc_g = L_gal_g * (np.repeat(1,len(B_T_ratio_i_old))-B_T_ratio_i_old)
 
 sph_mag_g_BD = -2.5*np.log10(L_sph_g)
 disc_mag_g_BD = -2.5*np.log10(L_disc_g)
@@ -187,6 +190,47 @@ Re_kpc = Re* scale
 
 Re_kpc_lerr, Re_kpc_uerr = abs(Re_kpc - Re* scale_lerr) , abs(Re* scale_uerr - Re_kpc)
 Re_kpc_err =[Re_kpc_lerr, Re_kpc_uerr]
+
+#%%
+# Read Sahu, Davis, and Savorgnan
+
+#read data
+Savorgnan_data = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Savorgnan_sizemass.dat")
+Savorgnan_data_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Savorgnan_sizemass.dat",dtype='str')
+
+Davis_data = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Davis_sizemass.dat")
+Davis_data_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Davis_sizemass.dat",dtype='str')
+
+Sahu_data = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Sahu_sizemass2.dat")
+Sahu_data_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/Sahu_sizemass2.dat",dtype='str')
+
+Savorgnan_name = Savorgnan_data_n[:,0]
+Savorgnan_size_eq_kpc = Savorgnan_data[:,8]
+Savorgnan_mass_36 = Savorgnan_data[:,10]
+
+# Savorgnan_mass_T11 = 10**(0.88 * Savorgnan_mass_36+1.02)
+Savorgnan_mass_T11 = 10**Savorgnan_mass_36
+
+Davis_name = Davis_data_n[:,0]
+Davis_size_eq_kpc = Davis_data[:,8]
+Davis_mass_36 = Davis_data[:,10]
+
+#Davis_mass_T11 = 10**(0.88 * Davis_mass_36+1.02)
+Davis_mass_T11 = 10**Davis_mass_36
+
+Sahu_name = Sahu_data_n[:,0]
+Sahu_size_eq_kpc = Sahu_data[:,8]
+Sahu_mass_36 = Sahu_data[:,10]
+
+#Sahu_mass_T11 = 10**(0.88 * Sahu_mass_36+1.02)
+Sahu_mass_T11 = 10**Sahu_mass_36
+
 
 ## End in reading base data#################################################
 
@@ -601,6 +645,10 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
                                 mu0[fit_instruc], Mag[fit_instruc])
     popt_n,pcov_n = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
                               np.log10(n[fit_instruc]), Mag[fit_instruc])
+    
+    print("1",mu0[fit_instruc],Mag[fit_instruc])
+    print("2",np.log10(n[fit_instruc]),Mag[fit_instruc])
+
   
     #Plotting
     fig = plt.figure(figsize=(12, 4.8))
@@ -656,14 +704,17 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     return (fig)#,*popt_n,*popt_mu)
 
 #%%
-xlim = [3e8,1.3e12]
+xlim = [1e9,3e12]
 ylim = [0.08,167]
+
+#xlim = [3e7,10e12]
+#ylim = [0.08,240]
 # plot size-mass diagram
 def plot_dexter_sample_T11(mass, size, size_err,mass_err, 
                            A, scale='log',alpha=0.65,
-                           colour='#a5200b',label="This work",marker='o'):
+                           colour='#a5200b',label="This work",marker='o',s=70):
     A.scatter(mass, size,marker='o',c=colour,label=label, 
-              s =70, alpha=0.7)
+              s =s, alpha=alpha)
     A.errorbar(mass, size, yerr = size_err, 
                   xerr = mass_err*mass, ls='none',linewidth=4, 
                   color = colour,
@@ -679,6 +730,38 @@ def plot_dexter_sample_T11(mass, size, size_err,mass_err,
 
     
 #%%
+def plot_sizemass_z0():
+    fig = plt.figure(figsize=(6.4, 5.8))
+    ax0 = plt.subplot()
+
+    
+    plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0,
+                           alpha = 0.4,colour='#a5200b',
+                          label=r"$\rm This~work$")
+    #plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',alpha = 0.1, label=r"$\rm This~work$")
+    #plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='k',alpha = 0.1, label=r"$\rm This~work$")
+    #plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='g',alpha = 0.1,label=r"$\rm S~(Dust corrected)$")
+
+
+    plot_dexter_sample_T11(Savorgnan_mass_T11, Savorgnan_size_eq_kpc,0,0,ax0, 
+                           alpha = 0.8,colour='#b940c8',
+                           label=r"$\rm Savorgnan~et~al.~2016$", s=100)
+    plot_dexter_sample_T11(Davis_mass_T11, Davis_size_eq_kpc, 0, 0,ax0, 
+                           alpha = 0.8,colour='#2e417b',
+                           label=r"$\rm Davis~et~al.~2019$", s=100)
+    
+    plot_dexter_sample_T11(Sahu_mass_T11, Sahu_size_eq_kpc, 0, 0,ax0,
+                           alpha = 0.8,colour='#e1a000',
+                           label=r"$\rm Sahu~et~al.~2019$", s =100)
+
+    ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (T11)$", fontsize=16)
+    plt.legend(fontsize = 12.5,loc="lower right")
+    plt.tight_layout()
+
+    plt.show()
+
+
 def plot_sizemass_Sersic_vs_core():
     fig = plt.figure()
     ax0 = plt.subplot()
@@ -698,12 +781,12 @@ def plot_sizemass_morph():
     #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
     plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
     plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
-    #plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
+    plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
     #plot_dexter_sample_T11(E_T11_K_dustcorr_S_old, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='g',label="S_dustcorr_old",marker='s')
     plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
 
     ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (RC15)$", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (T11)$", fontsize=16)
     plt.legend(loc="lower right")
     plt.show()
     
@@ -792,8 +875,8 @@ def plot_dustvsnodust_BD_gi():
     Abs_disc_mag_dustCorr_S = SSort.cherry_pick(morph_dict['S'], Abs_disc_mag_dustCorr)
     B_D_ratio_i_S =  SSort.cherry_pick(morph_dict['S'], B_D_ratio_i)
     
-    sph_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD)
-    disc_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD)
+    sph_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], sph_mag_g_BD_dustcorr)
+    disc_mag_g_BD_S = SSort.cherry_pick(morph_dict['S'], disc_mag_g_BD_dustcorr)
     
     
     A = 10**((np.array(sph_mag_g_BD_S)-np.array(disc_mag_g_BD_S))/-2.5)
@@ -862,6 +945,7 @@ def plot_discmag_i():
     plt.tight_layout()
 
     plt.show()    
+
 #%% Execution Area
 
 # extrapolate the central surface brightness
@@ -889,16 +973,18 @@ C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,
 
 
 plot_sizemass_morph()
-plot_dustvsnodust()
-plot_dustvsnodust_g()
-plot_dustvsnodust_i()
-plot_dustvsnodust_BD_g()
-plot_dustvsnodust_BD_i()
 
-plot_dustvsnodust_BD_gi()
+plot_sizemass_z0()
+#plot_dustvsnodust()
+#plot_dustvsnodust_g()
+#plot_dustvsnodust_i()
+#plot_dustvsnodust_BD_g()
+#plot_dustvsnodust_BD_i()
+
+#plot_dustvsnodust_BD_gi()
 
 
-plot_sphmag_g()
-plot_discmag_g()
-plot_sphmag_i()
-plot_discmag_i()
+#plot_sphmag_g()
+#plot_discmag_g()
+#plot_sphmag_i()
+#plot_discmag_i()

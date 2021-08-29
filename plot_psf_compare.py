@@ -19,6 +19,8 @@ import matplotlib.gridspec as gridspec
 plt.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 
 Bin1V_file = "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat"
 Bin2V_file = "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat"
@@ -264,7 +266,7 @@ def plot_gi_pasf_compare():
     #plt.plot(g_o_mix- i_o_mix , g_n_mix - i_n_mix ,'kX',ms=17, label='mix')
 
     plt.plot(1.7997353824777704,0.7759999999999998, 'rX',ms=8,label = r'$\rm UGC~8736$')
-    plt.plot(line_xy,linear_func(line_xy,*popt),'r-',lw=3,label= r'$\rm linear~fit$')
+    ##plt.plot(line_xy,linear_func(line_xy,*popt),'r-',lw=3,label= r'$\rm linear~fit$')
     #plt.plot(line_xy,linear_func(line_xy,popt[0]+perr[0],popt[1]+perr[1]),'r--')
     #plt.plot(line_xy,linear_func(line_xy,popt[0]-perr[0],popt[1]-perr[1]),'r--')
     

@@ -486,7 +486,7 @@ class SelectionCut(object):
         
         AX.set_xscale( 'log' )
         AX.set_yscale( 'log' )
-        AX.legend()
+        #AX.legend()
         
         
     def selection_subsample(self, input_list, 
@@ -960,7 +960,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             
         # the number density, default volume to be 1 Mpc^{-3} dex^{-1}
         dex_factor = np.array([(box[j][1]-box[j][0]) for j in range(len(box))])
-        dex_factor=np.average(dex_factor)
+        dex_factor= np.average(dex_factor)
         
         # The number of sample within each bin
         N = [np.size(master_bin[j]) for j in range(len(master_bin))]
@@ -1003,19 +1003,22 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         #print('nudens_err',nu_dens_err)
         #print('mid_pt',mid_pt)
         if plot_yes == True:
-            plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, label=label)
+            plt.plot(mid_pt, nu_dens, 'o', color = colour, ms = 14, 
+                     label=label,fillstyle="none")
             plt.errorbar(mid_pt,nu_dens,yerr=nu_dens_err,ls='none',
-                     linewidth=3, ecolor=colour,zorder=20,mew=1,capsize=3)        
-        
+                     linewidth=2, ecolor=colour,zorder=20,mew=1,capsize=3) 
+            
+            # show the number of galaxy in each mass interval
+            for j in range(len(list(nu_dens))):
+                plt.text(mid_pt[j], nu_dens[j]*2,r"{:.1f}".format(float(nu_dens[j]*volume*dex_factor)))
+            
             #plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
             plt.ylabel(r"$ \Phi~\rm (Mpc^{-3}dex^{-1})$", fontsize=16)
-            
-            plt.xscale( 'log' )
-            plt.yscale( 'log' )
+
         elif plot_yes == False:
             pass
         else:
-            raise Exception("You need to decide either show plot or not")
+            raise Exception("You need to decide either show the plot or not")
         return nu_dens, mid_pt
 
     # messy need clean up

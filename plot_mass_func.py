@@ -13,69 +13,103 @@ import SphPlot as SPlot
 import astro_func_list as func
 
 import numpy as np
+import astropy as astropy
+from astropy.cosmology import FlatLambdaCDM
+from astropy.cosmology import Planck13, z_at_value
+from astropy import units as u
+from astropy.coordinates import Distance
 
 import matplotlib.style
 import matplotlib as mpl
 mpl.style.use('classic')
 
 mpl.rcParams['grid.linewidth'] = 1.0
+mpl.rcParams["legend.numpoints"] = 1.0
+mpl.rcParams["legend.scatterpoints"] = 1.0
 
-#box=[[8.1,8.2],
-#     [8.2,8.3],
-#     [8.3,8.4],
-#     [8.4,8.5],
-#     [8.5,8.6],
-#     [8.6,8.7],
-#     [8.7,8.8],
-#     [8.8,8.9],
-#     [8.9,9.0],
-#     [9.0,9.1],
-#     [9.1,9.2],  
-#     [9.2,9.3],
-#     [9.3,9.4],
-#     [9.4,9.5],
-#     [9.5,9.6],
-#     [9.6,9.7],
-#     [9.7,9.8],
-#     [9.8,9.9],
-#     [9.9,10.0],
-#     [10.0,10.1],
-#     [10.1,10.2],
-#     [10.2,10.3],
-#     [10.3,10.4],
-#     [10.4,10.5],
-#     [10.5,10.6],
-#     [10.6,10.7],
-#     [10.7,10.8],
-#     [10.8,10.9],
-#     [10.9,11.0],
-#     [11.0,11.3],
-#     [11.3,11.4],
-#     [11.4,11.5],
-#     [11.5,11.6]]
+# Box collection
+box_01=[[8.1,8.2], [8.2,8.3], [8.3,8.4], [8.4,8.5], [8.5,8.6],
+     [8.6,8.7], [8.7,8.8], [8.8,8.9], [8.9,9.0], [9.0,9.1],
+     [9.1,9.2], [9.2,9.3], [9.3,9.4], [9.4,9.5], [9.5,9.6],
+     [9.6,9.7], [9.7,9.8], [9.8,9.9], [9.9,10.0], [10.0,10.1],
+     [10.1,10.2], [10.2,10.3], [10.3,10.4], [10.4,10.5], [10.5,10.6],
+     [10.6,10.7], [10.7,10.8], [10.8,10.9], [10.9,11.0], [11.0,11.3],
+     [11.3,11.4], [11.4,11.5], [11.5,11.6]]
+
+box_03=[[8.0,8.3],[8.3,8.6],[8.6,8.9],
+     [8.9,9.2],[9.2,9.5],[9.5,9.8],
+     [9.8,10.1],[10.1,10.4],[10.4,10.7],
+     [10.7,11.0],[11.0,11.3],[11.3,11.6],
+     [11.6,11.9],[11.9,12.2],[12.2,12.5],[12.5,12.8]]
+
+box_02 = [[8.0,8.2],[8.2,8.4],[8.4,8.6],[8.6,8.8],[8.8,9.0],[9.0,9.2],[9.2,9.4],
+          [9.4,9.6],[9.6,9.8],[9.8,10.0],[10.0,10.2],[10.2,10.4],[10.4,10.6],
+          [10.6,10.8],[10.8,11.0],[11.0,11.2],[11.2,11.4],[11.4,11.6],[11.6,11.8],
+          [11.8,12.0]]
+
+box_10=[[7,8],[8,9],[9,10],[10,11],[11,12]]
+#box =[[9.9,10.5],[10.5,11.0],[11.0,11.6]]
+
+box_05=[[8.0,8.5],[8.5,9.0],[9.0,9.5],[9.5,10.0],
+     [10.0,10.5],[10.5,11.0],[11.0,11.5],[11.5,12.0]]
+
+box = box_03
+
 
 # calculate the volume
 D = np.array([45,75,110])
 
 voll = ((D**3)/3)*((214-139)/180)*np.pi*(np.cos((np.pi/2)-(55*np.pi/180)-np.cos(np.pi/2)))
 
+volume = voll
+
+V1_V = volume[2] - volume[1]
+V2_V = volume[1] - volume[0]
+V3_V = volume[0]
+
+#V1_V = volume[2] 
+#V2_V = volume[1]
+#V3_V = volume[0]
+
+
 print('voll',voll)
 
-box=[[8.0,8.3],[8.3,8.6],[8.6,8.9],
-     [8.9,9.2],[9.2,9.5],[9.5,9.8],
-     [9.8,10.1],[10.1,10.4],[10.4,10.7],
-     [10.7,11.0],[11.0,11.3],[11.3,11.6],
-     [11.6,11.9],[11.9,12.2],[12.2,12.5],[12.5,12.8]]
 
-#box=[[7,8],[8,9],[9,10],[10,11],[11,12]]
-#box =[[9.9,10.5],[10.5,11.0],[11.0,11.6]]
 
 #old volume
 #volume = [29526.108,97704.819,357422.506]
 
-volume = voll
 
 #volume = [357422.506,357422.506,357422.506]
+
+
+def plot_solid_circles():
+    Solid_Bin1_mass = 10**np.array([np.average(box[12]),np.average(box[13])])
+    Solid_Bin1_nudens = np.array([3,2])/V1_V/0.3
+
+    Solid_Bin2_mass = 10**np.array([np.average(box[10])])
+    Solid_Bin2_nudens = np.array([6])/V2_V/0.3
+
+    Solid_Bin3_mass = 10**np.array([np.average(box[9]), np.average(box[11])])
+    Solid_Bin3_nudens = np.array([9,1])/V3_V/0.3
+    
+    ax.plot(Solid_Bin3_mass, Solid_Bin3_nudens, "o", color='#2a3236',label=r"$\rm Bin~3$",ms=14)
+    ax.plot(Solid_Bin2_mass, Solid_Bin2_nudens, "o", color='#0b5786',label=r"$\rm Bin~2$",ms=14)
+    ax.plot(Solid_Bin1_mass, Solid_Bin1_nudens, "o",color='#a5200b',label=r"$\rm Bin~1$",ms=14)
+
+def plot_half_circles():
+    HalfSolid_Bin1_mass = 10**np.array([np.average(box[11])])
+    HalfSolid_Bin1_nudens = np.array([3])/V1_V/0.3
+
+    HalfSolid_Bin2_mass = 10**np.array([np.average(box[9])])
+    HalfSolid_Bin2_nudens = np.array([4])/V2_V/0.3
+
+    HalfSolid_Bin3_mass = 10**np.array([np.average(box[7]), np.average(box[8])])
+    HalfSolid_Bin3_nudens = np.array([9,13])/V3_V/0.3
+    
+    ax.plot(HalfSolid_Bin3_mass, HalfSolid_Bin3_nudens, "o", fillstyle = "bottom",color='#2a3236',ms=14, alpha=0.3)
+    ax.plot(HalfSolid_Bin2_mass, HalfSolid_Bin2_nudens, "o", fillstyle = "bottom",color='#0b5786',ms=14, alpha=0.3)
+    ax.plot(HalfSolid_Bin1_mass, HalfSolid_Bin1_nudens, "o", fillstyle = "bottom",color='#a5200b',ms=14, alpha=0.3)
 
 ##########################################
 # input, horizontal bins
@@ -84,11 +118,19 @@ volume = voll
 
 # Calculate the local Sph mass
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt")
+
+D0_Bin1_table_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt",dtype="str")
+D0_Bin2_table_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt",dtype="str")
+D0_Bin3_table_n = SRead.read_table(
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt",dtype="str")
+
 
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
@@ -98,6 +140,33 @@ D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
 
+# calculate the redshift with these distance
+cosmo = FlatLambdaCDM(H0=68.0, Om0=0.3)
+
+#z_1 = z_at_value(Planck13.distmod,100*u.Mpc)
+
+# convert to Luminosity distance
+
+z_1,z_2,z_3 = [], [], []
+for i in range(len(D1)):
+    z_1.append(Distance(D1[i],unit=u.Mpc).compute_z(cosmology=cosmo))
+for i in range(len(D2)):
+    z_2.append(Distance(D2[i],unit=u.Mpc).compute_z(cosmology=cosmo))
+for i in range(len(D3)):
+    z_3.append(Distance(D3[i],unit=u.Mpc).compute_z(cosmology=cosmo))
+z_1,z_2,z_3 = np.array(z_1), np.array(z_2), np.array(z_3)
+
+print("D1",D1)
+print("z1",z_1)
+print("DL1",D1/(1+z_1))
+
+#calculate the Cosmological dimming correction 
+
+I1_corr_factor= (1+z_1)**(-4)
+I2_corr_factor= (1+z_2)**(-4)
+I3_corr_factor= (1+z_3)**(-4)
+
+# extract the total magnitude
 total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
 total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
 total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
@@ -106,6 +175,24 @@ sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
+# magntiude correction (cosmological dimming)
+Extinction_g1 = list(D0_Bin1_table[:,-4])
+Extinction_g2 = list(D0_Bin2_table[:,-4])
+Extinction_g3 = list(D0_Bin3_table[:,-4])
+
+Extinction_i1 = list(D0_Bin1_table[:,-3])
+Extinction_i2 = list(D0_Bin2_table[:,-3])
+Extinction_i3 = list(D0_Bin3_table[:,-3])
+
+sph_mag1 = sph_mag1 - Extinction_i1
+sph_mag2 = sph_mag2 - Extinction_i2
+sph_mag3 = sph_mag3 - Extinction_i3
+
+mag_g1, mag_i1 = mag_g1 - Extinction_g1, mag_i1 - Extinction_i1
+mag_g2, mag_i2 = mag_g2 - Extinction_g2, mag_i2 - Extinction_i2
+mag_g3, mag_i3 = mag_g3 - Extinction_g3, mag_i3 - Extinction_i3
+
+# extinction correction
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
@@ -173,17 +260,20 @@ mass2 = np.log10(E2_R15BC)
 mass3 = np.log10(E3_R15BC)
 
 # select for the data pount that has R_e < 2 kpc
-E1_2kpc = SSort.selection_generic(10**mass1, Re_1_kpc, array1_2kpc, direction="down")['bag_x']
-E2_2kpc = SSort.selection_generic(10**mass2, Re_2_kpc, array2_2kpc, direction="down")['bag_x']
-E3_2kpc = SSort.selection_generic(10**mass3, Re_3_kpc, array3_2kpc, direction="down")['bag_x']
+E1_2kpc = SSort.selection_generic(10**mass1, Re_1_kpc, array1_2kpc, direction="low")['bag_x']
+E2_2kpc = SSort.selection_generic(10**mass2, Re_2_kpc, array2_2kpc, direction="low")['bag_x']
+E3_2kpc = SSort.selection_generic(10**mass3, Re_3_kpc, array3_2kpc, direction="low")['bag_x']
 
-print(SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="down")['bag_y']
+
+print("Re_2kpc",SSort.selection_generic(E1_R15BC, Re_1_kpc, array1_2kpc, direction="low",axis="y")['bag_y']
       , E1_2kpc)
 
 # define the mass of data points with R_e < 2 kpc
 mass1_2kpc = np.log10(E1_2kpc)
 mass2_2kpc = np.log10(E2_2kpc)
 mass3_2kpc = np.log10(E3_2kpc)
+
+print("mass1_2kpc",mass1_2kpc)
 
 ##### calculate the mass function (GAMA)
 Kalvin14_all1 ={'M_star':[],
@@ -251,11 +341,7 @@ line_style = Kalvin14_morph['line_style']
 
 
 ##Ploting##################################
-
-V1_V = volume[2] - volume[1]
-V2_V = volume[1] - volume[0]
-V3_V = volume[0]
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(9.8,6.4))
 
 print('V1','V2','V3',volume[2],volume[1],volume[0])
 
@@ -296,19 +382,19 @@ print('V1_V','V2_V','V3_V',V1_V,V2_V,V3_V)
 
 nu_dens1_t, mid_pt1_t = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
                                                           colour='#2a3236',
-                                                          label="Bin 3",
+                                                          label="",
                                                           trim=False)
 nu_dens2_t, mid_pt2_t = SPlot.ShowcaseIndi.mass_function_plot(mass2, box, V2_V, 
                                                           colour='#0b5786',
-                                                          label="Bin 2",
+                                                          label="",
                                                           trim=False)
 nu_dens3_t, mid_pt3_t = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
                                                           colour='#a5200b',
-                                                          label="Bin 1",
+                                                          label="",
                                                           trim=False)
 
 
-nu_dens_t_sum = nu_dens1_t +nu_dens2_t +nu_dens3_t
+nu_dens_t_sum = (nu_dens1_t*V1_V +nu_dens2_t*V2_V +nu_dens3_t*V3_V)/volume[2]
 
 nu_dens1_2kpc, mid_pt1_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass3_2kpc, box, V3_V, 
                                                           colour='#2a3236',
@@ -326,12 +412,15 @@ nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, 
                                                           trim=False,
                                                           plot_yes=False)
 
+
+
 # create mass function for sph Re<2kpc
-nu_dens_2kpc = nu_dens1_2kpc +nu_dens2_2kpc +nu_dens3_2kpc
+nu_dens_2kpc = (nu_dens1_2kpc*V1_V*0.3 +nu_dens2_2kpc*V2_V*0.3 +nu_dens3_2kpc*V1_V*0.3)/volume[2]/0.3
 
 #set limit for each bin
-Bin1_limit, Bin2_limit, Bin3_limit = 2.11e11,6.70e10,2.41e10
-Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.6, Bin2_limit*0.6, Bin3_limit*0.6
+Bin1_limit, Bin2_limit, Bin3_limit = 3.4e11, 1.3e11, 6.7e10
+Bin1_limit_az, Bin2_limit_az, Bin3_limit_az = 3.4e11*0.42, 1.3e11*0.36, 6.7e10*0.24
+Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.3, Bin2_limit*0.3, Bin3_limit*0.3
 
 Bin1_l,Bin1_u = Bin1_limit - Bin1_sigma, Bin1_limit + Bin1_sigma
 Bin2_l,Bin2_u = Bin2_limit - Bin2_sigma, Bin2_limit + Bin2_sigma
@@ -347,6 +436,9 @@ Bin1_shade_y, Bin1_shade_x = [3.1e-6,3.6e-6,3.6e-6,3.1e-6], [Bin1_limit, Bin1_li
 Bin2_shade_y, Bin2_shade_x = [4.0e-6,4.6e-6,4.6e-6,4.0e-6], [Bin2_limit, Bin2_limit, high_end, high_end]
 Bin3_shade_y, Bin3_shade_x = [5.0e-6,5.9e-6,5.9e-6,5.0e-6], [Bin3_limit, Bin3_limit, high_end, high_end]
 
+Bin1_shade_az_y, Bin1_shade_az_x = [3.1e-6,3.6e-6,3.6e-6,3.1e-6], [Bin1_limit_az, Bin1_limit_az, high_end, high_end]
+Bin2_shade_az_y, Bin2_shade_az_x = [4.0e-6,4.6e-6,4.6e-6,4.0e-6], [Bin2_limit_az, Bin2_limit_az, high_end, high_end]
+Bin3_shade_az_y, Bin3_shade_az_x = [5.0e-6,5.9e-6,5.9e-6,5.0e-6], [Bin3_limit_az, Bin3_limit_az, high_end, high_end]
 
 #Bin1_shade_y, Bin1_shade_x = [3.1e-3,3.6e-6,3.6e-6,3.1e-3], [Bin1_limit, Bin1_limit, high_end, high_end]
 #Bin2_shade_y, Bin2_shade_x = [4.0e-3,4.6e-6,4.6e-6,4.0e-3], [Bin2_limit, Bin2_limit, high_end, high_end]
@@ -356,18 +448,28 @@ ax.fill(Bin1_shade_x, Bin1_shade_y, '#a5200b',alpha=0.7)
 ax.fill(Bin2_shade_x, Bin2_shade_y, '#0b5786',alpha=0.7)
 ax.fill(Bin3_shade_x, Bin3_shade_y, '#2a3236',alpha=0.7)
 
+ax.fill(Bin1_shade_az_x, Bin1_shade_az_y, '#a5200b',alpha=0.3)
+ax.fill(Bin2_shade_az_x, Bin2_shade_az_y, '#0b5786',alpha=0.3)
+ax.fill(Bin3_shade_az_x, Bin3_shade_az_y, '#2a3236',alpha=0.3)
 
-ax.plot( mid_pt1_t , nu_dens_t_sum,"o--",label="Sum",linewidth=7)
-ax.plot(mid_pt1_t,nu_dens_2kpc, 'o--',label="<2kpc",linewidth=7)
+
+ax.plot(mid_pt1_t, nu_dens_t_sum,"o--",label=r"$n_\mathrm{Sph}$",linewidth=5)
+ax.plot(mid_pt1_t,nu_dens_2kpc, 'o--',label=r"$<~2~\rm kpc$",linewidth=5)
+
+plot_solid_circles()
+plot_half_circles()
+
 
 #ax.vlines(x=Bin1_limit,ymin=1e-2,ymax=1e-6,color='#a5200b',lw=5, alpha=0.7)
 #ax.vlines(x=Bin2_limit,ymin=1e-2,ymax=1e-6,color='#0b5786',lw=5, alpha=0.7)
 #ax.vlines(x=Bin3_limit,ymin=1e-2,ymax=1e-6,color='#2a3236',lw=5, alpha=0.7)
 
-ax.set_xlabel(r"$M_*/ \rm M_{\odot}(IP13)$",fontsize=16)
+ax.set_xlabel(r"$M_*/ \rm M_{\odot}(RC15)$",fontsize=16)
 
 #plt.grid(True)
-ax.set_ylim(1e-6,1e-2)
-ax.set_xlim(1e8,6e12)
+ax.set_ylim(2e-6,6e-3)
+ax.set_xlim(4e8,2e12)
+plt.xscale( 'log' )
+plt.yscale( 'log' )
 plt.legend()
 plt.show()

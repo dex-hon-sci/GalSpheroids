@@ -106,8 +106,8 @@ my_z = np.array([0,0,0])
 #####
 #Bin V number density RC15
 my_nd_Barro = np.array([4.92e-5,1.10e-4,7.37e-4])
-my_nd_Dam = np.array([4.92e-5,1.27e-4,7.98e-4])
-my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 1.23e-4])
+my_nd_Dam = np.array([4.92e-5,1.27e-4,8.29e-4])
+my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 9.21e-5])
 my_nd_vdWel = np.array([6.15e-6,2.54e-5,1.23e-4])
 my_nd_Graham = np.array([1.23e-6,8.46e-6,0])
 
@@ -164,7 +164,7 @@ my_nd_oldE_Bin3 = np.array([my_nd_oldE[2],0])
 peak_RN_Barro = 2.413e-4
 peak_RN_vdWel = 1.692e-4
 peak_RN_vDokkum = 1.458e-4 
-peak_RN_Dam = 10**-3.504
+peak_RN_Dam = 5.08e-5
 
 
 ms0 = 12
@@ -449,7 +449,7 @@ def plot_nd_E_3plot():
     plot_nd_Barro(axs0)
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
-    axs0.legend(loc=4,fontsize=12)
+    axs0.legend(loc=4,fontsize=10)
 
 
     #plot Panel (2)
@@ -469,7 +469,7 @@ def plot_nd_E_3plot():
     plot_nd_vdWel(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
-    axs1.legend(loc=4,fontsize=12)
+    axs1.legend(loc=4,fontsize=10)
 
 
     
@@ -490,7 +490,7 @@ def plot_nd_E_3plot():
     plot_nd_vDokkum(axs2)
 
     #axs2.grid(True)
-    axs2.legend(loc=4,fontsize=12)
+    axs2.legend(loc=4,fontsize=10)
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
@@ -510,7 +510,7 @@ def plot_nd_E_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=18)
     #axs2.grid(True)
-    axs3.legend(loc=4,fontsize=12)
+    axs3.legend(loc=4,fontsize=10)
     plt.tight_layout()
 
     plt.show()
@@ -541,6 +541,7 @@ def plot_nd_3plot():
 
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
+    axs0.text(1.8,4e-4, r'$\rm Barro~cut$', weight = "bold", color= "g", fontsize=24)
     axs0.legend(loc=4,fontsize=12)
 
     twin0=axs0.twinx()
@@ -556,6 +557,7 @@ def plot_nd_3plot():
     plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
+    axs1.text(1.2,4e-4, r'$\rm van~der~Wel~cut$', weight = "bold", color= "b", fontsize=24)
     axs1.legend(loc=4,fontsize=12)
 
     #plot Panel (3)
@@ -570,6 +572,7 @@ def plot_nd_3plot():
     plt.setp(axs2.get_xticklabels(), visible=False)
     
     #axs2.grid(True)
+    axs2.text(1.2,4e-4, r'$\rm van~Dokkum~cut$', weight = "bold", color= "#e58b1a", fontsize=24)
     axs2.legend(loc=4,fontsize=12)
     
     #plot Panel (4)
@@ -584,7 +587,7 @@ def plot_nd_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=20)
     #axs2.grid(True)
-    axs3.text(2.18,4e-4,'Damjanov cut')
+    axs3.text(1.4,4e-4, r'$\rm Damjanov~cut$', weight = "bold", color= "r", fontsize=24)
     axs3.legend(loc=4,fontsize=12)
     
     twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~1 $", color ='#a5200b', 
@@ -912,6 +915,8 @@ def plot_nd_all_mass():
                      label = r"", AX=axs12,nsum = True)
     plot_compact_sum(my_nd_E, colour='red', xlim_n = xlim,
                      label = r"", AX=axs12,nsum = True) 
+    axs12.axhline(peak_RN_Dam,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="r" )
     
     plot_nd_3bins(my_nd_Dam_T11,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs12)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs12)    
@@ -933,6 +938,8 @@ def plot_nd_all_mass():
                      label = r"", AX=axs13,nsum = True)
     plot_compact_sum(my_nd_E, colour='red', xlim_n = xlim,
                      label = r"", AX=axs13,nsum = True) 
+    axs13.axhline(peak_RN_Dam,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="r" )
     
     plot_nd_3bins(my_nd_Dam_Z09,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs13)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs13)
@@ -956,6 +963,8 @@ def plot_nd_all_mass():
                      label = r"", AX=axs14,nsum = True)
     plot_compact_sum(my_nd_E, colour='red', xlim_n = xlim,
                      label = r"", AX=axs14,nsum = True) 
+    axs14.axhline(peak_RN_Dam,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="r" )
     
     plot_nd_3bins(my_nd_Dam,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs14)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs14)
@@ -978,6 +987,8 @@ def plot_nd_all_mass():
                      label = r"", AX=axs15,nsum = True)
     plot_compact_sum(my_nd_E, colour='red', xlim_n = xlim,
                      label = r"", AX=axs15,nsum = True) 
+    axs15.axhline(peak_RN_Dam,xlim[0],xlim[1],linestyle="dashed", linewidth = 3,
+               color="r" )
     
     plot_nd_3bins(my_nd_Dam_IP13,'o',my_z=np.array([-0.1,-0.1,-0.1]) ,AX=axs15)
     plot_nd_3bins(my_nd_E, 's', my_z=np.array([0.1,0.1,0.1]),AX=axs15)

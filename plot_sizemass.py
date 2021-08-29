@@ -44,27 +44,27 @@ print("5/V", 5/V1, 5/V2, 5/V3)
 
 ##Read input file by bins
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt")
 
 D0_all_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_3.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_3.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_3.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
 # The apparant magnitude of the galaxy in g- and i-band.
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
@@ -126,6 +126,24 @@ sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
+# magntiude correction (cosmological dimming)
+Extinction_g1 = list(D0_Bin1_table[:,-4])
+Extinction_g2 = list(D0_Bin2_table[:,-4])
+Extinction_g3 = list(D0_Bin3_table[:,-4])
+
+Extinction_i1 = list(D0_Bin1_table[:,-3])
+Extinction_i2 = list(D0_Bin2_table[:,-3])
+Extinction_i3 = list(D0_Bin3_table[:,-3])
+
+sph_mag1 = sph_mag1 - Extinction_i1
+sph_mag2 = sph_mag2 - Extinction_i2
+sph_mag3 = sph_mag3 - Extinction_i3
+
+mag_g1, mag_i1 = mag_g1 - Extinction_g1, mag_i1 - Extinction_i1
+mag_g2, mag_i2 = mag_g2 - Extinction_g2, mag_i2 - Extinction_i2
+mag_g3, mag_i3 = mag_g3 - Extinction_g3, mag_i3 - Extinction_i3
+
+# The structural parameters
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
@@ -443,14 +461,7 @@ mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
 #mass1, mass2, mass3 = E1_IP13_K, E2_IP13_K, E3_IP13_K
 
 
-################################
-# The three ES are at 7 and 17 in Bin1 and at 4 in Bin2
-E_R15BC_K_ES = np.array([E1_R15BC_K[7],E1_R15BC_K[17],E2_R15BC_K[4]])
-Re_kpc_ES = np.array([Re_1_kpc[7],Re_1_kpc[17],Re_2_kpc[4]])
-Re_kpc_major_ES = np.array([Re_1_kpc_major[7],Re_1_kpc_major[17],Re_2_kpc_major[4]])
-
-ES_index = [33,70,93]
-
+##################################
 # Dust Correction and morph seperation
 
 # correct for galaxies g and i in bulge+Disk
@@ -598,13 +609,17 @@ D1 = D1
 D2 = D2
 D3 = D3
 
-mass1 = E1_IP13_K
-mass2 = E2_IP13_K
-mass3 = E3_IP13_K
+mass1 = E1_R15BC_K
+mass2 = E2_R15BC_K
+mass3 = E3_R15BC_K
 
 mass_err1 = mass_err1
 mass_err2 = mass_err2
 mass_err3 = mass_err3
+
+mass1_E = E1_R15BC_K_E
+mass2_E = E2_R15BC_K_E
+mass3_E = E3_R15BC_K_E
 
 Re_1_kpc = Re_1_kpc
 Re_2_kpc = Re_2_kpc
@@ -623,10 +638,22 @@ Re_2_kpc_err =[Re_2_kpc_lerr, Re_2_kpc_uerr]
 Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
 
 # The mass, and size of E galaxies
+mass_E = np.concatenate((mass1_E,mass2_E,mass3_E))
+
 E_R15BC_K_E = np.concatenate((E1_R15BC_K_E,E2_R15BC_K_E,E3_R15BC_K_E))
 Re_kpc_E = np.concatenate((Re_1_kpc_E,Re_2_kpc_E,Re_3_kpc_E))
 Re_kpc_major_E = np.concatenate((Re_1_kpc_major_E,Re_2_kpc_major_E,Re_3_kpc_major_E))
 
+################################
+# The three ES are at 7 and 17 in Bin1 and at 4 in Bin2
+
+mass_ES = np.array([mass1[7],mass1[17],mass2[4]])
+
+E_R15BC_K_ES = np.array([E1_R15BC_K[7],E1_R15BC_K[17],E2_R15BC_K[4]])
+Re_kpc_ES = np.array([Re_1_kpc[7],Re_1_kpc[17],Re_2_kpc[4]])
+Re_kpc_major_ES = np.array([Re_1_kpc_major[7],Re_1_kpc_major[17],Re_2_kpc_major[4]])
+
+ES_index = [33,70,93]
 
 ################################
 # Define ploting in RDJ15
@@ -968,29 +995,29 @@ def plot_dexter_sample_Bin2(A):
 def plot_dexter_sample_all2(A,alpha=0.65):
     
     # Plot E galaxies
-    A.plot(E_R15BC_K_E, Re_kpc_E ,marker='s',color='#1b872a',label='E', 
+    A.plot(mass_E, Re_kpc_E ,marker='s',color='#1b872a',label='E', 
               ms =10, alpha=1.0,linestyle="None")   
     # Plot ES galaxies
-    A.plot(E_R15BC_K_ES, Re_kpc_ES,marker='s',color='#ccab05',label='ES', 
+    A.plot(mass_ES, Re_kpc_ES,marker='s',color='#ccab05',label='ES', 
               ms =10, alpha=1.0,linestyle="None")
     
     #Bin1
     A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='Spheroids', 
-              s =70, alpha=0.1)
+              s =70, alpha=alpha)
     A.errorbar(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
                   color ='#a5200b',
                   ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
     #Bin2
     A.scatter(mass2, Re_2_kpc,marker='o',c='#a5200b',label='', 
-              s =70,alpha=0.71)
+              s =70,alpha=alpha)
     A.errorbar(mass2, Re_2_kpc, yerr = Re_2_kpc_err, 
                   xerr = mass_err2*mass2,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
     #Bin3
     A.scatter(mass3, Re_3_kpc,marker='o',c='#a5200b',label='', 
-              s =70, alpha=0.7)
+              s =70, alpha=alpha)
     A.errorbar(mass3, Re_3_kpc, yerr = Re_3_kpc_err, 
                   xerr = mass_err3*mass3,ls='none',linewidth=4,
                   color = '#a5200b',
@@ -1015,21 +1042,21 @@ def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
     
     #Bin1
     A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label='Spheroids', 
-              s =70, alpha=0.7)
+              s =70, alpha=alpha)
     A.errorbar(mass1, Re_1_kpc_major, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
                   color ='#a5200b',
                   ecolor='#a5200b', capsize=0, alpha=alpha, marker='o')
     #Bin2
     A.scatter(mass2, Re_2_kpc_major,marker='o',c='#a5200b',label='', 
-              s =70,alpha=0.71)
+              s =70,alpha=alpha)
     A.errorbar(mass2, Re_2_kpc_major, yerr = Re_2_kpc_err, 
                   xerr = mass_err2*mass2,ls='none',linewidth=4,
                   color = '#a5200b',
                   ecolor='#a5200b',capsize=0, alpha=alpha, marker='o')
     #Bin3
     A.scatter(mass3, Re_3_kpc_major,marker='o',c='#a5200b',label='', 
-              s =70, alpha=0.7)
+              s =70, alpha=alpha)
     A.errorbar(mass3, Re_3_kpc_major, yerr = Re_3_kpc_err, 
                   xerr = mass_err3*mass3,ls='none',linewidth=4,
                   color = '#a5200b',
@@ -1063,21 +1090,21 @@ import matplotlib.gridspec as gridspec
 
 def plot_sizemass_6plot():
     
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12.8, 18.4))
     gs = gridspec.GridSpec(ncols=2, nrows=3,
                                hspace=0, wspace=0.0) 
 
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])
     plot_dexter_sample_Bin2(axs0)
-    axs0.legend(loc=2)
-    axs0.set_ylabel(r"$R_{e,sph} \rm~(kpc)$",fontsize=16)
+    axs0.legend(fontsize = 10, loc=2)
+    axs0.set_ylabel(r"$R_\mathrm{e,Sph} \rm~(kpc)$",fontsize=16)
     #axs0.grid(True)
 
     #plot Panel (2)
     axs1 = plt.subplot(gs[1],sharey=axs0)
     plot_sizemass_DamCut_mine(axs1)
-    axs1.legend(loc=4)
+    axs1.legend(fontsize = 10, loc=4)
     plt.setp(axs1.get_yticklabels(), visible=False)
     #axs1.set_yticks([])
     #axs1.grid(True)
@@ -1093,14 +1120,14 @@ def plot_sizemass_6plot():
     #plot Panel (3)
     axs2 = plt.subplot(gs[2])
     plot_sizemass_BarroCut_mine(axs2)
-    axs2.legend(loc=4)
-    axs2.set_ylabel(r"$R_{e,sph} \rm~(kpc)$",fontsize=16)
+    axs2.legend(fontsize = 10, loc=4)
+    axs2.set_ylabel(r"$R_\mathrm{e,Sph} \rm~(kpc)$",fontsize=16)
     #axs2.grid(True)
     
     #plot Panel (4)
     axs3 = plt.subplot(gs[3],sharey=axs2)
     plot_sizemass_vDokkumCut_mine(axs3)
-    axs3.legend(loc=4)
+    axs3.legend(fontsize = 10, loc=4)
     #axs3.set_yticks([])
     plt.setp(axs3.get_yticklabels(), visible=False)
     #axs3.grid(True)
@@ -1108,18 +1135,18 @@ def plot_sizemass_6plot():
     #plot Panel (5)
     axs4 = plt.subplot(gs[4])
     plot_sizemass_vdWelCut_mine(axs4)
-    axs4.legend(loc=4)
-    axs4.set_ylabel(r"$ R_{e,sph} \rm~(kpc)$", fontsize=16)
-    axs4.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} (RC15)$", fontsize=16)
+    axs4.legend(fontsize = 10, loc=4)
+    axs4.set_ylabel(r"$ R_\mathrm{e,Sph} \rm~(kpc)$", fontsize=16)
+    axs4.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axs4.grid(True)
    
     #plot Panel (6)
     axs5 = plt.subplot(gs[5],sharey=axs4)
     plot_sizemass_GrahamCut_mine(axs5)
-    axs5.legend(loc=4)
+    axs5.legend(fontsize = 10, loc=4)
     plt.setp(axs5.get_yticklabels(), visible=False)
     #axs5.set_yticks([])
-    axs5.set_xlabel(r"$ M_{*,sph} / \rm M_{\odot} (RC15)$", fontsize=16)
+    axs5.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axs5.grid(True)
 
     plt.show()
@@ -1237,7 +1264,7 @@ def plot_Magi_to_n(Sersic_n,Abs_mag):
     
     #ax.text(10,-16, "$\rm Mag = {:.2e}+ {:.2e}log_{10}(n)$".format(popt_lin[0], popt_lin[1]))
     
-    ax.legend(loc=2)
+    ax.legend(fontsize = 12,loc=2)
     #plt.grid(True)
     plt.ylabel(r"$\rm Mag_{sph,i-band}$",fontsize=16)
     plt.xlabel(r"$\rm n$",fontsize=16)
@@ -1271,7 +1298,7 @@ def plot_Magi_to_mu0(mu,Abs_mag,Sersic_n):
     
     #ax.text(10,-16, "$\rm Mag = {:.2e}+ {:.2e}log_{10}(n)$".format(popt_lin[0], popt_lin[1]))
     
-    ax.legend(loc=2)
+    ax.legend(fontsize = 12,loc=2)
     #plt.grid(True)
     plt.ylabel(r"$\rm Mag_{sph,i-band}$",fontsize=16)
     plt.xlabel(r"$\rm \mu_{0,sph,i-band}$",fontsize=16)
@@ -1396,7 +1423,7 @@ def plot_sizemass_z0comparison():
     ax.set_xlim(left = xlim[0], right = xlim[1])
     ax.set_ylim(bottom = ylim[0], top = ylim[1])
 
-    ax.legend(loc=2)
+    ax.legend(fontsize = 12,loc=2)
     #plt.grid(True)
     
     plt.xlabel(r"$\rm M_{*,sph}$ / $M_{\odot}$",fontsize=16)

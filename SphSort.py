@@ -431,7 +431,7 @@ def selection_generic(input_list_x, input_list_y, func,
                     bag_list_x.append(input_list_x[i])
                     bag_list_y.append(input_list_y[i])
                     
-        elif direction == "down":
+        elif direction == "low":
             for i in range(len(input_list_x)):
                 if input_list_x[i] < func[i]:
                 

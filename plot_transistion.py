@@ -464,8 +464,8 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt0.set_xscale( 'log' )
     axt0.set_yscale( 'log' )
     
-    axt0.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
-    axt0.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
+    axt0.set_ylabel(r"$\rm R_\mathrm{e,equ}~(kpc)$", fontsize=16)
+    axt0.set_xlabel(r"$M_{*} / \rm M_{\odot}$", fontsize=16)
     
     
     #axt0.legend(loc=4)
@@ -495,7 +495,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt1.set_xscale( 'log' )
     axt1.set_yscale( 'log' )
     
-    axt1.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
+    axt1.set_xlabel(r"$\rm M_{*} / \rm M_{\odot}$", fontsize=16)
     #axt1.legend(loc=4)
     #axt1.grid(True)
     plt.setp(axt1.get_yticklabels(), visible=False)
@@ -525,7 +525,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt2.set_xscale( 'log' )
     axt2.set_yscale( 'log' )
         
-    axt2.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
+    axt2.set_xlabel(r"$ M_{*} / \rm M_{\odot}$", fontsize=16)
     #axt2.legend(loc=4)
     #axt2.grid(True)
     plt.setp(axt2.get_yticklabels(), visible=False)
@@ -554,7 +554,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt3.set_xscale( 'log' )
     axt3.set_yscale( 'log' )
         
-    axt3.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
+    axt3.set_ylabel(r"$\rm R_\mathrm{e,equ}$ (kpc)", fontsize=16)
     #axt3.legend(loc=4)
     #axt3.grid(True)
     plt.setp(axt3.get_xticklabels(), visible=False)
@@ -575,7 +575,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     #SPlot.ShowcaseIndi.show_name(xo_4,yo_4, name4, A=axt4,size=16)
 
     axt4.text(text_location[0],text_location[1],
-              r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
+              r"$\rm Bin~2$",fontsize=22,color="#0b5786") 
     axt4.text(text_location[0],text_location[1]-delta_text,
               r"$\rm S0 -> E$",fontsize=22,color="k")    
 
@@ -632,7 +632,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     #add_arrow(axt6,xo_6,yo_6,xn_6,yn_6)
     #SPlot.ShowcaseIndi.show_name(xo_6,yo_6, name6, A=axt6,size=16)
 
-    axt6.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
+    axt6.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
     axt6.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
 
     axt6.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
@@ -641,10 +641,10 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt6.set_xscale( 'log' )
     axt6.set_yscale( 'log' )
         
-    axt6.legend(loc=3)
+    #axt6.legend(loc=3)
     #axt6.grid(True)
-    axt6.set_ylabel(r"$\rm R_{e}$ (kpc)", fontsize=16)
-    axt6.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)    
+    axt6.set_ylabel(r"$ R_\mathrm{e,equ}~(kpc)$", fontsize=16)
+    axt6.set_xlabel(r"$ M_{*} / \rm M_{\odot}$ ", fontsize=16)    
 
 
     axt7 = plt.subplot(gs[7])
@@ -663,7 +663,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     #add_arrow(axt7,xo_7,yo_7,xn_7,yn_7)
     #SPlot.ShowcaseIndi.show_name(xo_7,yo_7, name7, A=axt7,size=16)
 
-    axt7.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
+    axt7.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
     axt7.text(text_location[0],text_location[1]-delta_text,r"$\rm S0 -> E$",fontsize=22,color="k")    
 
     
@@ -673,7 +673,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt7.set_xscale( 'log' )
     axt7.set_yscale( 'log' )
         
-    axt7.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
+    axt7.set_xlabel(r"$ M_{*} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axt7.legend(loc=4)
     #axt7.grid(True)
     plt.setp(axt7.get_yticklabels(), visible=False)
@@ -693,7 +693,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     #add_arrow(axt8,xo_8,yo_8,xn_8,yn_8)
     #SPlot.ShowcaseIndi.show_name(xo_8,yo_8, name8, A=axt8,size=18)
 
-    axt8.text(text_location[0],text_location[1],r"$\rm Bin 3$",fontsize=22,color="#2a3236") 
+    axt8.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
     axt8.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
 
     
@@ -703,7 +703,7 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt8.set_xscale( 'log' )
     axt8.set_yscale( 'log' )
         
-    axt8.set_xlabel(r"$\rm M_{*} / M_{\odot}$", fontsize=16)
+    axt8.set_xlabel(r"$M_{*} / \rm M_{\odot} (RC15)$", fontsize=16)
     #axt8.legend(loc=4)
     #axt8.grid(True)
     plt.setp(axt8.get_yticklabels(), visible=False)
@@ -809,6 +809,10 @@ plot_sizemass_trans_3plots(xo_0 = E_host_Bin1_E, yo_0 = R_host_Bin1_E, xn_0 = E_
                            xo_7 = E_host_Bin3_S0, yo_7 = R_host_Bin3_S0, xn_7 = E_sph_Bin3_S0, yn_7 = R_sph_Bin3_S0, name7 = morph_Bin3_S0,
                            xo_8 = E_host_Bin3_S, yo_8 = R_host_Bin3_S, xn_8 = E_sph_Bin3_S, yn_8 = R_sph_Bin3_S, name8 = morph_Bin3_S)
 
+
+
+print("S0", len(E_sph_Bin1_S0)+len(E_sph_Bin2_S0)+len(E_sph_Bin3_S0))
+print("S", len(E_sph_Bin1_S)+len(E_sph_Bin2_S)+len(E_sph_Bin3_S))
 #reserve
 #
 #fig, ax = plt.subplots()        
