@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct 21 16:49:02 2020
+Created on Fri Oct  8 17:47:30 2021
 
 @author: dexter
 """
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from astropy.cosmology import FlatLambdaCDM
 from matplotlib.colors import LogNorm
 import SphSort as SSort
@@ -375,31 +378,39 @@ def count_gal(x,y,x1,x2,y1,y2):
 #count_gal(E_R15BC_K,Re_kpc_mine, 1e10,2.5e11,0.4,6.0)
 
 def add_arrow(A,x0,y0,x1,y1):
-    N = len(x0)
+    N = len([x0])
+    print('Num',N)
+    if N > 0:
+        i=0
+        for i in range(N):
+            print(i)
+            #A.arrow(x0[i], y0[i], x1[i], y1[i],
+            #        head_width=0.05, head_length=0.1, fc='k', ec='k')
+            arrow = mpatches.FancyArrowPatch((x0[i],y0[i]), ((x1[i]),(y1[i])),
+                                         lw = 2,
+                                         mutation_scale=30, arrowstyle="-")
+            A.add_patch(arrow)
+    
+def add_lines(A,x0,y0,x1,y1):
+    N = len([x0])
 
     i=0
     for i in range(N):
-        #A.arrow(x0[i], y0[i], x1[i], y1[i],
-        #        head_width=0.05, head_length=0.1, fc='k', ec='k')
-        arrow = mpatches.FancyArrowPatch((x0[i],y0[i]), ((x1[i]),(y1[i])),
-                                         lw = 2,
-                                         mutation_scale=30, arrowstyle="-|>")
-        A.add_patch(arrow)
-    
+        A.plot([x0[i],y0[i]], [x1[i],y1[i]],'--',lw=3)
 
 
 def plot_sizemass_trans(A, mass_old, R_old, mass_new, R_new,
                         label_old = None, label_new=None):
 
     #Bin1
-    A.scatter(mass_new, R_new,marker='o',c='#a5200b',label=label_new, 
-              s =120, alpha=0.7)
+    A.scatter(mass_new, R_new,marker='o',c='#a5200b',label=r"$\rm Hidden~c,Sph$", 
+              s =360, alpha=0.8)
     
     #A.scatter(E1_R15BC_K_SE_prof, Re_1_kpc,marker='x',c='#a5200b',label='Bin1', 
      #         s =70, alpha=0.7)
     
-    A.scatter(mass_old, R_old,marker='x',c='g',label=label_old, 
-              s =70, alpha=0.0)
+    A.scatter(mass_old, R_old,marker='P',c='g',label=r"$\rm Host~galaxies$", 
+              s =360, alpha=0.8)
     
     
 import matplotlib.image as mpimg
@@ -419,44 +430,38 @@ def add_morph_marker(A,x,y):
 
         A.add_artist(ab)
 
-xlim_mo = [4.8e9,3.69e12]
-ylim_mo = [0.18,60]
+xlim_mo = [4e9,2e12]
+ylim_mo = [0.18,150]
 #plot morphology based selection
-text_location=[1.61e10,24]
+text_location=[0.8e10,24]
 delta_text = 8
 
 
-def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=None,
-                               xo_1=None,yo_1=None,xn_1=None,yn_1=None, name1=None,
-                               xo_2=None,yo_2=None,xn_2=None,yn_2=None, name2=None,
-                               xo_3=None,yo_3=None,xn_3=None,yn_3=None, name3=None,
-                               xo_4=None,yo_4=None,xn_4=None,yn_4=None, name4=None,
-                               xo_5=None,yo_5=None,xn_5=None,yn_5=None, name5=None,
-                               xo_6=None,yo_6=None,xn_6=None,yn_6=None, name6=None,
-                               xo_7=None,yo_7=None,xn_7=None,yn_7=None, name7=None,
-                               xo_8=None,yo_8=None,xn_8=None,yn_8=None, name8=None):
-    fig = plt.figure(figsize=(12.8, 18.4))
-    gs = gridspec.GridSpec(ncols=3, nrows=3,
+def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=None,
+                               xo_1=None,yo_1=None,xn_1=None,yn_1=None, name1=None):
+    fig = plt.figure(figsize=(6.4, 11.6))
+    gs = gridspec.GridSpec(ncols=1, nrows=2,
                                hspace=0, wspace=0.0) 
 
     axt0 = plt.subplot(gs[0])
+    #add_lines(axt0,xo_0,yo_0,xn_0,yn_0)
 
-    plot_sizemass_trans(axt0,xo_0,yo_0,xn_0,yn_0)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
                                                       "", 
                                                       alpha0=0,AX=axt0)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      "", 
-                                                      alpha0=0,AX=axt0)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      "", 
-                                                      alpha0=0,AX=axt0)             
-    
-    add_arrow(axt0,xo_0,yo_0,xn_0,yn_0)
-    SPlot.ShowcaseIndi.show_name(xo_0,yo_0, name0, A=axt0,size=16)
 
-    axt0.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b")    
-    axt0.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
+    med0_xo, med0_yo = np.median(xo_0),np.median(yo_0)
+    med0_xn, med0_yn = np.median(xn_0),np.median(yn_0)
+    
+    arrow0 = mpatches.FancyArrowPatch((med0_xn,med0_yn), (med0_xo,med0_yo),
+                                 mutation_scale=100,alpha=0.5,color="b",ec='k')
+    axt0.add_patch(arrow0)
+    
+    plot_sizemass_trans(axt0,xo_0,yo_0,xn_0,yn_0)
+
+    #SPlot.ShowcaseIndi.show_name(xo_0,yo_0, name0, A=axt0,size=16)
+
+    axt0.text(text_location[0],text_location[1],r"$\rm S0~hosts$",fontsize=32,color="k")    
     
     axt0.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
     axt0.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
@@ -473,21 +478,24 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
 
     axt1 = plt.subplot(gs[1],sharey=axt0)
 
-    plot_sizemass_trans(axt1,xo_1,yo_1,xn_1,yn_1)
+
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
                                                       None, 
                                                       alpha0=0,AX=axt1)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt1)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt1)
-    add_arrow(axt1,xo_1,yo_1,xn_1,yn_1)
-    SPlot.ShowcaseIndi.show_name(xo_1,yo_1, name1, A=axt1,size=16)
+
+    #SPlot.ShowcaseIndi.show_name(xo_1,yo_1, name1, A=axt1,size=16)
     
-    axt1.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b") 
-    axt1.text(text_location[0],text_location[1]-delta_text,r"$\rm S0 -> E$",fontsize=22,color="k")    
+    med1_xo, med1_yo = np.median(xo_1),np.median(yo_1)
+    med1_xn, med1_yn = np.median(xn_1),np.median(yn_1)
+    
+    arrow1 = mpatches.FancyArrowPatch((med1_xn,med1_yn), (med1_xo,med1_yo),
+                                 mutation_scale=100,alpha=0.5,color="b",ec='k')
+    axt1.add_patch(arrow1)
+   # add_arrow(axt1,med_xo,med_yo,med_xn,med_yn)
+
+    plot_sizemass_trans(axt1,xo_1,yo_1,xn_1,yn_1)
+
+    axt1.text(text_location[0],text_location[1],r"$\rm S~hosts$",fontsize=32,color="k") 
     
     axt1.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
     axt1.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
@@ -495,218 +503,12 @@ def plot_sizemass_trans_3plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt1.set_xscale( 'log' )
     axt1.set_yscale( 'log' )
     
-    axt1.set_xlabel(r"$\rm M_{*} / \rm M_{\odot}$", fontsize=16)
-    #axt1.legend(loc=4)
+    axt1.set_ylabel(r"$R_\mathrm{e,equ}~\rm(kpc)$", fontsize=16)    
+    axt1.set_xlabel(r"$M_{*} / \rm M_{\odot}$", fontsize=16)
+    axt1.legend(loc=4)
     #axt1.grid(True)
-    plt.setp(axt1.get_yticklabels(), visible=False)
     
-    axt2 = plt.subplot(gs[2],sharey=axt0)
 
-    plot_sizemass_trans(axt2,xo_2,yo_2,xn_2,yn_2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt2)
-    add_arrow(axt2,xo_2,yo_2,xn_2,yn_2)
-    SPlot.ShowcaseIndi.show_name(xo_2,yo_2, name2, A=axt2,size=16)
-  
-    
-    axt2.text(text_location[0],text_location[1],r"$\rm Bin 1$",fontsize=22,color="#a5200b") 
-    axt2.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-    
-    axt2.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt2.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt2.set_xscale( 'log' )
-    axt2.set_yscale( 'log' )
-        
-    axt2.set_xlabel(r"$ M_{*} / \rm M_{\odot}$", fontsize=16)
-    #axt2.legend(loc=4)
-    #axt2.grid(True)
-    plt.setp(axt2.get_yticklabels(), visible=False)
-
-
-    axt3 = plt.subplot(gs[3])
-    plot_sizemass_trans(axt3,xo_3,yo_3,xn_3,yn_3)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt3)    
-    add_arrow(axt3,xo_3,yo_3,xn_3,yn_3)
-    SPlot.ShowcaseIndi.show_name(xo_3,yo_3, name3, A=axt3,size=16)
-
-    axt3.text(text_location[0],text_location[1],r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
-    axt3.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
-   
-    axt3.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt3.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt3.set_xscale( 'log' )
-    axt3.set_yscale( 'log' )
-        
-    axt3.set_ylabel(r"$ R_\mathrm{e,equ}$ \rm (kpc)", fontsize=16)
-    #axt3.legend(loc=4)
-    #axt3.grid(True)
-    plt.setp(axt3.get_xticklabels(), visible=False)
-    
-    axt4 = plt.subplot(gs[4])
-    
-    plot_sizemass_trans(axt4,xo_4,yo_4,xn_4,yn_4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt4)    
-    add_arrow(axt4,xo_4,yo_4,xn_4,yn_4)
-    SPlot.ShowcaseIndi.show_name(xo_4,yo_4, name4, A=axt4,size=16)
-
-    axt4.text(text_location[0],text_location[1],
-              r"$\rm Bin~2$",fontsize=22,color="#0b5786") 
-    axt4.text(text_location[0],text_location[1]-delta_text,
-              r"$\rm S0 -> E$",fontsize=22,color="k")    
-
-    axt4.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt4.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt4.set_xscale( 'log' )
-    axt4.set_yscale( 'log' )
-        
-    #axt4.legend(loc=4)
-    #axt4.grid(True)
-    plt.setp(axt4.get_yticklabels(), visible=False)
-
-    axt5 = plt.subplot(gs[5])
-    
-    plot_sizemass_trans(axt5,xo_5,yo_5,xn_5,yn_5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt5)
-    add_arrow(axt5,xo_5,yo_5,xn_5,yn_5)
-    SPlot.ShowcaseIndi.show_name(xo_5,yo_5, name5, A=axt5,size=16)
-
-    axt5.text(text_location[0],text_location[1],r"$\rm Bin 2$",fontsize=22,color="#0b5786") 
-    axt5.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-    
-    axt5.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt5.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt5.set_xscale( 'log' )
-    axt5.set_yscale( 'log' )
-        
-    #axt5.legend(loc=4)
-    #axt5.grid(True)
-    plt.setp(axt5.get_yticklabels(), visible=False)
-
-    axt6 = plt.subplot(gs[6])
-    
-    plot_sizemass_trans(axt6,xo_6,yo_6,xn_6,yn_6,label_new="Spheroids")
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      "Barro et al. 2013", 
-                                                      alpha0=0,AX=axt6)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      "van der Wel et al. 2014", 
-                                                      alpha0=0,AX=axt6)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      "van Dokkum et al. 2015", 
-                                                      alpha0=0,AX=axt6)      
-    add_arrow(axt6,xo_6,yo_6,xn_6,yn_6)
-    SPlot.ShowcaseIndi.show_name(xo_6,yo_6, name6, A=axt6,size=16)
-
-    axt6.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
-    axt6.text(text_location[0],text_location[1]-delta_text,r"$\rm E -> E$",fontsize=22,color="k")    
-
-    axt6.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt6.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt6.set_xscale( 'log' )
-    axt6.set_yscale( 'log' )
-        
-    #axt6.legend(loc=3)
-    #axt6.grid(True)
-    axt6.set_ylabel(r"$ R_\mathrm{e,equ}~\rm(kpc)$", fontsize=16)
-    axt6.set_xlabel(r"$ M_{*} / \rm M_{\odot} (RC15)$ ", fontsize=16)    
-
-
-    axt7 = plt.subplot(gs[7])
-      
-    plot_sizemass_trans(axt7,xo_7,yo_7,xn_7,yn_7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt7)     
-    #add_morph_marker(axt2,E3_R15BC,Re_3_kpc)
-    add_arrow(axt7,xo_7,yo_7,xn_7,yn_7)
-    SPlot.ShowcaseIndi.show_name(xo_7,yo_7, name7, A=axt7,size=16)
-
-    axt7.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
-    axt7.text(text_location[0],text_location[1]-delta_text,r"$\rm S0 -> E$",fontsize=22,color="k")    
-
-    
-    axt7.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt7.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt7.set_xscale( 'log' )
-    axt7.set_yscale( 'log' )
-        
-    axt7.set_xlabel(r"$ M_{*} / \rm M_{\odot} (RC15)$", fontsize=16)
-    #axt7.legend(loc=4)
-    #axt7.grid(True)
-    plt.setp(axt7.get_yticklabels(), visible=False)
-
-    axt8 = plt.subplot(gs[8])
-    plot_sizemass_trans(axt8,xo_8,yo_8,xn_8,yn_8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)
-    SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", 
-                                                      None, 
-                                                      alpha0=0,AX=axt8)    
-    #add_morph_marker(axt2,E3_R15BC,Re_3_kpc)
-    add_arrow(axt8,xo_8,yo_8,xn_8,yn_8)
-    SPlot.ShowcaseIndi.show_name(xo_8,yo_8, name8, A=axt8,size=18)
-
-    axt8.text(text_location[0],text_location[1],r"$\rm Bin~3$",fontsize=22,color="#2a3236") 
-    axt8.text(text_location[0],text_location[1]-delta_text,r"$\rm S -> E$",fontsize=22,color="k")    
-
-    
-    axt8.set_xlim(left = xlim_mo[0], right = xlim_mo[1])
-    axt8.set_ylim(bottom = ylim_mo[0], top = ylim_mo[1])
-       
-    axt8.set_xscale( 'log' )
-    axt8.set_yscale( 'log' )
-        
-    axt8.set_xlabel(r"$M_{*} / \rm M_{\odot} (RC15)$", fontsize=16)
-    #axt8.legend(loc=4)
-    #axt8.grid(True)
-    plt.setp(axt8.get_yticklabels(), visible=False)
     plt.show()
 
 
@@ -798,16 +600,34 @@ R_host_Bin3_S = SSort.cherry_pick(index_Bin3_S, R3_gal)
 E_sph_Bin3_S =  SSort.cherry_pick(index_Bin3_S, mass3)
 R_sph_Bin3_S = SSort.cherry_pick(index_Bin3_S, R3)
 
+E_host_Bin_E = E_host_Bin1_E + E_host_Bin2_E + E_host_Bin3_E
+E_host_Bin_S0 = E_host_Bin1_S0 + E_host_Bin2_S0 + E_host_Bin3_S0
+E_host_Bin_S = E_host_Bin1_S + E_host_Bin2_S + E_host_Bin3_S
+
+R_host_Bin_E = R_host_Bin1_E + R_host_Bin2_E + R_host_Bin3_E
+R_host_Bin_S0 = R_host_Bin1_S0 + R_host_Bin2_S0 + R_host_Bin3_S0
+R_host_Bin_S = R_host_Bin1_S + R_host_Bin2_S + R_host_Bin3_S
+
+E_sph_Bin_E = E_sph_Bin1_E + E_sph_Bin2_E + E_sph_Bin3_E
+E_sph_Bin_S0 = E_sph_Bin1_S0 + E_sph_Bin2_S0 + E_sph_Bin3_S0
+E_sph_Bin_S = E_sph_Bin1_S + E_sph_Bin2_S + E_sph_Bin3_S
+
+R_sph_Bin_E = R_sph_Bin1_E + R_sph_Bin2_E + R_sph_Bin3_E
+R_sph_Bin_S0 = R_sph_Bin1_S0 + R_sph_Bin2_S0 + R_sph_Bin3_S0
+R_sph_Bin_S = R_sph_Bin1_S + R_sph_Bin2_S + R_sph_Bin3_S
+
+morph_Bin_E = morph_Bin1_E + morph_Bin2_E + morph_Bin3_E
+morph_Bin_S0 = morph_Bin1_S0 + morph_Bin2_S0 + morph_Bin3_S0
+morph_Bin_S = morph_Bin1_S + morph_Bin2_S + morph_Bin3_S
+
+
+morph_Bin_S0 = morph_Bin1_S0+ morph_Bin2_S0 + morph_Bin3_S0
+morph_Bin_S = morph_Bin1_S + morph_Bin2_S + morph_Bin3_S
+
 # plot the comaprison
-plot_sizemass_trans_3plots(xo_0 = E_host_Bin1_E, yo_0 = R_host_Bin1_E, xn_0 = E_sph_Bin1_E, yn_0 = R_sph_Bin1_E, name0 = morph_Bin1_E, 
-                           xo_1 = E_host_Bin1_S0, yo_1 = R_host_Bin1_S0, xn_1 = E_sph_Bin1_S0, yn_1 = R_sph_Bin1_S0, name1 = morph_Bin1_S0,
-                           xo_2 = E_host_Bin1_S, yo_2= R_host_Bin1_S, xn_2 = E_sph_Bin1_S, yn_2 = R_sph_Bin1_S, name2 = morph_Bin1_S,
-                           xo_3 = E_host_Bin2_E, yo_3 = R_host_Bin2_E, xn_3 = E_sph_Bin2_E, yn_3 = R_sph_Bin2_E, name3 = morph_Bin2_E,
-                           xo_4 = E_host_Bin2_S0, yo_4 = R_host_Bin2_S0, xn_4 = E_sph_Bin2_S0, yn_4 = R_sph_Bin2_S0, name4 = morph_Bin2_S0,
-                           xo_5 = E_host_Bin2_S, yo_5 = R_host_Bin2_S, xn_5 = E_sph_Bin2_S, yn_5 = R_sph_Bin2_S, name5 = morph_Bin2_S,
-                           xo_6 = E_host_Bin3_E, yo_6 = R_host_Bin3_E, xn_6 = E_sph_Bin3_E, yn_6 = R_sph_Bin3_E, name6 = morph_Bin3_E,
-                           xo_7 = E_host_Bin3_S0, yo_7 = R_host_Bin3_S0, xn_7 = E_sph_Bin3_S0, yn_7 = R_sph_Bin3_S0, name7 = morph_Bin3_S0,
-                           xo_8 = E_host_Bin3_S, yo_8 = R_host_Bin3_S, xn_8 = E_sph_Bin3_S, yn_8 = R_sph_Bin3_S, name8 = morph_Bin3_S)
+plot_sizemass_trans_2plots(xo_0 = E_host_Bin_S0, yo_0 = R_host_Bin_S0, xn_0 = E_sph_Bin_S0, yn_0 = R_sph_Bin_S0, name0 = morph_Bin_S0, 
+                           xo_1 = E_host_Bin_S, yo_1 = R_host_Bin_S, xn_1 = E_sph_Bin_S, yn_1 = R_sph_Bin_S, name1 = morph_Bin_S)
+                           
 
 
 

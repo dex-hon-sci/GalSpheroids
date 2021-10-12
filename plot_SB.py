@@ -191,7 +191,7 @@ def list_mu0():
 
 #list_centre()
 #list_prof_mag()
-list_mu0()
+#list_mu0()
 
 def run_cal_mag():
     outlist = SRead.read_table("/home/dexter/result/stat/completeness/gal_output_list_all.dat",
@@ -210,25 +210,33 @@ def run_cal_mag():
         R = outfile[:,0]
         R_s = outfile[:,0]*0.4
         e = outfile[:,5]
-
+        
+        # Turn pixel value into surface brightness
         mu = SAna.Isophote.pix_val_to_mu(pix) 
         
+        # The maximum radius in pixel
         Rmax = geom_file[:,2][i]/ 0.4
         
-        
+        # Load the total magnitude calculated by the 
+        # profiler multi-cpt decomoposition
         total_mag_prof = geom_file[:,5]
-        R_e = SAna.Isophote.circularized(R_s, e)
+        R_equ = SAna.Isophote.circularized(R_s, e)
+        
+        R1_2 = SAna.Isophote.radius_by_percentage(R_equ,pix,e, total_mag_prof[i],
+                                                  fraction=0.5)
+
+        
         #print(len(R),len(mu),len(Rmax),len(e))
         total_mag_mine = SAna.Isophote.cal_SB_mag(R,pix,Rmax,e)
         
-        print(name[i], total_mag_prof[i],total_mag_mine)
+        print(name[i], total_mag_prof[i],total_mag_mine,R1_2,R_e)
         
         total_mag_mine_bag.append(total_mag_mine)
     total_mag_mine_bag = np.array(total_mag_mine_bag)
     return name, total_mag_prof, total_mag_mine_bag
     
 
-#A = run_cal_mag()
+A = run_cal_mag()
 
 
 #SPlot.ShowcaseCompare2.plot_compare_generic(A[1], A[2], para_name="Mag", name=A[0], label=["prof","mine"])

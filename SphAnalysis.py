@@ -318,7 +318,7 @@ class Isophote(object):
     
     def pix_val_to_mu(pix_val,zp=22.5,scale=0.4):
         """
-        Convert pixel value to surface brightness
+        Convert pixel value to surface brightness density
 
         Parameters
         ----------
@@ -364,12 +364,14 @@ class Isophote(object):
          Bogdan use "comp" to calculate the total mag, with different step size, 
          0.1 or so)    
 
+        This function only operate on equ axis
+        
         Parameters
         ----------
         input_SB_x : 1D list, np array
             Radius, pixel or arcsec.
         input_SB_y : 1D list, np array
-            The brightness, flux, intensity, or surface brightness.
+            The brightness, flux, intensity.
         Rmax : float
             The maximum radius.
         e : 1D numpy array
@@ -388,27 +390,29 @@ class Isophote(object):
         # Turn the input from major to equvi axis
         input_SB_x = np.nan_to_num(Isophote.circularized(input_SB_x,e))
         
-        A = closest(input_SB_x,Rmax) #Find the closest value to Rmax
+        #Find the closest value to Rmax
+        A = closest(input_SB_x,Rmax) 
         
         # profiler weird operation
-        nxt = 2.0
-        extsize = nxt*len(input_SB_x)
-        xx = np.array(np.linspace(input_SB_x[0],nxt*input_SB_x[len(input_SB_x)-1],int(extsize)))
+        #nxt = 2.0
+        #extsize = nxt*len(input_SB_x)
+        #xx = np.array(np.linspace(input_SB_x[0],nxt*input_SB_x[len(input_SB_x)-1],int(extsize)))
         #print(xx,input_SB_x)
         
      		#total_galaxy_magnitude=integrator.magnitude(x_ex,fit_nice_extended,mzp)
         
-        yy = interp1d(input_SB_x, input_SB_y, kind='linear')
-        ee = interp1d(input_SB_x, e, kind='linear')
+        #yy = interp1d(input_SB_x, input_SB_y, kind='linear')
+        #ee = interp1d(input_SB_x, e, kind='linear')
 
         #yy_o = yy(xx)
         #ee_o = ee(xx)
+        
         # find the index of maximum radius
         index= np.where(input_SB_x==A)[0][:]
         #print(input_SB_y[index],int(index), Rmax*scale)
     
         dx = step #0.5 is the sma distance, 0.4 is the pixel to arcsec ratio
-        l, dl = 0, 0
+
         #print(len(input_SB_x),len(input_SB_y))
         #for i in range(1,int(index)): #int temp
         #
@@ -422,31 +426,31 @@ class Isophote(object):
         #        total_mag = -2.5*np.log10(l*scale*scale)
         #        #total_mag = input_SB_y[0:index] +2.5*np.log10(2*input_SB_x[0:index]*np.pi*0.5)
         
-        r = input_SB_x*0.4
-        p = input_SB_y
         
+        r = input_SB_x*0.4 # x-input in arcsec
+        p = input_SB_y     # y-input in SB
+        # operate integration on r
+        rr = r
         
+
+        #n_ex = 7
+        #lx_ex = n_ex *len(r)
+        #x_ex = np.array(np.linspace(r[0],1.*n_ex*r[len(r)-1],4*lx_ex))  
+        #
+        #rr = x_ex
         
-        n_ex = 7
-        lx_ex = nxt*len(r)
-        #rr = np.array(np.linspace(r[0],r[len(r)-1],int(extsize)))
-        #print(xx,input_SB_x)
-        rr = np.array(np.linspace(r[0],1.*n_ex*r[len(r)-1],int(4*lx_ex)))
-        
-        print(len(r),len(rr))
-        print(max(r),max(rr))
-     		#total_galaxy_magnitude=integrator.magnitude(x_ex,fit_nice_extended,mzp)
-        
+        # Interpolation
         pp = interp1d(r, p, kind='linear')
         ee = interp1d(r, e, kind='linear')
         
         pp_o, ee_o = pp(rr), ee(rr)
-        p#p_o, ee_o = p, e
-        #rr = r 
+        
         # profiler code
         mzp = 22.5
+        # Turn pixel value into SB
         mu = Isophote.pix_val_to_mu(pp_o)
-        #mu = mu - mzp
+        mu = mu - mzp
+        lum = [0.0] * len(mu)
         lum = 10.0 ** (-mu / 2.5)
         dl, t = 0.0, 0.0
         for i in range(1, int(index)-1):#len(r) - 1):
@@ -455,7 +459,7 @@ class Isophote(object):
             dl = l * s
             t = t + dl
 
-        total_mag = -2.5 * np.log10(t) 
+        total_mag = -2.5 * np.log10(t) + mzp
         #ax = plt.gca()
         #ax.plot(input_SB_x*scale,input_SB_y,'o')
         #ax.vlines(Rmax*scale,  max(input_SB_y), min(input_SB_y))
@@ -470,12 +474,41 @@ class Isophote(object):
     #WIP
     def scan_basic1D(input_array_x, input_array_y, e, Rmax,
                  percentage=1.0, start_point=0.5):
-        
+        """
+        A function to scan the SB profile, and find the radius that matches the 
+        percentage value.
+        i.e. percentage =0.5, this function return the half-light radius
+
+        Parameters
+        ----------
+        input_SB_x : 1D list, np array
+            Radius, pixel or arcsec.
+        input_SB_y : 1D list, np array
+            The brightness, flux, intensity, or surface brightness.
+        Rmax : float
+            The maximum radius.
+        e : 1D numpy array
+            The ellipicity at each radius
+        percentage : TYPE, optional
+            DESCRIPTION. The default is 1.0.
+        start_point : TYPE, optional
+            DESCRIPTION. The default is 0.5.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+        TYPE
+            DESCRIPTION.
+
+        """
         # Find max
         # start with start_point, find area, 
         return None #x,y coordinate for the percentage
 
-    def radius_by_percentage(input_file,max_radius=None,fraction=None):
+    # WIP
+    def radius_by_percentage(x,y,e,total_mag,fraction=1.0,
+                             ):
         """
         A function to calculate the radius of the galaxy at some percentage of 
         light. 
@@ -499,26 +532,37 @@ class Isophote(object):
 
         """
         #Read inputfile, b/a e and so on
-        table, table_n = SRead.read_list(input_file), SRead.read_list(input_file,dtype ="str")
+        #table, table_n = SRead.read_list(input_file), SRead.read_list(input_file,dtype ="str")
         
-        x = table[:,0] # sma
-        y = table[:,1] # intens
-        e = table[:,5] # ellipticity    
+        #x = table[:,0]*0.4 # sma*pixscale
+        #y = table[:,1] # intens
+        #e = table[:,5] # ellipticity   
+        
+        # Turn intens pixel value to SB density mu
+        yy = Isophote.pix_val_to_mu(y)
+        yy = y/0.4**2 
+        # Turn intens pixel value into Luminosity
+        
         #calculate the total light covered within max_radius
-        total_mag = Isophote.cal_SB_mag(x, y, max_radius, e)
-        
+        #if total_mag == "Auto":
+        #    total_mag = Isophote.cal_SB_mag(x, y, max_radius, e)
+        #elif total_mag > 1:
+        #    total_mag = total_mag
+            
         # Set the target magnitude
         target_lum = 10**(total_mag/-2.5) * fraction
-        
         #loop from the centre, and numerically determine the radius in which 
-        
         Lum = []
         #calculate the cumulative luminosity at each radius
-        for i in range(1,len(x)):
-            Lum.append(0.5*(y[i]-[i-1])*(x[i]**2-x[i-1]**2)*np.pi)
-            
+        for i in range(2,len(x)):
+            Lum.append(0.5*(yy[i]-yy[i-1])*(x[i]**2-x[i-1]**2)*np.pi)
+            #print(i,Lum[i],target_lum)
+            print(i, yy[i],x[i])
+            print(0.5*(yy[i]-yy[i-1])*(x[i]**2-x[i-1]**2)*np.pi)
             #x percentage of light are included (stopping condition)
-            if Lum > target_lum[i] and Lum < target_lum[i-1]:
+            if sum(Lum[0:i]) > target_lum and sum(Lum[0:i-1]) < target_lum:
                 R_traget = x[i]
                 break
+        print("target_lum",target_lum)
+
         return R_traget

@@ -79,6 +79,8 @@ Dam_z3 = Dam_data3[:,0]
 Dam_nd3 = 10**Dam_data3[:,1]
 Dam_nd_uerr3 = 10**Dam_data3[:,2]
 
+print("max",max(Barro_nd),max(vDokkum_nd),max(vdWel_nd))
+
 Poggianti_z = 0.06009445742113899
 Poggianti_nd = 10**-3.8849206349206353
 Poggianti_nd_u = 10**-3.5238095238095237
@@ -134,7 +136,7 @@ my_nd_vDokkum_Z09 = np.array([6.15e-6,0,9.21e-5])
 my_nd_vdWel_Z09 = np.array([3.08e-6,1.69e-5,6.14e-5])
 my_nd_Graham_Z09 = np.array([6.15e-6,8.46e-6,0])
 
-#Bin V numer density Z09
+#Bin V numer density IP13
 my_nd_Barro_IP13 = np.array([5.54e-5,1.52e-4,9.21e-4])
 my_nd_Dam_IP13 = np.array([5.85e-5,1.69e-4,1.04e-3])
 my_nd_vDokkum_IP13 = np.array([4.0e-5,6.77e-5,3.07e-4])
@@ -541,7 +543,7 @@ def plot_nd_3plot():
 
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
-    axs0.text(1.8,4e-4, r'$\rm Barro~cut$', weight = "bold", color= "g", fontsize=24)
+    axs0.text(1.6,4e-4, r'$\rm Barro~criteria$', weight = "bold", color= "g", fontsize=24)
     axs0.legend(loc=4,fontsize=12)
 
     twin0=axs0.twinx()
@@ -557,7 +559,7 @@ def plot_nd_3plot():
     plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
-    axs1.text(1.2,4e-4, r'$\rm van~der~Wel~cut$', weight = "bold", color= "b", fontsize=24)
+    axs1.text(1.0,4e-4, r'$\rm van~der~Wel~criteria$', weight = "bold", color= "b", fontsize=24)
     axs1.legend(loc=4,fontsize=12)
 
     #plot Panel (3)
@@ -572,7 +574,7 @@ def plot_nd_3plot():
     plt.setp(axs2.get_xticklabels(), visible=False)
     
     #axs2.grid(True)
-    axs2.text(1.2,4e-4, r'$\rm van~Dokkum~cut$', weight = "bold", color= "#e58b1a", fontsize=24)
+    axs2.text(0.9,4e-4, r'$\rm van~Dokkum~criteria$', weight = "bold", color= "#e58b1a", fontsize=24)
     axs2.legend(loc=4,fontsize=12)
     
     #plot Panel (4)
@@ -587,7 +589,7 @@ def plot_nd_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=20)
     #axs2.grid(True)
-    axs3.text(1.4,4e-4, r'$\rm Damjanov~cut$', weight = "bold", color= "r", fontsize=24)
+    axs3.text(1.2,4e-4, r'$\rm Damjanov~criteria$', weight = "bold", color= "r", fontsize=24)
     axs3.legend(loc=4,fontsize=12)
     
     twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~1 $", color ='#a5200b', 
@@ -710,7 +712,7 @@ def plot_nd_all_mass():
     axs3.set_yscale('log')
     
     twin3=axs3.twinx()
-    twin3.set_ylabel(r'$\rm Barro~cut$',fontsize=16)
+    twin3.set_ylabel(r'$\rm Barro~criteria$',fontsize=16)
     
     axs3.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
     plt.xticks([-0.1, 0.1],[],fontsize=18)
@@ -803,7 +805,7 @@ def plot_nd_all_mass():
         
     twin7 = axs7.twinx()
     #twin7.set_yscale('log')
-    twin7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
+    twin7.set_ylabel(r'$\rm van~der~Wel~criteria$',fontsize=16)
     #axs7.yaxis.tick_right()
     #axs7.yaxis.set_label_position("right")
     #axs7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
@@ -899,7 +901,7 @@ def plot_nd_all_mass():
     axs11.set_yscale('log')
 
     twin11 = axs11.twinx()
-    twin11.set_ylabel(r'$\rm van~Dokkum~cut$',fontsize=14)
+    twin11.set_ylabel(r'$\rm van~Dokkum~criteria$',fontsize=14)
     
     axs11.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
     plt.xticks([-0.1, 0.1],[])
@@ -1002,7 +1004,7 @@ def plot_nd_all_mass():
 
     twin15 = axs15.twinx()
     #twin15.set_yscale('log')
-    twin15.set_ylabel(r'$\rm Damjanov~cut$',fontsize=14)
+    twin15.set_ylabel(r'$\rm Damjanov~criteria$',fontsize=14)
     #axs15.yaxis.tick_right()
     #axs15.set_yticks([])
     #axs15.yaxis.set_label_position("right")

@@ -754,8 +754,8 @@ def plot_sizemass_z0():
                            alpha = 0.8,colour='#e1a000',
                            label=r"$\rm Sahu~et~al.~2019$", s =100)
 
-    ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
-    ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (T11)$", fontsize=16)
+    ax0.set_ylabel("$ R_\mathrm{e,Sph}$ (kpc)", fontsize=16)
+    ax0.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_\mathrm{\odot} (T11)$", fontsize=16)
     plt.legend(fontsize = 12.5,loc="lower right")
     plt.tight_layout()
 
@@ -952,7 +952,7 @@ def plot_discmag_i():
 R_gen = np.linspace(0,300,300*2)
 
 # produce the stacked radial profile figure, as well as the mu0 
-#stack = plot_stack_surface_brightness_profile(R_gen)
+stack = plot_stack_surface_brightness_profile(R_gen)
 #list_mu0_extrapolate(stack[1])
 
 # plot the Mag vs n and mu0 plot

@@ -44,8 +44,8 @@ def plot_RA_DEC_VCC():
     fig = plt.figure(figsize=(6.4, 5.8))
 
     plt.plot(all_gal_RA, all_gal_DEC,'o', color = "#8e8e8e" ,ms = 1.0, alpha = 0.6, label= r"$\rm All$")
-    plt.plot(host_gal_RA, host_gal_DEC,'o', color = "b",  ms =10, label = r"$\rm Host~galaxies$")
-    plt.plot(VCC_gal_RA, VCC_gal_DEC,'ro',ms=10, label= r"$\rm Virgo~cluster~host~galaxies$")
+    plt.plot(host_gal_RA, host_gal_DEC,'o', color = "b",  ms =10, label = r"$\rm Our~galaxies$")
+    plt.plot(VCC_gal_RA, VCC_gal_DEC,'ro',ms=10, label= r"$\rm Our~Virgo~cluster~galaxies$")
     plt.xlabel(r"$R.A.~(\rm deg)$", fontsize=16)
     plt.ylabel(r"$Dec.~(\rm deg)$", fontsize=16)    
     plt.legend(numpoints = 1, loc=2,fontsize=12)

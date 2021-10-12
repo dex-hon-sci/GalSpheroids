@@ -341,7 +341,7 @@ line_style = Kalvin14_morph['line_style']
 
 
 ##Ploting##################################
-fig, ax = plt.subplots(figsize=(9.8,6.4))
+fig, ax = plt.subplots(figsize=(12.2,6.4))
 
 print('V1','V2','V3',volume[2],volume[1],volume[0])
 
@@ -380,7 +380,7 @@ print('V1_V','V2_V','V3_V',V1_V,V2_V,V3_V)
 #                                                          colour='#a5200b',
 #                                                          label="Bin1")
 
-nu_dens1_t, mid_pt1_t = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
+nu_dens3_t, mid_pt3_t = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
                                                           colour='#2a3236',
                                                           label="",
                                                           trim=False)
@@ -388,15 +388,16 @@ nu_dens2_t, mid_pt2_t = SPlot.ShowcaseIndi.mass_function_plot(mass2, box, V2_V,
                                                           colour='#0b5786',
                                                           label="",
                                                           trim=False)
-nu_dens3_t, mid_pt3_t = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
+nu_dens1_t, mid_pt1_t = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
                                                           colour='#a5200b',
                                                           label="",
                                                           trim=False)
 
 
-nu_dens_t_sum = (nu_dens1_t*V1_V +nu_dens2_t*V2_V +nu_dens3_t*V3_V)/volume[2]
+nu_dens_t_sum = (nu_dens1_t*V1_V*0.3 +nu_dens2_t*V2_V*0.3 +nu_dens3_t*V3_V*0.3)/volume[2]/0.3
 
-nu_dens1_2kpc, mid_pt1_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass3_2kpc, box, V3_V, 
+
+nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass3_2kpc, box, V3_V, 
                                                           colour='#2a3236',
                                                           label="",
                                                           trim=False,
@@ -406,7 +407,7 @@ nu_dens2_2kpc, mid_pt2_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass2_2kpc, 
                                                           label="",
                                                           trim=False,
                                                           plot_yes=False)
-nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, box, V1_V, 
+nu_dens1_2kpc, mid_pt1_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, box, V1_V, 
                                                           colour='#a5200b',
                                                           label="",
                                                           trim=False,
@@ -415,16 +416,16 @@ nu_dens3_2kpc, mid_pt3_2kpc = SPlot.ShowcaseIndi.mass_function_plot(mass1_2kpc, 
 
 
 # create mass function for sph Re<2kpc
-nu_dens_2kpc = (nu_dens1_2kpc*V1_V*0.3 +nu_dens2_2kpc*V2_V*0.3 +nu_dens3_2kpc*V1_V*0.3)/volume[2]/0.3
+nu_dens_2kpc = (nu_dens1_2kpc*V1_V*0.3 +nu_dens2_2kpc*V2_V*0.3 +nu_dens3_2kpc*V3_V*0.3)/volume[2]/0.3
 
 #set limit for each bin
 Bin1_limit, Bin2_limit, Bin3_limit = 3.4e11, 1.3e11, 6.7e10
 Bin1_limit_az, Bin2_limit_az, Bin3_limit_az = 3.4e11*0.42, 1.3e11*0.36, 6.7e10*0.24
-Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.3, Bin2_limit*0.3, Bin3_limit*0.3
+#Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.3, Bin2_limit*0.3, Bin3_limit*0.3
 
-Bin1_l,Bin1_u = Bin1_limit - Bin1_sigma, Bin1_limit + Bin1_sigma
-Bin2_l,Bin2_u = Bin2_limit - Bin2_sigma, Bin2_limit + Bin2_sigma
-Bin3_l,Bin3_u = Bin3_limit - Bin3_sigma, Bin3_limit + Bin3_sigma
+#Bin1_l,Bin1_u = Bin1_limit - Bin1_sigma, Bin1_limit + Bin1_sigma
+#Bin2_l,Bin2_u = Bin2_limit - Bin2_sigma, Bin2_limit + Bin2_sigma
+#Bin3_l,Bin3_u = Bin3_limit - Bin3_sigma, Bin3_limit + Bin3_sigma
 
 #Bin1_shade_x, Bin1_shade_y = [1e-6,1e-2,1e-2,1e-6],[Bin1_l,Bin1_u, Bin1_u,Bin1_l]
 #Bin2_shade_x, Bin2_shade_y = [1e-6,1e-2,1e-2,1e-6],[Bin2_l,Bin2_u, Bin2_u,Bin2_l]
@@ -453,6 +454,12 @@ ax.fill(Bin2_shade_az_x, Bin2_shade_az_y, '#0b5786',alpha=0.3)
 ax.fill(Bin3_shade_az_x, Bin3_shade_az_y, '#2a3236',alpha=0.3)
 
 
+print("nu_dens_t_sum",nu_dens_t_sum)
+print("mid_pt1_t",mid_pt1_t)
+
+nu_dens_t_sum[nu_dens_t_sum==0] = np.nan
+nu_dens_2kpc[nu_dens_2kpc==0] = np.nan
+
 ax.plot(mid_pt1_t, nu_dens_t_sum,"o--",label=r"$n_\mathrm{Sph}$",linewidth=5)
 ax.plot(mid_pt1_t,nu_dens_2kpc, 'o--',label=r"$<~2~\rm kpc$",linewidth=5)
 
@@ -464,7 +471,7 @@ plot_half_circles()
 #ax.vlines(x=Bin2_limit,ymin=1e-2,ymax=1e-6,color='#0b5786',lw=5, alpha=0.7)
 #ax.vlines(x=Bin3_limit,ymin=1e-2,ymax=1e-6,color='#2a3236',lw=5, alpha=0.7)
 
-ax.set_xlabel(r"$M_*/ \rm M_{\odot}(RC15)$",fontsize=16)
+ax.set_xlabel(r"$M_\mathrm{*,Sph}/ \rm M_{\odot}(RC15)$",fontsize=16)
 
 #plt.grid(True)
 ax.set_ylim(2e-6,6e-3)

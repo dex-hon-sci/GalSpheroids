@@ -129,7 +129,7 @@ class MassCalculation(MLRelationIband):
     #@property
     #def M_sun(self):
     #    return(self.M_sun)
-    def cal_abs_mag(self):
+    def cal_abs_mag(self,m_gal,dist):
         """
         Calculate the absoulte magntiude of a galaxy
 
@@ -138,7 +138,8 @@ class MassCalculation(MLRelationIband):
         None.
 
         """
-        M_gal=self._m_gal-25-5*np.log10(self.dist)  
+        print("_m_gal",m_gal,"self.dist",dist)
+        M_gal=m_gal-25-5*np.log10(dist)  
         
         return M_gal
 
@@ -200,7 +201,6 @@ class MassCalculation(MLRelationIband):
         Return
         ------
         """
-        
         M_gal=self._m_gal-25-5*np.log10(self.dist)  
         #Absoulte Magnitude of the galaxy
         #print('M_gal',M_gal)
@@ -1009,8 +1009,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                      linewidth=2, ecolor=colour,zorder=20,mew=1,capsize=3) 
             
             # show the number of galaxy in each mass interval
-            for j in range(len(list(nu_dens))):
-                plt.text(mid_pt[j], nu_dens[j]*2,r"{:.1f}".format(float(nu_dens[j]*volume*dex_factor)))
+            #for j in range(len(list(nu_dens))):
+            #    plt.text(mid_pt[j], nu_dens[j]*2,r"{:.1f}".format(float(nu_dens[j]*volume*dex_factor)))
             
             #plt.xlabel("$M_*/M_{\odot}$",fontsize=16)
             plt.ylabel(r"$ \Phi~\rm (Mpc^{-3}dex^{-1})$", fontsize=16)
