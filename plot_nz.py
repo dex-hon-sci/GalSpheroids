@@ -107,11 +107,11 @@ my_z = np.array([0,0,0])
 
 #####
 #Bin V number density RC15
-my_nd_Barro = np.array([4.92e-5,1.10e-4,7.37e-4])
-my_nd_Dam = np.array([4.92e-5,1.27e-4,8.29e-4])
-my_nd_vDokkum = np.array([9.23e-6, 1.69e-5, 9.21e-5])
-my_nd_vdWel = np.array([6.15e-6,2.54e-5,1.23e-4])
-my_nd_Graham = np.array([1.23e-6,8.46e-6,0])
+my_nd_Barro = np.array([5.23e-5,1.18e-4,7.37e-4])
+my_nd_Dam = np.array([5.23e-5,1.35e-4,8.29e-4])
+my_nd_vDokkum = np.array([1.23e-5, 2.54e-5, 6.14e-5])
+my_nd_vdWel = np.array([1.23e-5,2.54e-5,9.21e-5])
+my_nd_Graham = np.array([1.54e-5,1.69e-5,0])
 
 # The lower limit for the overall num dens
 my_nd_sum_Barro_low = sum(my_nd_Barro*V)/voll[2]
@@ -120,28 +120,28 @@ my_nd_sum_vDokkum_low =  sum(my_nd_vDokkum*V)/voll[2]
 my_nd_sum_vdWel_low =  sum(my_nd_vdWel*V)/voll[2]
 my_nd_sum_Graham_low =  sum(my_nd_Graham*V)/voll[2]
 
-my_nd_sum_E_low = (6+ 3+ 3)/voll[2]
+my_nd_sum_E_low = (7+ 3+ 3)/voll[2]
 
 #Bin V number density T11
-my_nd_Barro_T11 = np.array([2.77e-5,7.61e-5,4.61e-4])
-my_nd_Dam_T11 = np.array([4.62e-5,8.46e-5,6.14e-4])
+my_nd_Barro_T11 = np.array([3.69e-5,7.61e-5,4.30e-4])
+my_nd_Dam_T11 = np.array([4.92e-5,8.46e-5,5.53e-4])
 my_nd_vDokkum_T11 = np.array([0,0,0])
 my_nd_vdWel_T11 = np.array([0,0,0])
 my_nd_Graham_T11 = np.array([3.08e-6,0,0])
 
 #Bin V numbder density Z09
-my_nd_Barro_Z09 = np.array([4.0e-5,1.02e-4,6.45e-4])
-my_nd_Dam_Z09 = np.array([4.62e-5,1.10e-4,7.37e-4])
-my_nd_vDokkum_Z09 = np.array([6.15e-6,0,9.21e-5])
-my_nd_vdWel_Z09 = np.array([3.08e-6,1.69e-5,6.14e-5])
-my_nd_Graham_Z09 = np.array([6.15e-6,8.46e-6,0])
+my_nd_Barro_Z09 = np.array([4.62e-5,1.02e-4,6.45e-4])
+my_nd_Dam_Z09 = np.array([4.92e-5,1.10e-4,7.37e-4])
+my_nd_vDokkum_Z09 = np.array([6.15e-6,8.46e-6,6.14e-5])
+my_nd_vdWel_Z09 = np.array([3.08e-6,2.54e-5,3.07e-5])
+my_nd_Graham_Z09 = np.array([9.23e-6,8.46e-6,0])
 
 #Bin V numer density IP13
-my_nd_Barro_IP13 = np.array([5.54e-5,1.52e-4,9.21e-4])
-my_nd_Dam_IP13 = np.array([5.85e-5,1.69e-4,1.04e-3])
-my_nd_vDokkum_IP13 = np.array([4.0e-5,6.77e-5,3.07e-4])
-my_nd_vdWel_IP13 = np.array([3.08e-5,6.77e-5,2.76e-4])
-my_nd_Graham_IP13 = np.array([1.85e-5,2.54e-5,1.54e-4])
+my_nd_Barro_IP13 = np.array([6.15e-5,1.44e-4,1.04e-3])
+my_nd_Dam_IP13 = np.array([6.46e-5,1.69e-4,1.17e-3])
+my_nd_vDokkum_IP13 = np.array([4.62e-5,8.46e-5,2.76e-4])
+my_nd_vdWel_IP13 = np.array([3.39e-5,5.92e-5,2.15e-4])
+my_nd_Graham_IP13 = np.array([1.85e-5,3.38e-5,9.21e-5])
 #my_nd_Barro = my_nd_Barro_T11
 #my_nd_Dam = my_nd_Dam_T11
 #my_nd_vDokkum = my_nd_vDokkum_T11
@@ -149,7 +149,7 @@ my_nd_Graham_IP13 = np.array([1.85e-5,2.54e-5,1.54e-4])
 #my_nd_Graham = my_nd_Graham_T11
 
 #my_nd_E = np.array([6/V1, 3/V2, 2/V3])#8.97e-5]
-my_nd_E = np.array([6/V1, 3/V2, 3/V3])#8.97e-5] BinV
+my_nd_E = np.array([6/V1, 4/V2, 3/V3])#8.97e-5] BinV
 
 my_nd_E_Bin1 = np.array([my_nd_E[0],0])
 my_nd_E_Bin2 = np.array([my_nd_E[1],0])
@@ -174,7 +174,7 @@ ms0 = 12
 print(np.sum(my_nd_Barro), np.sum(my_nd_vdWel), np.sum(my_nd_vDokkum))
 
 
-print(my_nd_E,sum(my_nd_E))
+print("nd_E+ES",my_nd_E,sum(my_nd_E))
 
 print("Csph", my_nd_Barro,sum(my_nd_Barro))
 
@@ -194,7 +194,7 @@ print("csph-peak /peak RN:",
       (np.sum(my_nd_vDokkum)/max(vDokkum_nd)))
 
 xlim = [-0.35,3.0]
-ylim = [1e-6,1e-3]
+ylim = [0.8e-6,1.2e-3]
 
 xlim_n = [0.05,0.15]
 
@@ -218,7 +218,7 @@ def plot_compact_sum(nd0, linestyle = "solid", colour="black", label = "",
 
     AX.axhline(nd,xlim_n[0],xlim_n[1],linestyle=linestyle, linewidth = 3,
                color=colour , label= label)
-    
+    print("sum(nd0*V)",sum(nd0*V),"nd:",nd)
     
 
 def plot_nd_3bins(nd,marker, my_z=my_z,AX=plt):
@@ -534,8 +534,12 @@ def plot_nd_3plot():
     #              ,ls='none',linewidth=3, ecolor='purple',mew=1,capsize=3) 
 
     plot_nd_3bins(my_nd_Barro,'o',AX=axs0)
+    print('---n_c,Sph (Barro)-------')
     plot_compact_sum(my_nd_Barro, colour='black',label = r"", AX=axs0)    
+    print('---n_E+ES--------')
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs0)    
+    
+    print('-----------------')
 
 
     plot_nd_Barro(axs0)
@@ -552,9 +556,13 @@ def plot_nd_3plot():
     axs1 = plt.subplot(gs[1],sharex=axs0) 
        
     plot_nd_3bins(my_nd_vdWel,'o',AX=axs1)
+    
+    print('---n_c,Sph (vdWel)-------')
     plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs1)
+    print('---n_E+ES--------')
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs1) 
-     
+    print('-----------------')
+
     plot_nd_vdWel(axs1)
     plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
@@ -567,9 +575,12 @@ def plot_nd_3plot():
 
   
     plot_nd_3bins(my_nd_vDokkum,'o',AX=axs2)
+    print('---n_c,Sph (vDokkum)-------')
     plot_compact_sum(my_nd_vDokkum, colour='black',label = r"", AX=axs2)
+    print('---n_E+ES--------')
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2)  
-    
+    print('-----------------')
+
     plot_nd_vDokkum(axs2)
     plt.setp(axs2.get_xticklabels(), visible=False)
     
@@ -579,11 +590,17 @@ def plot_nd_3plot():
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
-
-    plot_nd_3bins(my_nd_Dam,'o',AX=axs3)
-    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs3)
-    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3)  
     
+    plot_nd_3bins(my_nd_Dam,'o',AX=axs3)
+
+    print('---n_c,Sph (Dam)-------')
+    plot_compact_sum(my_nd_Dam, colour='black',label = r"", AX=axs3)
+
+    print('---n_E+ES (Dam)-------')
+
+    plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs3)  
+    print('-----------------')
+   
     plot_nd_Dam1(axs3)
     #plot_nd_Dam2(axs3)
 

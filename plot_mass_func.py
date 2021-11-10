@@ -84,11 +84,14 @@ print('voll',voll)
 
 
 def plot_solid_circles():
+    #Solid_Bin1_mass = 10**np.array([np.average(box[12]),np.average(box[13])])
+    #Solid_Bin1_nudens = np.array([3,2])/V1_V/0.3
+    
     Solid_Bin1_mass = 10**np.array([np.average(box[12]),np.average(box[13])])
     Solid_Bin1_nudens = np.array([3,2])/V1_V/0.3
 
-    Solid_Bin2_mass = 10**np.array([np.average(box[10])])
-    Solid_Bin2_nudens = np.array([6])/V2_V/0.3
+    Solid_Bin2_mass = 10**np.array([np.average(box[10]),np.average(box[11])])
+    Solid_Bin2_nudens = np.array([5,1])/V2_V/0.3
 
     Solid_Bin3_mass = 10**np.array([np.average(box[9]), np.average(box[11])])
     Solid_Bin3_nudens = np.array([9,1])/V3_V/0.3
@@ -98,8 +101,8 @@ def plot_solid_circles():
     ax.plot(Solid_Bin1_mass, Solid_Bin1_nudens, "o",color='#a5200b',label=r"$\rm Bin~1$",ms=14)
 
 def plot_half_circles():
-    HalfSolid_Bin1_mass = 10**np.array([np.average(box[11])])
-    HalfSolid_Bin1_nudens = np.array([3])/V1_V/0.3
+    HalfSolid_Bin1_mass = 10**np.array([np.average(box[10]),np.average(box[11])])
+    HalfSolid_Bin1_nudens = np.array([4,2])/V1_V/0.3
 
     HalfSolid_Bin2_mass = 10**np.array([np.average(box[9])])
     HalfSolid_Bin2_nudens = np.array([4])/V2_V/0.3
@@ -379,19 +382,25 @@ print('V1_V','V2_V','V3_V',V1_V,V2_V,V3_V)
 #nu_dens3, mid_pt3 = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
 #                                                          colour='#a5200b',
 #                                                          label="Bin1")
-
+print("====Bin3=====")
 nu_dens3_t, mid_pt3_t = SPlot.ShowcaseIndi.mass_function_plot(mass3, box, V3_V, 
                                                           colour='#2a3236',
                                                           label="",
                                                           trim=False)
+print("====Bin2=====")
+
 nu_dens2_t, mid_pt2_t = SPlot.ShowcaseIndi.mass_function_plot(mass2, box, V2_V, 
                                                           colour='#0b5786',
                                                           label="",
                                                           trim=False)
+print("====Bin1=====")
+
 nu_dens1_t, mid_pt1_t = SPlot.ShowcaseIndi.mass_function_plot(mass1, box, V1_V, 
                                                           colour='#a5200b',
                                                           label="",
                                                           trim=False)
+print("=============")
+
 
 
 nu_dens_t_sum = (nu_dens1_t*V1_V*0.3 +nu_dens2_t*V2_V*0.3 +nu_dens3_t*V3_V*0.3)/volume[2]/0.3
@@ -420,7 +429,11 @@ nu_dens_2kpc = (nu_dens1_2kpc*V1_V*0.3 +nu_dens2_2kpc*V2_V*0.3 +nu_dens3_2kpc*V3
 
 #set limit for each bin
 Bin1_limit, Bin2_limit, Bin3_limit = 3.4e11, 1.3e11, 6.7e10
-Bin1_limit_az, Bin2_limit_az, Bin3_limit_az = 3.4e11*0.42, 1.3e11*0.36, 6.7e10*0.24
+Bin1_limit_az, Bin2_limit_az, Bin3_limit_az = 3.4e11*0.33, 1.3e11*0.29, 6.7e10*0.23
+
+
+# new average 3.4e11*0.43, 1.3e11*0.39, 6.7e10*0.27
+# old average 3.4e11*0.42, 1.3e11*0.36, 6.7e10*0.24
 #Bin1_sigma, Bin2_sigma, Bin3_sigma = Bin1_limit*0.3, Bin2_limit*0.3, Bin3_limit*0.3
 
 #Bin1_l,Bin1_u = Bin1_limit - Bin1_sigma, Bin1_limit + Bin1_sigma

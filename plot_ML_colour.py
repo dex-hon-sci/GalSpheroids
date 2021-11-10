@@ -166,7 +166,7 @@ def plot_ML_gi():
     ax0.set_ylabel("$ log_{10}(M_*/L)$", fontsize=16)
     ax0.set_xlabel(r"$ (g-i)~\rm(mag)$", fontsize=16)
     #ax0.set_ylim(0.5,6)
-    ax0.set_xlim(0.3,2.0)
+    ax0.set_xlim(0.4,1.5)
     ax0.set_ylim(-0.5,0.7)
 
     #ax0.set_yscale('log')

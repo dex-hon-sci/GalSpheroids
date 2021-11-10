@@ -19,14 +19,14 @@ import SphPlot as SPlot
 override_list_maj = \
 ["NGC2862",2,"Disk","NGC2872",5,"Point Source", "NGC3805",5,"IntDisk","NGC3805",8,"Point Source","NGC3812",2,"Background",\
  "NGC3872",5,"Halo","NGC3940",5,"Point Source", "NGC4065",5,"Point Source", "NGC4555",5,"Point Source", "NGC4570", 2, "Disk",\
- "UGC8736",2,"Disk", "NGC4583", 5,"IntDisk","NGC5382", 5,"IntDisk","NGC4772", 14 ,"Point Source", "NGC4845", 14, "Point Source",
- "NGC5375",11 , "Point Source"]
+ "UGC8736",2,"Disk","NGC5382", 5,"IntDisk","NGC4772", 14 ,"Point Source", "NGC4845", 14, "Point Source",
+ "NGC5375",11 , "Point Source","NGC2832",5,"cD Halo"]
 
 override_list_equ = \
 ["NGC2862",2,"Disk","NGC2872",5,"Point Source", "NGC3805",5,"IntDisk","NGC3805",8,"Point Source","NGC3812",2,"Background",\
  "NGC3872",5,"Halo","NGC3940",5,"Point Source", "NGC4065",5,"Point Source", "NGC4555",5,"Point Source",\
- "UGC8736",2,"Disk","NGC4583", 5,"IntDisk", "NGC5382", 5,"IntDisk","NGC4772", 14 ,"Point Source", "NGC4845", 14, "Point Source",
- "NGC5375",11 , "Point Source"]
+ "UGC8736",2,"Disk", "NGC5382", 5,"IntDisk","NGC4772", 14 ,"Point Source", "NGC4845", 14, "Point Source",
+ "NGC5375",11 , "Point Source","NGC2832",5,"cD Halo"]
 
     
 ###############

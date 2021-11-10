@@ -138,15 +138,28 @@ class AnalyticFunctions(object):
             The Sersic index.
         """
         b_n = get_bn(n_ser)
-        if r[0] == 0.0:
-            r[0] = 1e-10
         y = -1.0 * (mu_p - 2.5 * ga / al * np.log10(1.0 + (r_b / r) ** al) 
                     + 1.0857362 * b_n * ((r ** al + r_b ** al) / r_e ** al) ** 
                     (1 / (n_ser * al)))
-        y[0] = -1.0 * (mu_p - 2.5 * ga / al * 
+        if (type(r)==list or type(r)==np.ndarray) and len(r) > 1:
+            if r[0] == 0.0:
+                r[0] = 1e-10
+            print("list")
+            y = -1.0 * (mu_p - 2.5 * ga / al * np.log10(1.0 + (r_b / r) ** al) 
+                    + 1.0857362 * b_n * ((r ** al + r_b ** al) / r_e ** al) ** 
+                    (1 / (n_ser * al)))
+            y[0] = -1.0 * (mu_p - 2.5 * ga / al * 
                        np.log10(1.0 + (r_b / (r[1] / 10.0)) ** al) + 
                        1.0857362 * b_n * (((r[1] / 10.0) ** al + r_b ** al) / 
                                           r_e ** al) ** (1 / (n_ser * al)))
+        
+        elif type(r)== int or type(r)== float:
+            print("float")
+            
+            y = -1.0 * (mu_p - 2.5 * ga / al * np.log10(1.0 + (r_b / r) ** al) 
+                    + 1.0857362 * b_n * ((r ** al + r_b ** al) / r_e ** al) ** 
+                    (1 / (n_ser * al)))
+        
         return y*-1.0
     
     def mu_exp_func(r,mu_0,h):

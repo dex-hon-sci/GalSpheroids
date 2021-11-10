@@ -294,3 +294,9 @@ print('mid-1sigma',linear_func(1.22-0.12,*popt),1.22-0.12)
 
 print('max',linear_func(1.8,*popt))
 
+
+#investigate outlier
+outliers = SSort.selection_generic((g_n-i_n),(g_psf_n-i_psf_n), np.repeat(1.4,len(g_n)),direction="high",axis = "x")
+
+print("outliers",outliers)
+print(name[outliers['index']])

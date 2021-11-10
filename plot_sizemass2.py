@@ -42,74 +42,103 @@ print("1/V", 1/V1, 1/V2, 1/V3)
 print("2/V", 2/V1, 2/V2, 2/V3)
 print("5/V", 5/V1, 5/V2, 5/V3)
 
-##Read input file by bins
+M_sun = 4.53
+
+#Read data#############################################
 D0_Bin1_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_3.txt")
 D0_Bin2_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_3.txt")
 D0_Bin3_table = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_3.txt")
 
 D0_all_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
 D0_Bin1_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_2.txt", 
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin1V_4_3.txt", 
     dtype = 'str')
 D0_Bin2_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_2.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin2V_4_3.txt",
     dtype = 'str')
 D0_Bin3_table_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_3.txt",
     dtype = 'str')
 
 D0_all_table_n = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
 
-# The apparant magnitude of the galaxy in g- and i-band.
+#RA,DEC 
+RA_1,DEC_1 = D0_Bin1_table[:,1], D0_Bin1_table[:,2]
+RA_2,DEC_2 = D0_Bin2_table[:,1], D0_Bin2_table[:,2]
+RA_3,DEC_3 = D0_Bin3_table[:,1], D0_Bin3_table[:,2]
+
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
 mag_g3, mag_i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 
-# The distance (final decision), lower limit and upper limit
 D1, D1_lerr, D1_uerr = D0_Bin1_table[:,29], D0_Bin1_table[:,30], D0_Bin1_table[:,31]
 D2, D2_lerr, D2_uerr = D0_Bin2_table[:,29], D0_Bin2_table[:,30], D0_Bin2_table[:,31]
 D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:,31]
+
+corr_D1 = D0_Bin1_table[:,12]
+corr_D2 = D0_Bin2_table[:,12]
+corr_D3 = D0_Bin3_table[:,12]
+
+# calculate the ellipticity of the Sersic dist2D fit
+b_a_1 = D0_Bin1_table[:,34]
+b_a_2 = D0_Bin2_table[:,34]
+b_a_3 = D0_Bin3_table[:,34]
 
 #extended disk ellipicity
 elle1 = D0_Bin1_table[:,-1] 
 elle2 = D0_Bin2_table[:,-1] 
 elle3 = D0_Bin3_table[:,-1] 
 
-# calculate the ellipticity of the Sersic 2D fit
-b_a_1 = D0_Bin1_table[:,34]
-b_a_2 = D0_Bin2_table[:,34]
-b_a_3 = D0_Bin3_table[:,34]
-
-# Calculate the Radius in equivalent axis given by the SDSS ATLAS catalogue
-# Accuracy questionable
-Sersic2D_50rad_1 = D0_Bin1_table[:,33]*np.sqrt(1-(1-(b_a_1)**2))
-Sersic2D_50rad_2 = D0_Bin2_table[:,33]*np.sqrt(1-(1-(b_a_2)**2))
-Sersic2D_50rad_3 = D0_Bin3_table[:,33]*np.sqrt(1-(1-(b_a_3)**2))
-
-Sersic2D_50rad_1 = D0_Bin1_table[:,33]
-Sersic2D_50rad_2 = D0_Bin2_table[:,33]
-Sersic2D_50rad_3 = D0_Bin3_table[:,33]
+seeing1 = D0_Bin1_table[:,15]
+seeing2 = D0_Bin2_table[:,15]
+seeing3 =  D0_Bin3_table[:,15]
 
 #Get the name of the galaxies
 name_D1 = D0_Bin1_table_n[:,0]
 name_D2 = D0_Bin2_table_n[:,0]
 name_D3 = D0_Bin3_table_n[:,0]
 
-#Get the morphology of the galaxies in RC3
+#Get the morphology of the galaxies
 morph1 = D0_Bin1_table_n[:,17]
 morph2 = D0_Bin2_table_n[:,17]
 morph3 = D0_Bin3_table_n[:,17]
 
-# Get the new morphology given by us 
-morph1_new = D0_Bin1_table_n[:,-2]
-morph2_new = D0_Bin2_table_n[:,-2]
-morph3_new = D0_Bin3_table_n[:,-2]
+morph1_new = D0_Bin1_table_n[:,-3]
+morph2_new = D0_Bin2_table_n[:,-3]
+morph3_new = D0_Bin3_table_n[:,-3]
+
+Rmax1 = D0_Bin1_table_n[:,-1]
+Rmax2 = D0_Bin1_table_n[:,-1]
+Rmax3 = D0_Bin1_table_n[:,-1]
+
+corr_mass1 = D0_Bin1_table[:,13]
+corr_mass2 = D0_Bin2_table[:,13]
+corr_mass3 = D0_Bin3_table[:,13]
+
+#####################################################
+# red ReRmax
+geom_file = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_all.dat")
+
+geom_file1 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin1.dat")
+geom_file2 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin2.dat")
+geom_file3 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin3.dat")
+
+Rmax = geom_file[:,2]
+Rmax1, Rmax2, Rmax3 = geom_file1[:,2], geom_file2[:,2], geom_file3[:,2]
+
+Rmax1_spc = SSort.morph_str_selection(Rmax1,morph1_new)
+Rmax2_spc = SSort.morph_str_selection(Rmax2,morph2_new)
+Rmax3_spc = SSort.morph_str_selection(Rmax3,morph3_new)
 
 ############### reading result files###############
 master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
@@ -126,51 +155,80 @@ sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
-# magntiude correction (cosmological dimming)
-Extinction_g1 = list(D0_Bin1_table[:,-4])
-Extinction_g2 = list(D0_Bin2_table[:,-4])
-Extinction_g3 = list(D0_Bin3_table[:,-4])
 
-Extinction_i1 = list(D0_Bin1_table[:,-3])
-Extinction_i2 = list(D0_Bin2_table[:,-3])
-Extinction_i3 = list(D0_Bin3_table[:,-3])
+mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) 
 
-sph_mag1 = sph_mag1 - Extinction_i1
-sph_mag2 = sph_mag2 - Extinction_i2
-sph_mag3 = sph_mag3 - Extinction_i3
-
-mag_g1, mag_i1 = mag_g1 - Extinction_g1, mag_i1 - Extinction_i1
-mag_g2, mag_i2 = mag_g2 - Extinction_g2, mag_i2 - Extinction_i2
-mag_g3, mag_i3 = mag_g3 - Extinction_g3, mag_i3 - Extinction_i3
-
-# The structural parameters
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+
+n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 2)
+n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 2)
+n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 2)
+
+ars = (4.84814e-6)*1e3 #1 arcsec = (4.84814e-6) rad ars:arcsec to rad scale
+
+scale1 = D1* ars
+scale2 = D2* ars
+scale3 = D3* ars
+
+scale1_lerr, scale1_uerr = (D1-D1_lerr)*ars, (D1+D1_uerr)*ars
+scale2_lerr, scale2_uerr =  (D2-D2_lerr)*ars, (D2+D2_uerr)*ars
+scale3_lerr, scale3_uerr =  (D3-D3_lerr)*ars, (D3+D3_uerr)*ars
+
+Re_1_kpc = Re_1* scale1
+Re_2_kpc = Re_2* scale2
+Re_3_kpc = Re_3* scale3
+
+Re_1_kpc_lerr, Re_1_kpc_uerr = abs(Re_1_kpc - Re_1* scale1_lerr) , abs(Re_1* scale1_uerr - Re_1_kpc)
+Re_2_kpc_lerr, Re_2_kpc_uerr = abs(Re_2* scale2_lerr - Re_2_kpc) , abs(Re_2* scale2_uerr - Re_2_kpc)
+Re_3_kpc_lerr, Re_3_kpc_uerr = abs(Re_3* scale3_lerr - Re_3_kpc), abs(Re_3* scale3_uerr - Re_3_kpc)
+
+Re_1_kpc_err =[Re_1_kpc_lerr, Re_1_kpc_uerr]
+Re_2_kpc_err =[Re_2_kpc_lerr, Re_2_kpc_uerr]
+Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
+
+############### reading result files###############
+master_file="/home/dexter/result/stat/completeness/master_file_h68dist_Intomass_RADEC_2.txt"
+
+name1 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+name2 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+name3 = SRead.grab_name("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
+
+total_mag1 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt")
+total_mag2 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt")
+total_mag3 = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt")
+
+sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
+sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
+sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
+
 
 Sersic_n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 2) #get n
 Sersic_n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 2) #get n
 Sersic_n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 2) #get n
 
-mu_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) #get n
-mu_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) #get n
-mu_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) #get n
 
-core_sersic_mu_p1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["CoreBulge"], 0)
-core_sersic_mu_p2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["CoreBulge"], 0)
-core_sersic_mu_p3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["CoreBulge"], 0)
+mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) 
+mu_e_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) 
+
+Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
+Re_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
 #Get Re major axis
 Re_1_major = SRead.grab_parameter("F_Gal_bundle_major_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_2_major = SRead.grab_parameter("F_Gal_bundle_major_Bin2V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 Re_3_major = SRead.grab_parameter("F_Gal_bundle_major_Bin3V_cpt", ["Bulge","CoreBulge"], 1) #get Re
 
-print("core_sersic_mu_p1",core_sersic_mu_p1)
-print("core_sersic_mu_p2",core_sersic_mu_p2)
-print("core_sersic_mu_p3",core_sersic_mu_p3)
+n1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 2)
+n2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 2)
+n3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 2)
 
-ars = (4.84814e-6)*1e3 # 1arcsec = (4.84814e-6) rad ars:arcsec to rad scale
-
+ars = (4.84814e-6)*1e3 #1 arcsec = (4.84814e-6) rad ars:arcsec to rad scale
 
 scale1 = D1* ars
 scale2 = D2* ars
@@ -188,28 +246,16 @@ Re_1_kpc_major = Re_1_major* scale1
 Re_2_kpc_major = Re_2_major* scale2
 Re_3_kpc_major = Re_3_major* scale3
 
-
 Re_1_kpc_lerr, Re_1_kpc_uerr = abs(Re_1_kpc - Re_1* scale1_lerr) , abs(Re_1* scale1_uerr - Re_1_kpc)
 Re_2_kpc_lerr, Re_2_kpc_uerr = abs(Re_2* scale2_lerr - Re_2_kpc) , abs(Re_2* scale2_uerr - Re_2_kpc)
 Re_3_kpc_lerr, Re_3_kpc_uerr = abs(Re_3* scale3_lerr - Re_3_kpc), abs(Re_3* scale3_uerr - Re_3_kpc)
-
 
 Re_1_kpc_err =[Re_1_kpc_lerr, Re_1_kpc_uerr]
 Re_2_kpc_err =[Re_2_kpc_lerr, Re_2_kpc_uerr]
 Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
 
 
-Sersic2D_50rad_1_kpc = Sersic2D_50rad_1*scale1
-Sersic2D_50rad_2_kpc = Sersic2D_50rad_2*scale2
-Sersic2D_50rad_3_kpc = Sersic2D_50rad_3*scale3
-
-for i in range(len(name1)):
-    print(name1[i],morph1[i], morph1_new[i])
-    
-for i in range(len(name1)):
-    print(name1[i],Sersic2D_50rad_1_kpc[i],Sersic2D_50rad_1[i],scale1[i])
-
-############# calculating spheroid mass
+############# calculating spheroid mass ########
 ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
 ML_select1_R15BC = SPlot.MLRelationIband(mag_g1,mag_i1).Roediger15BC03_MassRatio
 ML_select1_Z09 = SPlot.MLRelationIband(mag_g1,mag_i1).Zibetti09_MassRatio
@@ -248,42 +294,119 @@ E3_R15BC = M3.cal_Mass(ML_select3_R15BC)
 E3_Z09 = M3.cal_Mass(ML_select3_Z09)
 E3_T11 = M3.cal_Mass(ML_select3_T11)
 
-############# calculating spheroid absoulte magnitude
-Abs_sph_mag1 = M1.cal_abs_mag(sph_mag1,D1)
-Abs_sph_mag2 = M2.cal_abs_mag(sph_mag2,D2)
-Abs_sph_mag3 = M3.cal_abs_mag(sph_mag3,D3)
-
 ################################
 #Calculate mass with K-correction
+
 K_table1 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr_EXT.dat")
 K_table2 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr_EXT.dat")
 K_table3 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT.dat")
 
 K_table1_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr_EXT.dat", 
     dtype='str')
 K_table2_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat",
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr_EXT.dat",
     dtype='str')
 K_table3_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT.dat", 
     dtype='str')
 
 K_name1, K_name2, K_name3 = K_table1_n[:,4], K_table2_n[:,4], K_table3_n[:,4]
+
+mag_g1, mag_i1 = K_table1[:,10], K_table1[:,9]
+mag_g2, mag_i2 = K_table2[:,10], K_table2[:,9]
+mag_g3, mag_i3 = K_table3[:,10], K_table3[:,9]
 
 mag_g1_kcorr, mag_i1_kcorr = K_table1[:,19], K_table1[:,18]
 mag_g2_kcorr, mag_i2_kcorr = K_table2[:,19], K_table2[:,18]
 mag_g3_kcorr, mag_i3_kcorr = K_table3[:,19], K_table3[:,18]
 
-ML_select1_IP13_K = SPlot.MLRelationIband(mag_g1_kcorr,mag_i1_kcorr).Into13_MassRatio
-ML_select1_R15BC_K = SPlot.MLRelationIband(mag_g1_kcorr,mag_i1_kcorr).Roediger15BC03_MassRatio
-ML_select1_Z09_K = SPlot.MLRelationIband(mag_g1_kcorr,mag_i1_kcorr).Zibetti09_MassRatio
-ML_select1_T11_K = SPlot.MLRelationIband(mag_g1_kcorr,mag_i1_kcorr).Taylor11_MassRatio
+g1_EXT, i1_EXT = K_table1[:,23], K_table1[:,24]
+g2_EXT, i2_EXT = K_table2[:,23], K_table2[:,24]
+g3_EXT, i3_EXT = K_table3[:,23], K_table3[:,24]
 
-M1_K = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1_kcorr,mag_i1_kcorr)
+g1_kcorr, i1_kcorr = K_table1[:,25], K_table1[:,26]
+g2_kcorr, i2_kcorr = K_table2[:,25], K_table2[:,26]
+g3_kcorr, i3_kcorr = K_table3[:,25], K_table3[:,26]
+
+# the corrected mag g and i, Kcorrection+EXTINCTIOn
+mag_g1_corr, mag_i1_corr = mag_g1-g1_kcorr-g1_EXT, mag_i1-i1_kcorr-i1_EXT
+mag_g2_corr, mag_i2_corr = mag_g2-g2_kcorr-g2_EXT, mag_i2-i2_kcorr-i2_EXT
+mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr-g3_EXT, mag_i3-i3_kcorr-i3_EXT
+
+Mag_i1_kcorr_cDis = mag_i1_corr-25-5*np.log10(corr_D1) 
+Mag_i2_kcorr_cDis = mag_i2_corr-25-5*np.log10(corr_D2) 
+Mag_i3_kcorr_cDis = mag_i3_corr-25-5*np.log10(corr_D3) 
+
+Mag_i1_kcorr = mag_i1_corr-25-5*np.log10(D1) 
+Mag_i2_kcorr = mag_i2_corr-25-5*np.log10(D2) 
+Mag_i3_kcorr = mag_i3_corr-25-5*np.log10(D3) 
+
+
+###################
+#calculate the stellar mass after extinction and Kcorrection with corr_Dist
+ML_select1_IP13_corr = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Into13_MassRatio
+M1_corr = SPlot.MassCalculation(mag_i1_corr, corr_D1, 4.53,mag_g1_corr,mag_i1_corr)
+
+ML_select2_IP13_corr = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Into13_MassRatio
+M2_corr = SPlot.MassCalculation(mag_i2_corr, corr_D2, 4.53,mag_g2_corr,mag_i2_corr)
+
+ML_select3_IP13_corr = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Into13_MassRatio
+M3_corr = SPlot.MassCalculation(mag_i3_corr, corr_D3, 4.53,mag_g3_corr,mag_i3_corr)
+
+E1_gal_cDis = M1_corr.cal_Mass(ML_select1_IP13_corr)
+E2_gal_cDis = M2_corr.cal_Mass(ML_select2_IP13_corr)
+E3_gal_cDis = M3_corr.cal_Mass(ML_select3_IP13_corr)
+
+
+def list_gi_corr():
+    for i in range(len(mag_g3)):
+        print(name3[i], mag_i3_corr[i],Mag_i3_kcorr_cDis[i],Mag_i3_kcorr[i], E3_gal_cDis[i],corr_mass3[i])
+    print('--------------------------------------')
+
+#list_gi_corr()
+
+
+#####################
+# calculate the M/L ratio
+ML_select1_IP13_K = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Into13_MassRatio
+ML_select1_R15BC_K = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Roediger15BC03_MassRatio
+ML_select1_Z09_K = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Zibetti09_MassRatio
+ML_select1_T11_K = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Taylor11_MassRatio
+
+ML_select2_IP13_K = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Into13_MassRatio
+ML_select2_R15BC_K = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Roediger15BC03_MassRatio
+ML_select2_Z09_K = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Zibetti09_MassRatio
+ML_select2_T11_K = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Taylor11_MassRatio
+
+ML_select3_IP13_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Into13_MassRatio
+ML_select3_R15BC_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Roediger15BC03_MassRatio
+ML_select3_Z09_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Zibetti09_MassRatio
+ML_select3_T11_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Taylor11_MassRatio
+
+############# calculating  stellar mass
+
+##########################################
+#K correction and extinction for sph mag
+sph_mag1 = sph_mag1 - i1_EXT - i1_kcorr
+sph_mag2 = sph_mag2 - i2_EXT - i2_kcorr
+sph_mag3 = sph_mag3 - i3_EXT - i3_kcorr
+
+sph_abs_mag1 = SPlot.MassCalculation(mag_g1_corr, mag_i1_corr, sph_mag1, D1, M_sun).cal_abs_mag(sph_mag1, D1)
+sph_abs_mag2 = SPlot.MassCalculation(mag_g2_corr, mag_i2_corr, sph_mag2, D2, M_sun).cal_abs_mag(sph_mag2, D2)
+sph_abs_mag3 = SPlot.MassCalculation(mag_g3_corr, mag_i3_corr, sph_mag3, D3, M_sun).cal_abs_mag(sph_mag3, D3)
+
+
+sph_abs_mag1 = SPlot.MassCalculation(mag_g1_corr, mag_i1_corr,sph_mag1, D1, M_sun).cal_abs_mag(sph_mag1, D1)
+sph_abs_mag2 = SPlot.MassCalculation(mag_g2_corr, mag_i2_corr,sph_mag2, D2, M_sun).cal_abs_mag(sph_mag2, D2)
+sph_abs_mag3 = SPlot.MassCalculation(mag_g3_corr, mag_i3_corr,sph_mag3, D3, M_sun).cal_abs_mag(sph_mag3, D3)
+
+
+#######################
+M1_K = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1_corr,mag_i1_corr)
 
 E1_IP13_K = M1_K.cal_Mass(ML_select1_IP13_K)
 E1_R15BC_K = M1_K.cal_Mass(ML_select1_R15BC_K)
@@ -291,12 +414,7 @@ E1_Z09_K = M1_K.cal_Mass(ML_select1_Z09_K)
 E1_T11_K = M1_K.cal_Mass(ML_select1_T11_K)
 
 
-ML_select2_IP13_K = SPlot.MLRelationIband(mag_g2_kcorr,mag_i2_kcorr).Into13_MassRatio
-ML_select2_R15BC_K = SPlot.MLRelationIband(mag_g2_kcorr,mag_i2_kcorr).Roediger15BC03_MassRatio
-ML_select2_Z09_K = SPlot.MLRelationIband(mag_g2_kcorr,mag_i2_kcorr).Zibetti09_MassRatio
-ML_select2_T11_K = SPlot.MLRelationIband(mag_g2_kcorr,mag_i2_kcorr).Taylor11_MassRatio
-
-M2_K = SPlot.MassCalculation(sph_mag2, D2, 4.53,mag_g2_kcorr,mag_i2_kcorr)
+M2_K = SPlot.MassCalculation(sph_mag2, D2, 4.53,mag_g2_corr,mag_i2_corr)
 
 E2_IP13_K = M2_K.cal_Mass(ML_select2_IP13_K)
 E2_R15BC_K = M2_K.cal_Mass(ML_select2_R15BC_K)
@@ -304,96 +422,69 @@ E2_Z09_K = M2_K.cal_Mass(ML_select2_Z09_K)
 E2_T11_K = M2_K.cal_Mass(ML_select2_T11_K)
 
 
-ML_select3_IP13_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Into13_MassRatio
-ML_select3_R15BC_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Roediger15BC03_MassRatio
-ML_select3_Z09_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Zibetti09_MassRatio
-ML_select3_T11_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Taylor11_MassRatio
-
-M3_K = SPlot.MassCalculation(sph_mag3, D3, 4.53, mag_g3_kcorr,mag_i3_kcorr)
+M3_K = SPlot.MassCalculation(sph_mag3, D3, 4.53, mag_g3_corr,mag_i3_corr)
 
 E3_IP13_K = M3_K.cal_Mass(ML_select3_IP13_K)
 E3_R15BC_K = M3_K.cal_Mass(ML_select3_R15BC_K)
 E3_Z09_K = M3_K.cal_Mass(ML_select3_Z09_K)
 E3_T11_K = M3_K.cal_Mass(ML_select3_T11_K)
 
-#####################
 
-#stich the Bins together
+#####################
 E_R15BC_K = np.concatenate((E1_R15BC_K,E2_R15BC_K, E3_R15BC_K))
 E_T11_K = np.concatenate((E1_T11_K,E2_T11_K, E3_T11_K))
 
-print("median",np.median(E_R15BC_K)-np.median(E_T11_K))
-print(np.median(E_R15BC_K-E_T11_K))
-########################
-def plot_mass_compare_Kcor():
-    SPlot.ShowcaseCompare2.plot_compare_generic(E1_R15BC_K, E1_R15BC, 
-                                            sub=False , div=True,
-                                            para_name="Spheroid Mass", colour="blue", 
-                                            name=K_name1, label=["Kcorr",""])
 
-    SPlot.ShowcaseCompare2.plot_compare_generic(E2_R15BC_K, E2_R15BC, 
-                                            sub=False , div=True,
-                                            para_name="Spheroid Mass", colour="blue", 
-                                            name=K_name2, label=["Kcorr",""])
-    SPlot.ShowcaseCompare2.plot_compare_generic(E3_R15BC_K, E3_R15BC, 
-                                                sub=False , div=True,
-                                                para_name="Spheroid Mass", colour="blue", 
-                                                name=K_name3, label=["Kcorr",""])
-    plt.show()
+############# calculating spheroid absoulte magnitude
+Abs_sph_mag1 = M1.cal_abs_mag(sph_mag1,D1)
+Abs_sph_mag2 = M2.cal_abs_mag(sph_mag2,D2)
+Abs_sph_mag3 = M3.cal_abs_mag(sph_mag3,D3)
 
-############# calculating total stellar mass, both SDSS mag and profiler mag
-#Bin1
-#SDSS M/L
-M1_K_SE_SDSS = SPlot.MassCalculation(mag_i1, D1, 4.53,mag_g1_kcorr,mag_i1_kcorr)
-#profiler M/L
-M1_K_SE_prof = SPlot.MassCalculation(total_mag1, D1, 4.53,mag_g1_kcorr,mag_i1_kcorr)
+################################
+#calculate the mass error
 
-E1_IP13_K_SE_SDSS = M1_K_SE_SDSS.cal_Mass(ML_select1_IP13_K)
-E1_R15BC_K_SE_SDSS = M1_K_SE_SDSS.cal_Mass(ML_select1_R15BC_K)
-E1_Z09_K_SE_SDSS = M1_K_SE_SDSS.cal_Mass(ML_select1_Z09_K)
-E1_T11_K_SE_SDSS = M1_K_SE_SDSS.cal_Mass(ML_select1_T11_K)
-
-E1_IP13_K_SE_prof = M1_K_SE_prof.cal_Mass(ML_select1_IP13_K)
-E1_R15BC_K_SE_prof = M1_K_SE_prof.cal_Mass(ML_select1_R15BC_K)
-E1_Z09_K_SE_prof = M1_K_SE_prof.cal_Mass(ML_select1_Z09_K)
-E1_T11_K_SE_prof = M1_K_SE_prof.cal_Mass(ML_select1_T11_K)
+mag_e = 0.28 #magnitude error
+MLR_e_Z09 = 10**0.125
+MLR_e_T11 = 10**0.1
+MLR_e_IP13 = 10**0.14
+MLR_e_R15BC = 10**0.13
 
 
-#Bin2
-#SDSS M/L
-M2_K_SE_SDSS = SPlot.MassCalculation(mag_i2, D2, 4.53,mag_g2_kcorr,mag_i2_kcorr)
-#profiler M/L
-M2_K_SE_prof = SPlot.MassCalculation(total_mag2, D2, 4.53,mag_g2_kcorr,mag_i2_kcorr)
+def cal_mass_error(mag_e, D, D_err, MLR ,MLR_e):
+    return np.sqrt(((mag_e/2.5)**2)+
+                   ((2*D_err/(D*np.log(10)))**2)+
+                   ((MLR_e/(MLR*np.log(10)))**2))
 
-E2_IP13_K_SE_SDSS = M2_K_SE_SDSS.cal_Mass(ML_select2_IP13_K)
-E2_R15BC_K_SE_SDSS = M2_K_SE_SDSS.cal_Mass(ML_select2_R15BC_K)
-E2_Z09_K_SE_SDSS = M2_K_SE_SDSS.cal_Mass(ML_select2_Z09_K)
-E2_T11_K_SE_SDSS = M2_K_SE_SDSS.cal_Mass(ML_select2_T11_K)
+mass_Z09_uerr1 = E1_Z09_K* cal_mass_error(mag_e, D1, D1_uerr, ML_select1_Z09_K ,MLR_e_Z09)
+mass_T11_uerr1 = E1_T11_K * cal_mass_error(mag_e, D1, D1_uerr, ML_select1_T11_K ,MLR_e_T11)
+mass_IP13_uerr1 = E1_IP13_K* cal_mass_error(mag_e, D1, D1_uerr, ML_select1_IP13_K ,MLR_e_IP13)
+mass_R15BC_uerr1 = E1_R15BC_K* cal_mass_error(mag_e, D1, D1_uerr, ML_select1_R15BC_K ,MLR_e_R15BC)
 
-E2_IP13_K_SE_prof = M2_K_SE_prof.cal_Mass(ML_select2_IP13_K)
-E2_R15BC_K_SE_prof = M2_K_SE_prof.cal_Mass(ML_select2_R15BC_K)
-E2_Z09_K_SE_prof = M2_K_SE_prof.cal_Mass(ML_select2_Z09_K)
-E2_T11_K_SE_prof = M2_K_SE_prof.cal_Mass(ML_select2_T11_K)
+mass_Z09_uerr2 = E2_Z09_K* cal_mass_error(mag_e, D2, D2_uerr, ML_select2_Z09_K ,MLR_e_Z09)
+mass_T11_uerr2 = E2_T11_K * cal_mass_error(mag_e, D2, D2_uerr, ML_select2_T11_K ,MLR_e_T11)
+mass_IP13_uerr2 = E2_IP13_K* cal_mass_error(mag_e, D2, D2_uerr, ML_select2_IP13_K ,MLR_e_IP13)
+mass_R15BC_uerr2 = E2_R15BC_K* cal_mass_error(mag_e, D2, D2_uerr, ML_select2_R15BC_K ,MLR_e_R15BC)
 
-#Bin3
-#SDSS M/L
-M3_K_SE_SDSS = SPlot.MassCalculation(mag_i3, D3, 4.53,mag_g3_kcorr,mag_i3_kcorr)
-#profiler M/L
-M3_K_SE_prof = SPlot.MassCalculation(total_mag3, D3, 4.53,mag_g3_kcorr,mag_i3_kcorr)
+mass_Z09_uerr3 = E3_Z09_K* cal_mass_error(mag_e, D3, D3_uerr, ML_select3_Z09_K ,MLR_e_Z09)
+mass_T11_uerr3 = E3_T11_K *cal_mass_error(mag_e, D3, D3_uerr, ML_select3_T11_K ,MLR_e_T11)
+mass_IP13_uerr3 = E3_IP13_K*cal_mass_error(mag_e, D3, D3_uerr, ML_select3_IP13_K ,MLR_e_IP13)
+mass_R15BC_uerr3 = E3_R15BC_K*cal_mass_error(mag_e, D3, D3_uerr, ML_select3_R15BC_K ,MLR_e_R15BC)
 
-E3_IP13_K_SE_SDSS = M3_K_SE_SDSS.cal_Mass(ML_select3_IP13_K)
-E3_R15BC_K_SE_SDSS = M3_K_SE_SDSS.cal_Mass(ML_select3_R15BC_K)
-E3_Z09_K_SE_SDSS = M3_K_SE_SDSS.cal_Mass(ML_select3_Z09_K)
-E3_T11_K_SE_SDSS = M3_K_SE_SDSS.cal_Mass(ML_select3_T11_K)
+mass_Z09_lerr1 = E1_Z09_K*cal_mass_error(mag_e, D1, D1_lerr, ML_select1_Z09_K ,MLR_e_Z09)
+mass_T11_lerr1 = E1_T11_K *cal_mass_error(mag_e, D1, D1_lerr, ML_select1_T11_K ,MLR_e_T11)
+mass_IP13_lerr1 = E1_IP13_K*cal_mass_error(mag_e, D1, D1_lerr, ML_select1_IP13_K ,MLR_e_IP13)
+mass_R15BC_lerr1 = E1_R15BC_K*cal_mass_error(mag_e, D1, D1_lerr, ML_select1_R15BC_K ,MLR_e_R15BC)
 
-E3_IP13_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_IP13_K)
-E3_R15BC_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_R15BC_K)
-E3_Z09_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_Z09_K)
-E3_T11_K_SE_prof = M3_K_SE_prof.cal_Mass(ML_select3_T11_K)
+mass_Z09_lerr2 = E2_Z09_K*cal_mass_error(mag_e, D2, D2_lerr, ML_select2_Z09_K ,MLR_e_Z09)
+mass_T11_lerr2 = E2_T11_K *cal_mass_error(mag_e, D2, D2_lerr, ML_select2_T11_K ,MLR_e_T11)
+mass_IP13_lerr2 = E2_IP13_K*cal_mass_error(mag_e, D2, D2_lerr, ML_select2_IP13_K ,MLR_e_IP13)
+mass_R15BC_lerr2 = E2_R15BC_K*cal_mass_error(mag_e, D2, D2_lerr, ML_select2_R15BC_K ,MLR_e_R15BC)
 
+mass_Z09_lerr3 = E3_Z09_K*cal_mass_error(mag_e, D3, D3_lerr, ML_select3_Z09_K ,MLR_e_Z09)
+mass_T11_lerr3 = E3_T11_K *cal_mass_error(mag_e, D3, D3_lerr, ML_select3_T11_K ,MLR_e_T11)
+mass_IP13_lerr3 = E3_IP13_K*cal_mass_error(mag_e, D3, D3_lerr, ML_select3_IP13_K ,MLR_e_IP13)
+mass_R15BC_lerr3 = E3_R15BC_K*cal_mass_error(mag_e, D3, D3_lerr, ML_select3_R15BC_K ,MLR_e_R15BC)
 
-print ("T11 average M/L ratio", np.average(ML_select1_T11_K),
-       np.average(ML_select2_T11_K),np.average(ML_select3_T11_K))
 ################################
 #calculate the mass error
 
@@ -1261,8 +1352,8 @@ E_T11_mine = np.concatenate((E1_T11, E2_T11, E3_T11))
 Re_kpc_mine = np.concatenate((Re_1_kpc, Re_2_kpc, Re_3_kpc))
 
 Sersic_n_mine = np.concatenate((Sersic_n1, Sersic_n2, Sersic_n3))
-Abs_sph_mag_mine = np.concatenate((Abs_sph_mag1, Abs_sph_mag2, Abs_sph_mag3))
-mu_mine = np.concatenate((mu_1, mu_2, mu_3))
+Abs_sph_mag_mine = np.concatenate((sph_abs_mag1, sph_abs_mag2, sph_abs_mag3))
+mu_mine = np.concatenate((mu_e_1, mu_e_2, mu_e_3))
 
 ########################
 #Curve fit for our sample

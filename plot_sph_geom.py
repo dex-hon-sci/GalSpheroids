@@ -51,7 +51,7 @@ geom_file = SRead.read_table(
 geom_file_n = SRead.read_table(
     "/home/dexter/result/stat/completeness/gal_geom_all.dat",dtype='str')
 
-bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_cpt"
+bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_V_cpt"
 bundle = SRead.read_list(bundle_name)
 
 bundle_BD_name = "/home/dexter/SphProject/F_Gal_bundle_BD_equvi_V_cpt"
@@ -61,14 +61,14 @@ name = geom_file_n[:,0]
 mu0 = geom_file[:,6]
 
 # Read the data from the galaxy bundle
-sph_mag = SRead.grab_mag("F_Gal_bundle_equvi_cpt", ["Bulge","CoreBulge"])
-Re = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["Bulge","CoreBulge"], 1) 
-Sersic_n = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["Bulge","CoreBulge"], 2) 
-mu_e = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["Bulge","CoreBulge"], 0) 
+sph_mag = SRead.grab_mag("F_Gal_bundle_equvi_V_cpt", ["Bulge","CoreBulge"])
+Re = SRead.grab_parameter("F_Gal_bundle_equvi_V_cpt", ["Bulge","CoreBulge"], 1) 
+Sersic_n = SRead.grab_parameter("F_Gal_bundle_equvi_V_cpt", ["Bulge","CoreBulge"], 2) 
+mu_e = SRead.grab_parameter("F_Gal_bundle_equvi_V_cpt", ["Bulge","CoreBulge"], 0) 
 
-core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_cpt", ["CoreBulge"], 0)
+core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_V_cpt", ["CoreBulge"], 0)
 
-total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt")
+total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_V_cpt")
 
 # Get the distance from the parent sample completeness
 D0_all_table = SRead.read_table(
@@ -103,7 +103,7 @@ ML_select_Z09 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Zibetti09_MassRat
 ML_select_IP13 =  SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Into13_MassRatio
 
 M = SPlot.MassCalculation(sph_mag, D, 4.53,mag_g_kcorr,mag_i_kcorr)
-Abs_sph_mag = M.cal_abs_mag()
+Abs_sph_mag = M.cal_abs_mag(sph_mag, D)
 
 #establish B/T ratio
 B_T_ratio_i_old = 10**((sph_mag-total_mag)/(-2.5)) #old B/T ratio
@@ -285,7 +285,7 @@ total_mag_corebulge = list(SRead.grab_total_mag(S[1]["CoreBulge"]))
 name_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], name)
 mu0_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mu0)
 
-print(name_corebulge[12],name_corebulge[14])
+#print("coreBulge",name_corebulge[12],name_corebulge[14])
 
 mag_g_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mag_g)
 mag_i_corebulge = SSort.cherry_pick(S[1]["CoreBulge_index"], mag_i)
@@ -311,9 +311,9 @@ Re_kpc_lerr_corebulge, Re_kpc_uerr_corebulge = abs(Re_kpc_corebulge - Re_corebul
 Re_kpc_err_corebulge =[Re_kpc_lerr_corebulge, Re_kpc_uerr_corebulge]
 
 # put the two array together  
-n_combine = np.array([Sersic_n_bulge,Sersic_n_corebulge])
-mu0_combine = np.array([mu0_bulge,mu0_corebulge])
-Mag_combine = np.array([Abs_sph_mag_bulge,Abs_sph_mag_corebulge])
+n_combine = np.array([Sersic_n_corebulge,Sersic_n_bulge])
+mu0_combine = np.array([mu0_corebulge,mu0_bulge])
+Mag_combine = np.array([Abs_sph_mag_corebulge,Abs_sph_mag_bulge])
 
 
 ##############End Seperation 1#################################################
@@ -519,44 +519,50 @@ Mag_combine_ELtype = np.array([Abs_sph_mag_ETG,Abs_sph_mag_LTG])
 Q = SSort.selection_generic(name_corebulge, Abs_sph_mag_corebulge, np.repeat(-20,len(name_corebulge)),
                             direction="high")
 
-print(len(sph_corebulge_mag),len(Abs_sph_mag_corebulge))
+#print(len(sph_corebulge_mag),len(Abs_sph_mag_corebulge))
 Q2 = SSort.selection_generic(sph_corebulge_mag, Abs_sph_mag_corebulge, np.repeat(-20,len(name_corebulge)),
                             direction="high")
 print(Q,Q2) #show the core spheroid magnitude
 
+
+Q33 = SSort.selection_generic(mu0_bulge, name_bulge, np.repeat(5,len(mu0_bulge)),
+                            direction="low",axis='x')
+
+print("Q33",Q33)
+
 print(D_corebulge[12],D_corebulge[14]) # show the distance
 
-print(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,0,0).cal_abs_mag())
-print(SPlot.MassCalculation(10.05999, D_corebulge[14], 4.53,0,0).cal_abs_mag())
+print(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,np.zeros(1),np.zeros(1)).cal_abs_mag(10.006806, D_corebulge[12]))
+print(SPlot.MassCalculation(10.05999, D_corebulge[14], 4.53,np.zeros(1),np.zeros(1)).cal_abs_mag(10.05999, D_corebulge[14]))
 
-ML_T11 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Taylor11_MassRatio
-ML_RC15 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Roediger15BC03_MassRatio
-ML_IP13 = SPlot.MLRelationIband(mag_g_corebulge[12],mag_i_corebulge[12]).Into13_MassRatio
+ML_T11 = SPlot.MLRelationIband(np.array([mag_g_corebulge[12]]),np.array([mag_i_corebulge[12]])).Taylor11_MassRatio
+ML_RC15 = SPlot.MLRelationIband(np.array([mag_g_corebulge[12]]),np.array([mag_i_corebulge[12]])).Roediger15BC03_MassRatio
+ML_IP13 = SPlot.MLRelationIband(np.array([mag_g_corebulge[12]]),np.array([mag_i_corebulge[12]])).Into13_MassRatio
 
 
-print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
-                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_T11)))
-print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
-                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_RC15)))
-print(np.log10(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,
-                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_IP13)))
+#print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
+#                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_T11)))
+#print(np.log10(SPlot.MassCalculation(10.006806, 17.881, 4.53,
+#                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_RC15)))
+#print(np.log10(SPlot.MassCalculation(10.006806, D_corebulge[12], 4.53,
+#                            mag_g_corebulge[12],mag_i_corebulge[12]).cal_Mass(ML_IP13)))
 # Find 3.2,4.6, 4e10 5.2e10 S0
 
 # weird S gal, high bugle size and mass NGC3270, paticular high size. nuclear cpt
 Q3 = SSort.zone_in_2D(np.array([list(E_T11_K_S),list(Re_kpc_S)]),[4e10,3.7],[5.2e10,4.6])
 
-print(Q3)
-print(name[Q3["index"]])
+#print(Q3)
+#print(name[Q3["index"]])
 
 #weird dim S0, NGC3665 nuclear **Dusty disk
 Q4 = SSort.zone_in_2D([Sersic_n_S0,Abs_sph_mag_S0],[0,-18],[1,-16])
 
-print(Q4,name[Q4["index"]])
+#print(Q4,name[Q4["index"]])
 ############End reading 
 
 #%%
 def plot_stack_surface_brightness_profile(r):
-    bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_cpt"
+    bundle_name ="/home/dexter/SphProject/F_Gal_bundle_equvi_V_cpt"
     bundle=SRead.read_list(bundle_name)
     name = SRead.grab_name(bundle_name)
     
@@ -578,10 +584,11 @@ def plot_stack_surface_brightness_profile(r):
                 
                 #get b and mu_e
                 mu_e, n = para[0], para[2]
+                
                 b = SAna.get_bn(n) # get_bn is the exact function used in profiler
                 # obtain mu_0 by equ7 from Graham2005
                 new_mu = mu_e-2.5*b/np.log(10)
-                #print(name[i],new_mu) # list mu0
+                print(name[i],new_mu,Re[i],n,sph_mag[i]) # list mu0
                 new_mu_list.append(new_mu) # save the new mu_0
                 
                 #list name, first element of from the radial SB, and the mu_0 
@@ -593,13 +600,13 @@ def plot_stack_surface_brightness_profile(r):
                 
                 # calculate the mu_e of the core Sersic funtion
                 mu_e = SAna.AnalyticFunctions.simple_mu_core_sersic(para[1],*list(para))
-                
+                n = para[2]
                 # put in the core Sersic fit parameter mu_e, r_e , n_ser
                 line = SAna.AnalyticFunctions.mu_sersic_func(r,mu_e,para[1],para[2])
                 plt.plot(r,line,"k-",lw= 3)
                 new_mu_list.append(line[0])
 
-                #print(name[i],line[0]) #list mu0
+                print(name[i],line[0], Re[i],n,sph_mag[i]) #list mu0
                 pass
     plt.gca().invert_yaxis()
     #plt.ylim(np.log10(24),np.log(10))
@@ -610,6 +617,8 @@ def plot_stack_surface_brightness_profile(r):
     plt.show()
     
     return fig,new_mu_list
+
+
 #%%
 def list_mu0_extrapolate(new_mu_list):
     """
@@ -619,6 +628,7 @@ def list_mu0_extrapolate(new_mu_list):
     """
     for i in range(len(name)):
         print(name[i],new_mu_list[i])
+        
 #%%
 def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     """
@@ -638,18 +648,26 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
         Fitting instruction. The default is the 0 element of the input array.
     """
     n_line = np.linspace(-5, 20, 100)
-    mu_line = np.linspace(5, 30, 100)
+    mu_line = np.linspace(-5, 30, 100)
 
     #Fitting the relevant data
-    popt_mu,pcov_mu = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
-                                mu0[fit_instruc], Mag[fit_instruc])
-    popt_n,pcov_n = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
-                              np.log10(n[fit_instruc]), Mag[fit_instruc])
-    
-    print("1",mu0[fit_instruc],Mag[fit_instruc])
-    print("2",np.log10(n[fit_instruc]),Mag[fit_instruc])
 
-  
+    popt_mu,pcov_mu = [], []
+    popt_n,pcov_n = [], []
+    for i in range(len(mu0)):
+        popt_mu_ind,pcov_mu_ind = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
+                                mu0[i], Mag[i])
+        popt_n_ind,pcov_n_ind = curve_fit(SAna.AnalyticFunctions.linear_func_1D, 
+                              np.log10(n[i]), Mag[i])  
+        
+        popt_mu.append(popt_mu_ind)
+        pcov_mu.append(pcov_mu_ind)
+        popt_n.append(popt_n_ind)
+        pcov_n.append(pcov_n_ind)
+        
+    #print("1",mu0[fit_instruc],Mag[fit_instruc])
+    #print("2",np.log10(n[fit_instruc]),Mag[fit_instruc])
+
     #Plotting
     fig = plt.figure(figsize=(12, 4.8))
     gs = gridspec.GridSpec(ncols=2, nrows=1,
@@ -660,8 +678,7 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
     
     # The Mag vs Sersic n plot
     axt0 = plt.subplot(gs[0])
-    #axt0.plot(10**n_line, 
-    #          SAna.AnalyticFunctions.linear_func_1D(n_line,*popt_n),'b--',lw=4)
+
     # Check the dimension of the input array 
     if n.shape[0] != len(label):
         axt0.plot(n,Mag,'ko',ms=10)
@@ -670,6 +687,9 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
             axt0.plot(n[i],Mag[i], linestyle="None",
                       marker=markers[i], color = colour[i],
                       ms=10,label=label[i])
+            axt0.plot(10**n_line, 
+              SAna.AnalyticFunctions.linear_func_1D(n_line,*popt_n[i]),
+              color=colour[i],linestyle='dashed',lw=3)
     
     #axt0.legend(loc="lower right")
     axt0.set_ylabel(r"$\mathfrak{M}_{i}$", fontsize=22)
@@ -679,8 +699,7 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
    
     # The Mag vs mu_0 plot
     axt1 = plt.subplot(gs[1],sharey=axt0)
-    #axt1.plot(mu_line, 
-    #          SAna.AnalyticFunctions.linear_func_1D(mu_line,*popt_mu),'b--',lw=4)
+
    
     # Check the dimension of the input array  
     if mu0.shape[0] != len(label):
@@ -690,6 +709,10 @@ def plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[],fit_instruc=0):
             axt1.plot(mu0[i],Mag[i], linestyle="None",
                       marker=markers[i],color = colour[i],
                       ms=10,label=label[i])    
+            axt1.plot(mu_line, 
+              SAna.AnalyticFunctions.linear_func_1D(mu_line,*popt_mu[i]),
+              color=colour[i],linestyle='dashed',lw=3)
+            
     print("Linear fit mu",*popt_mu)
     print("Linear fit n",*popt_n)
     
@@ -715,7 +738,7 @@ def plot_dexter_sample_T11(mass, size, size_err,mass_err,
                            colour='#a5200b',label="This work",marker='o',s=70):
     A.scatter(mass, size,marker='o',c=colour,label=label, 
               s =s, alpha=alpha)
-    A.errorbar(mass, size, yerr = size_err, 
+    A.errorbar(mass, size, yerr = size_err, ms =10,
                   xerr = mass_err*mass, ls='none',linewidth=4, 
                   color = colour,
                   ecolor= colour, capsize=0, alpha=alpha, marker=marker)
@@ -763,7 +786,7 @@ def plot_sizemass_z0():
 
 
 def plot_sizemass_Sersic_vs_core():
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 5.8))
     ax0 = plt.subplot()
     #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
     plot_dexter_sample_T11(E_T11_K_bulge, Re_kpc_bulge,Re_kpc_err_bulge,mass_err_bulge,ax0,colour='k',label=r"$\rm S\'{e}rsic$")
@@ -774,20 +797,22 @@ def plot_sizemass_Sersic_vs_core():
     plt.tight_layout()
 
     plt.show()
-    
+
 def plot_sizemass_morph():
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.4, 5.8))
     ax0 = plt.subplot()
     #plot_dexter_sample_T11(E_T11_K, Re_kpc,Re_kpc_err,mass_err,ax0)
     plot_dexter_sample_T11(E_T11_K_E, Re_kpc_E,Re_kpc_err_E,mass_err_E,ax0,colour='k',label = "E")
-    plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour='r',label="S0")
-    plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='b',label="S")
+    plot_dexter_sample_T11(E_T11_K_S0, Re_kpc_S0,Re_kpc_err_S0,mass_err_S0,ax0,colour="#d20d0d",label="S0")
+    plot_dexter_sample_T11(E_T11_K_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour="#ebb800",label="S")
     #plot_dexter_sample_T11(E_T11_K_dustcorr_S_old, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='g',label="S_dustcorr_old",marker='s')
-    plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
+    #plot_dexter_sample_T11(E_T11_K_dustcorr_S, Re_kpc_S,Re_kpc_err_S,mass_err_S,ax0,colour='y',label="S_dustcorr",marker='s')
 
     ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
     ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} (T11)$", fontsize=16)
     plt.legend(loc="lower right")
+    plt.tight_layout()
+
     plt.show()
     
 def plot_sizemass_LTGETG(): 
@@ -799,6 +824,8 @@ def plot_sizemass_LTGETG():
     ax0.set_ylabel("$ R_\mathrm{e,sph}$ (kpc)", fontsize=16)
     ax0.set_xlabel(r"$ M_\mathrm{*,sph} / \rm M_\mathrm{\odot} $", fontsize=16)
     plt.legend(loc="lower right")
+    plt.tight_layout()
+
     plt.show()
 
 def plot_dustvsnodust():
@@ -948,20 +975,40 @@ def plot_discmag_i():
 
 #%% Execution Area
 
+def ScS_type_generate(file_name):
+    table = SRead.read_list(file_name)
+    ScStype= []
+    for i in range(len(table)):
+        if "Bulge" in table[i]:
+            ScStype.append("S")
+        elif "CoreBulge" in table[i]:
+            ScStype.append("cS")
+    return ScStype
+
+ScStype = ScS_type_generate("/home/dexter/SphProject/F_Gal_bundle_equvi_cpt")
+
 # extrapolate the central surface brightness
 R_gen = np.linspace(0,300,300*2)
 
 # produce the stacked radial profile figure, as well as the mu0 
 stack = plot_stack_surface_brightness_profile(R_gen)
-#list_mu0_extrapolate(stack[1])
+list_mu0_extrapolate(stack[1])
 
+
+new_mu_list = stack[1]
+
+def list_para():
+    for i in range(len(name)):
+        print(name[i],total_mag[i])#new_mu_list[i],Re[i],Sersic_n[i],sph_mag[i],ScStype[i])
+
+list_para()
 # plot the Mag vs n and mu0 plot
 #plot_n_mu0_Mag_2plot(n,mu0,Mag,label=[r"$type~1$",r"$type~2$"])
 
 #plot_n_mu0_Mag_2plot(Sersic_n,mu0,Abs_sph_mag)
 B = plot_n_mu0_Mag_2plot(n_combine,mu0_combine,
-                     Mag_combine,label=[r"$\rm S\'{e}rsic$",
-                                        r"$\rm Core-S\'{e}rsic$"])
+                     Mag_combine,label=[r"$\rm Core-S\'{e}rsic$",
+                                        r"$\rm S\'{e}rsic$"])
 
 
 C = plot_n_mu0_Mag_2plot(n_combine_morph,mu0_combine_morph,

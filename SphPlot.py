@@ -80,11 +80,19 @@ class MLRelationIband(object):
     def __init__(self,g,i):
         self.g=g
         self.i=i
-        self.Into13_MassRatio = 10**(0.985*(g-i)-0.669)
-        self.Roediger15BC03_MassRatio = 10**(0.979*(g-i)-0.831)
-        self.Roediger15FSPS_MassRatio = 10**(0.831*(g-i)-0.597)
-        self.Zibetti09_MassRatio = 10**(1.032*(g-i)-0.963)
-        self.Taylor11_MassRatio =10**(0.70*(g-i)-0.68)
+        
+        colour = g-i
+        
+        #print("colour",colour)
+        colour[colour>1.5] = 1.5
+        #print("colour_after",colour)
+
+        
+        self.Into13_MassRatio = 10**(0.985*(colour)-0.669)
+        self.Roediger15BC03_MassRatio = 10**(0.979*(colour)-0.831)
+        self.Roediger15FSPS_MassRatio = 10**(0.831*(colour)-0.597)
+        self.Zibetti09_MassRatio = 10**(1.032*(colour)-0.963)
+        self.Taylor11_MassRatio =10**(0.70*(colour)-0.68)
         
 #%% tested
 class MassCalculation(MLRelationIband):
@@ -138,7 +146,7 @@ class MassCalculation(MLRelationIband):
         None.
 
         """
-        print("_m_gal",m_gal,"self.dist",dist)
+        #print("_m_gal",m_gal,"self.dist",dist)
         M_gal=m_gal-25-5*np.log10(dist)  
         
         return M_gal
@@ -1022,9 +1030,10 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         return nu_dens, mid_pt
 
     # messy need clean up
-    def cpt_to_total_by_type_plot(bundle, morph_name, morph, cpt=["Bulge","CoreBulge"], 
+    def cpt_to_total_by_type_plot(bundle, morph_name, morph, num_E = 1.0, 
+                                  cpt=["Bulge","CoreBulge"], 
                                   show_plot=True, 
-                                  mode="median",AX=plt):
+                                  mode="median", AX=plt):
         """
         Plotting the magntiude cpt-to-total ratio
 
@@ -1042,6 +1051,8 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             DESCRIPTION. The default is True.
         mode : str, optional
             The default is "average".
+        num_E: float
+            The number of E galaxies in this bundle. The default is 1.0
         Returns
         -------
         The dictionary sortted by morphology.
@@ -1089,22 +1100,34 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                                    
         average_bin, std_bin = [], []        
         
+        Q1_bin, Q3_bin = [], []
         # calculate the average and std in each type
         if mode=="median":
             for i in range(len(morph_list)):
                 #print(morph_list[i])
                 #print(gal_bin[i])
-                avg_ratio = np.median(10**gal_bin[i]), 
+                avg_ratio = np.median(10**gal_bin[i]) 
                 #std_ratio = np.std(gal_bin[i])/np.sqrt(len(gal_bin[i]))
                 std_ratio = np.std(10**gal_bin[i])
+                
+                #print(10**gal_bin[i])
                 average_bin.append(np.log10(avg_ratio))
                 std_bin.append(np.log10(std_ratio))
                 
+                if len(gal_bin[i]) == 0:
+                    Q1_bin.append(0)
+                    Q3_bin.append(0)
+                else:
+                    Q1_ratio = np.percentile(10**gal_bin[i],16)
+                    Q3_ratio = np.percentile(10**gal_bin[i],84)
+                    Q1_bin.append(Q1_ratio)
+                    Q3_bin.append(Q3_ratio)
                 print(list(mag_dict.keys())[i], 10**average_bin[i]) 
                       
                 if len(gal_bin[i]) > 1 :
                     print('min',min(10**gal_bin[i]),'max', max(10**gal_bin[i]))
-                    print('median',10**average_bin[i][0],'std', 10**std_bin[i], "({})".format(len(gal_bin[i])))
+                    print('median',10**average_bin[i],'std', 10**std_bin[i], "({})".format(len(gal_bin[i])))
+                    print('Q1',10**average_bin[i]-Q1_bin[i],'Q3', Q3_bin[i]-10**average_bin[i])
                     #print(average_bin,std_bin)
                 else:
                     pass
@@ -1173,10 +1196,24 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         S0 = 10**np.concatenate((gal_bin[3], gal_bin[4], gal_bin[5]))
         S = 10**np.concatenate((gal_bin[6], gal_bin[7], gal_bin[8]))
         
+        # make an array of B/T ratio for E galaxies
+        E = np.repeat(1.0,num_E)
+        
+        #make an array with all the B/T ratio in this bundle
+        total = np.array([])
+        for i in range(4):        
+            if len([[E,ES,S0,S][i]]) == 0:
+                pass
+            elif len([[E,ES,S0,S][i]]) > 0:
+                total = np.concatenate((E,ES,S0,S))
+                
+        total = np.concatenate((E,ES,S0,S))
+        
         print("ES:", np.median(ES),np.std(ES),"({})".format(len(ES)))
         print("S0:", np.median(S0),np.std(S0),"({})".format(len(S0)))
         print("S:",np.median(S),np.std(S),"({})".format(len(S)))
 
+        print("Total:", np.median(total),np.std(total),"({})".format(len(total)))
         return mag_dict
         
 #%% tested Structurally
@@ -1964,7 +2001,7 @@ class ShowcaseCompare2(ShowcaseIndi):
             
         """
         
-        fig,ax = plt.subplots()
+        fig,ax = plt.subplots(figsize=(6.4,18.2))
 
         delta_sub = para1-para2
         delta_div = para1/para2
@@ -1974,13 +2011,13 @@ class ShowcaseCompare2(ShowcaseIndi):
         elif sub == True:
             delta = delta_sub
             mid_line = 0
-            xlabel = "$ %s_{%s} \,-\, %s_{%s}$"  %(para_name, label[0] , 
+            xlabel = "$ {}_\mathrm{} \,-\, {}_\mathrm{}$".format(para_name, label[0] , 
                                                    para_name, label[1])
             
         elif div == True:
             delta = delta_div
             mid_line = 1.0
-            xlabel = "$ %s_{%s} \,/\, %s_{%s}$"  %(para_name, label[0] , 
+            xlabel = "$ {}_\mathrm{} \,/\, {}_\mathrm{}$".format(para_name, label[0] , 
                                                    para_name, label[1])
             
         else: 
@@ -2014,6 +2051,8 @@ class ShowcaseCompare2(ShowcaseIndi):
         ax.fill(x_edge, y_edge, alpha=0.1, color=colour, label="$1\sigma$")
         
         ax.invert_yaxis()
+        
+        ax.set_ylim(-1,len(para1)+1)
         
         print('mean:', avg_delta,'std:',std_delta)
         #plt.setp(ax.get_yticklabels(), visible=False)

@@ -30,7 +30,7 @@ morph_file0 = "/home/dexter/result/stat/completeness/morph_list.txt"
 #morph_source = SRead.read_table(morph_file)
 
 
-def plot_B_T_ratio(morph_file,bundle_name):
+def plot_B_T_ratio(morph_file,bundle_name,num_E):
     
     morph_source_t = SRead.read_table(morph_file,dtype="str")
     morph_name, morph = morph_source_t[:,0], morph_source_t[:,1]
@@ -40,10 +40,10 @@ def plot_B_T_ratio(morph_file,bundle_name):
     gs = gridspec.GridSpec(1,1) 
     ax = plt.subplot(gs[0])
     S = SPlot.ShowcaseIndi.cpt_to_total_by_type_plot(bundle_name, morph_name, 
-                                                 morph, AX =ax)
+                                                 morph, num_E=num_E, AX =ax)
     plt.tight_layout()
 
-plot_B_T_ratio(morph_file0,bundle_name0)    #
+#plot_B_T_ratio(morph_file0,bundle_name0,num_E=11.0)    #
 
 bundle_2 = "/home/dexter/SphProject/F_Gal_bundle_equvi_V"
 
@@ -55,15 +55,15 @@ D2 = SRead.grab_parameter(bundle_name0, ["CoreBulge"], 0)
 
 #print(SRead.read_list(bundle_2))
 #print(len(B))
-print(D)
-print(D2)
+#print(D)
+#print(D2)
 
 
 bundle_name3 = "/home/dexter/SphProject/F_Gal_bundle_equvi_Bin3V_cpt"
 morph_file3 = "/home/dexter/result/stat/completeness/morph_list_Bin3.txt"
 
 
-#plot_B_T_ratio(morph_file3,bundle_name3)
+plot_B_T_ratio(morph_file3,bundle_name3, num_E=3.0)
 #plt.text(0,-1.8,r"$\rm Bin~3$",fontsize = 26)
 
 
@@ -71,14 +71,14 @@ morph_file3 = "/home/dexter/result/stat/completeness/morph_list_Bin3.txt"
 bundle_name2 = "/home/dexter/SphProject/F_Gal_bundle_equvi_Bin2V_cpt"
 morph_file2 = "/home/dexter/result/stat/completeness/morph_list_Bin2.txt"
 
-#plot_B_T_ratio(morph_file2,bundle_name2)
+#plot_B_T_ratio(morph_file2,bundle_name2, num_E=3.0)
 #plt.text(0,-1.8,r"$\rm Bin~2$",fontsize = 26)
 
 
 bundle_name1 = "/home/dexter/SphProject/F_Gal_bundle_equvi_Bin1V_cpt"
 morph_file1 = "/home/dexter/result/stat/completeness/morph_list_Bin1.txt"
 
-#plot_B_T_ratio(morph_file1,bundle_name1)
+#plot_B_T_ratio(morph_file1,bundle_name1,num_E=5.0)
 #plt.text(0,-1.8,r"$\rm Bin~1$",fontsize = 26)
 
 

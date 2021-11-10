@@ -26,6 +26,8 @@ import matplotlib.gridspec as gridspec
 
 plt.style.use('classic')
 
+matplotlib.rcParams['axes.unicode_minus'] = True
+
 mpl.rcParams['grid.linewidth'] = 1.0
 mpl.rcParams["legend.numpoints"] = 1.0
 mpl.rcParams["legend.scatterpoints"] = 1.0
@@ -337,6 +339,10 @@ R1_gal, R2_gal, R3_gal = Re_1_kpc_1Sersic, Re_2_kpc_1Sersic, Re_3_kpc_1Sersic
 # compare Re and Rmax
 
 Re_1Sersic = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_V_cpt", ["Bulge"], 1) #get Re
+Re_1Sersic_Bin1 = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_Bin1V_cpt", ["Bulge"], 1)
+Re_1Sersic_Bin2 = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_Bin2V_cpt", ["Bulge"], 1)
+Re_1Sersic_Bin3 = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_Bin3V_cpt", ["Bulge"], 1)
+
 name = SRead.grab_name("F_Gal_bundle_1Sersic_equvi_V_cpt") #get Re
 D, D_lerr, D_uerr = D0_all_table[:,29], D0_all_table[:,30], D0_all_table[:,31]
 scale = D* ars
@@ -344,21 +350,30 @@ scale = D* ars
 total_mag_1Sersic = SRead.grab_total_mag("F_Gal_bundle_1Sersic_equvi_V_cpt")
 total_mag= SRead.grab_total_mag("F_Gal_bundle_equvi_V_cpt")
 
-Re_1Sersic_kpc = Re_1Sersic*scale
 
 geom_file = SRead.read_table(
     "/home/dexter/result/stat/completeness/gal_geom_all.dat")
 
-Rmax = geom_file[:,2]*0.4
+geom_file1 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin1.dat")
+geom_file2 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin2.dat")
+geom_file3 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/gal_geom_Bin3.dat")
+
+Rmax = geom_file[:,2]
+Rmax1, Rmax2, Rmax3 = geom_file1[:,2], geom_file2[:,2], geom_file3[:,2]
+
 l,q =0,0
 
+print("============name/Re/Rmax/mag1Sersic/magMulti===========")
 for i in range(len(Rmax)):
-    if Re_1Sersic_kpc[i]/Rmax[i] < 1.0:
+    if Re_1Sersic[i]/Rmax[i] < 1.0:
         l = l+1
-    if Re_1Sersic_kpc[i]/Rmax[i] < 0.:
+    if Re_1Sersic[i]/Rmax[i] < 0.:
         q= q+1 
         
-    print(name[i],Re_1Sersic_kpc[i],Rmax[i], total_mag_1Sersic[i], total_mag[i])
+    print(name[i],Re_1Sersic[i],Rmax[i], total_mag_1Sersic[i], total_mag[i])
 print("l", l , "q",q)
 
 #########plot transition##############
@@ -431,7 +446,7 @@ def add_morph_marker(A,x,y):
         A.add_artist(ab)
 
 xlim_mo = [4e9,2e12]
-ylim_mo = [0.18,150]
+ylim_mo = [0.18,600]
 #plot morphology based selection
 text_location=[0.8e10,24]
 delta_text = 8
@@ -439,7 +454,7 @@ delta_text = 8
 
 def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=None,
                                xo_1=None,yo_1=None,xn_1=None,yn_1=None, name1=None):
-    fig = plt.figure(figsize=(6.4, 11.6))
+    fig = plt.figure(figsize=(8.2, 11.6))
     gs = gridspec.GridSpec(ncols=1, nrows=2,
                                hspace=0, wspace=0.0) 
 
@@ -455,9 +470,21 @@ def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     
     arrow0 = mpatches.FancyArrowPatch((med0_xn,med0_yn), (med0_xo,med0_yo),
                                  mutation_scale=100,alpha=0.5,color="b",ec='k')
+    
+    # Find the outliers
+    outlier_S0 = SSort.selection_generic(E_host_Bin_S0, R_host_Bin_S0, np.repeat(30.0,len(R_host_Bin_S0)),
+                                     direction="high", axis="y")
+    outlier_S = SSort.selection_generic(E_host_Bin_S, R_host_Bin_S, np.repeat(30.0,len(R_host_Bin_S)),
+                                     direction="high", axis="y")
+    
+    
     axt0.add_patch(arrow0)
     
     plot_sizemass_trans(axt0,xo_0,yo_0,xn_0,yn_0)
+    
+    # circle all the outliers
+    axt0.scatter(outlier_S0["bag_x"],outlier_S0["bag_y"],
+                 facecolors='none', edgecolors='r', s = 650)
 
     #SPlot.ShowcaseIndi.show_name(xo_0,yo_0, name0, A=axt0,size=16)
 
@@ -494,6 +521,9 @@ def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
    # add_arrow(axt1,med_xo,med_yo,med_xn,med_yn)
 
     plot_sizemass_trans(axt1,xo_1,yo_1,xn_1,yn_1)
+    
+    axt1.scatter(outlier_S["bag_x"],outlier_S["bag_y"],
+                 facecolors='none', edgecolors='r', s = 650)
 
     axt1.text(text_location[0],text_location[1],r"$\rm S~hosts$",fontsize=32,color="k") 
     
@@ -504,7 +534,7 @@ def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     axt1.set_yscale( 'log' )
     
     axt1.set_ylabel(r"$R_\mathrm{e,equ}~\rm(kpc)$", fontsize=16)    
-    axt1.set_xlabel(r"$M_{*} / \rm M_{\odot}$", fontsize=16)
+    axt1.set_xlabel(r"$M_{*} / \rm M_{\odot}~(RC15)$", fontsize=16)
     axt1.legend(loc=4)
     #axt1.grid(True)
     
@@ -533,6 +563,14 @@ index_Bin1_E = SSort.morph_str_selection(S1['index'], morph1_sub)["E"]
 index_Bin1_S0 = SSort.morph_str_selection(S1['index'], morph1_sub)["S0"]
 index_Bin1_S = SSort.morph_str_selection(S1['index'], morph1_sub)["S"]
 
+name_Bin1_E = SSort.cherry_pick(index_Bin1_E, name1)
+name_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, name1)
+name_Bin1_S = SSort.cherry_pick(index_Bin1_S, name1)
+
+Rmax1_E = SSort.cherry_pick(index_Bin1_E, Rmax1)
+Rmax1_S0 = SSort.cherry_pick(index_Bin1_S0, Rmax1)
+Rmax1_S = SSort.cherry_pick(index_Bin1_S, Rmax1)
+
 morph_Bin1_E = SSort.cherry_pick(index_Bin1_E, morph1_new)
 morph_Bin1_S0 = SSort.cherry_pick(index_Bin1_S0, morph1_new)
 morph_Bin1_S = SSort.cherry_pick(index_Bin1_S, morph1_new)
@@ -556,6 +594,14 @@ R_sph_Bin1_S = SSort.cherry_pick(index_Bin1_S, R1)
 index_Bin2_E = SSort.morph_str_selection(S2['index'], morph2_sub)["E"]
 index_Bin2_S0 = SSort.morph_str_selection(S2['index'], morph2_sub)["S0"]
 index_Bin2_S = SSort.morph_str_selection(S2['index'], morph2_sub)["S"]
+
+name_Bin2_E = SSort.cherry_pick(index_Bin2_E, name2)
+name_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, name2)
+name_Bin2_S = SSort.cherry_pick(index_Bin2_S, name2)
+
+Rmax2_E = SSort.cherry_pick(index_Bin2_E, Rmax2)
+Rmax2_S0 = SSort.cherry_pick(index_Bin2_S0, Rmax2)
+Rmax2_S = SSort.cherry_pick(index_Bin2_S, Rmax2)
 
 morph_Bin2_E = SSort.cherry_pick(index_Bin2_E, morph2_new)
 morph_Bin2_S0 = SSort.cherry_pick(index_Bin2_S0, morph2_new)
@@ -581,6 +627,14 @@ index_Bin3_E = SSort.morph_str_selection(S3['index'], morph3_sub)["E"]
 index_Bin3_S0 = SSort.morph_str_selection(S3['index'], morph3_sub)["S0"]
 index_Bin3_S = SSort.morph_str_selection(S3['index'], morph3_sub)["S"]
 
+name_Bin3_E = SSort.cherry_pick(index_Bin3_E, name3)
+name_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, name3)
+name_Bin3_S = SSort.cherry_pick(index_Bin3_S, name3)
+
+Rmax3_E = SSort.cherry_pick(index_Bin3_E, Rmax3)
+Rmax3_S0 = SSort.cherry_pick(index_Bin3_S0, Rmax3)
+Rmax3_S = SSort.cherry_pick(index_Bin3_S, Rmax3)
+
 morph_Bin3_E = SSort.cherry_pick(index_Bin3_E, morph3_new)
 morph_Bin3_S0 = SSort.cherry_pick(index_Bin3_S0, morph3_new)
 morph_Bin3_S = SSort.cherry_pick(index_Bin3_S, morph3_new)
@@ -599,6 +653,20 @@ E_host_Bin3_S = SSort.cherry_pick(index_Bin3_S, mass3_gal)
 R_host_Bin3_S = SSort.cherry_pick(index_Bin3_S, R3_gal)
 E_sph_Bin3_S =  SSort.cherry_pick(index_Bin3_S, mass3)
 R_sph_Bin3_S = SSort.cherry_pick(index_Bin3_S, R3)
+
+
+# combine Bin1-3
+index_Bin_E = index_Bin1_E+index_Bin2_E+index_Bin3_E
+index_Bin_S0 = index_Bin1_S0+index_Bin2_S0+index_Bin3_S0
+index_Bin_S = index_Bin1_S+index_Bin2_S+index_Bin3_S
+
+name_E = name_Bin1_E + name_Bin2_E + name_Bin3_E
+name_SO = name_Bin1_S0 + name_Bin2_S0 + name_Bin3_S0
+name_S = name_Bin1_S + name_Bin2_S + name_Bin3_S
+
+Rmax_E = Rmax1_E + Rmax2_E + Rmax3_E 
+Rmax_S0 = Rmax1_S0 + Rmax2_S0 + Rmax3_S0
+Rmax_S = Rmax1_S + Rmax2_S + Rmax3_S 
 
 E_host_Bin_E = E_host_Bin1_E + E_host_Bin2_E + E_host_Bin3_E
 E_host_Bin_S0 = E_host_Bin1_S0 + E_host_Bin2_S0 + E_host_Bin3_S0
@@ -620,19 +688,28 @@ morph_Bin_E = morph_Bin1_E + morph_Bin2_E + morph_Bin3_E
 morph_Bin_S0 = morph_Bin1_S0 + morph_Bin2_S0 + morph_Bin3_S0
 morph_Bin_S = morph_Bin1_S + morph_Bin2_S + morph_Bin3_S
 
-
-morph_Bin_S0 = morph_Bin1_S0+ morph_Bin2_S0 + morph_Bin3_S0
-morph_Bin_S = morph_Bin1_S + morph_Bin2_S + morph_Bin3_S
-
 # plot the comaprison
 plot_sizemass_trans_2plots(xo_0 = E_host_Bin_S0, yo_0 = R_host_Bin_S0, xn_0 = E_sph_Bin_S0, yn_0 = R_sph_Bin_S0, name0 = morph_Bin_S0, 
                            xo_1 = E_host_Bin_S, yo_1 = R_host_Bin_S, xn_1 = E_sph_Bin_S, yn_1 = R_sph_Bin_S, name1 = morph_Bin_S)
                            
+outlier_S0 = SSort.selection_generic(E_host_Bin_S0, R_host_Bin_S0, np.repeat(30.0,len(R_host_Bin_S0)),
+                                     direction="high", axis="y")
 
-
+outlier_S = SSort.selection_generic(E_host_Bin_S, R_host_Bin_S, np.repeat(30.0,len(R_host_Bin_S)),
+                                     direction="high", axis="y")
 
 print("S0", len(E_sph_Bin1_S0)+len(E_sph_Bin2_S0)+len(E_sph_Bin3_S0))
 print("S", len(E_sph_Bin1_S)+len(E_sph_Bin2_S)+len(E_sph_Bin3_S))
+
+
+print("outlier_S0",outlier_S0)
+print("outlier_S",outlier_S)
+
+
+print(name_SO[7])
+print(name_S[0])
+print(name_S[10])
+
 #reserve
 #
 #fig, ax = plt.subplots()        
@@ -664,12 +741,101 @@ print("S", len(E_sph_Bin1_S)+len(E_sph_Bin2_S)+len(E_sph_Bin3_S))
 
 #plot the size mass relation transision
 
-ReRmax = SRead.read_table("/home/dexter/result/stat/completeness/gal_ReRmaxMag.txt")
-ReRmax_n = SRead.read_table("/home/dexter/result/stat/completeness/gal_ReRmaxMag.txt",dtype="str")
+ReRmax = SRead.read_table("/home/dexter/result/stat/completeness/gal_ReRmaxMag2.txt")
+ReRmax_n = SRead.read_table("/home/dexter/result/stat/completeness/gal_ReRmaxMag2.txt",dtype="str")
 
 mag_one_sersic = ReRmax[:,3]
 mag_multi_cpt= ReRmax[:,4]
 name_ReRmax = ReRmax_n[:,0]
 
-SPlot.ShowcaseCompare2.plot_compare_generic(mag_one_sersic, mag_multi_cpt,para_name="mag", name=name_ReRmax,label=["1-Sersic","multi-cpt"])
+SPlot.ShowcaseCompare2.plot_compare_generic(mag_one_sersic, 
+                                            mag_multi_cpt,para_name="mag", 
+                                            name=name_ReRmax,label=["{1-S{\'e}rsic}","{multi-cpt}"])
 
+# Find the insider in Re/Rmax
+ReRmax_insiders = SSort.selection_generic(
+    np.repeat(0,len(Re_1Sersic)), Re_1Sersic/Rmax, np.repeat(
+        3.0,len(Re_1Sersic)), direction="low", axis="y")
+
+# Find the outliers in Re/Rmax
+ReRmax_outliers = SSort.selection_generic(
+    np.repeat(0,len(Re_1Sersic)), Re_1Sersic/Rmax, np.repeat(
+        3.0,len(Re_1Sersic)), direction="high", axis="y")
+
+print((ReRmax_outliers['bag_y']))
+print(len(ReRmax_insiders['bag_y']))
+
+# Seperate Re and Rmax by morphology
+Re1_spc = SSort.morph_str_selection(Re_1Sersic_Bin1,morph1_new)
+Re2_spc = SSort.morph_str_selection(Re_1Sersic_Bin2,morph2_new)
+Re3_spc = SSort.morph_str_selection(Re_1Sersic_Bin3,morph3_new)
+
+Rmax1_spc = SSort.morph_str_selection(Rmax1,morph1_new)
+Rmax2_spc = SSort.morph_str_selection(Rmax2,morph2_new)
+Rmax3_spc = SSort.morph_str_selection(Rmax3,morph3_new)
+
+name1_spc = SSort.morph_str_selection(name1,morph1_new)
+name2_spc = SSort.morph_str_selection(name2,morph2_new)
+name3_spc = SSort.morph_str_selection(name3,morph3_new)
+
+
+name_E = name1_spc["E"]+name2_spc["E"]+name3_spc["E"]
+name_S0 = name1_spc["S0"]+name2_spc["S0"]+name3_spc["S0"]
+name_S = name1_spc["S"]+name2_spc["S"]+name3_spc["S"]
+
+Re_E = np.concatenate((Re1_spc["E"],Re2_spc["E"],Re3_spc["E"]))
+Re_S0 = np.concatenate((Re1_spc["S0"], Re2_spc["S0"], Re3_spc["S0"]))
+Re_S = np.concatenate((Re1_spc["S"], Re2_spc["S"], Re3_spc["S"]))
+
+Rmax_E = np.concatenate((Rmax1_spc["E"],Rmax2_spc["E"],Rmax3_spc["E"]))
+Rmax_S0 = np.concatenate((Rmax1_spc["S0"], Rmax2_spc["S0"], Rmax3_spc["S0"]))
+Rmax_S = np.concatenate((Rmax1_spc["S"], Rmax2_spc["S"], Rmax3_spc["S"]))
+
+
+print(np.array(Re_E)/np.array(Rmax_E))
+print(np.array(Re_S0)/np.array(Rmax_S0))
+print(np.array(Re_S)/np.array(Rmax_S))
+
+def plot_ReRmax_hist():
+    fig = plt.figure(figsize=(6.4, 4.8))
+
+    # Divided by morphology
+    # 20,20,160
+    
+    space = np.linspace(0.0,50.0,num=400)
+    
+    plt.hist(np.array(Re_S)/np.array(Rmax_S),space, 
+                                facecolor='blue',
+                                alpha=0.6, histtype ='stepfilled',label="S")
+ 
+    plt.hist(np.array(Re_S0)/np.array(Rmax_S0),space, 
+                                facecolor='orange',
+                                alpha=0.6, histtype ='stepfilled',label="S0")
+    plt.hist(np.array(Re_E)/np.array(Rmax_E),space, 
+                                facecolor='red',
+                                alpha=0.6, histtype ='stepfilled',label="E")
+    
+    
+    #plt.hist(np.array(R_sph_Bin_S)/np.array(Rmax_S),650, 
+    #                            facecolor='orange',
+    #                            alpha=0.7, histtype ='stepfilled',label="Our galaxies")
+    #plt.hist(ReRmax_outliers['bag_y'],662, 
+    #                            facecolor='red',
+    #                            alpha=0.7, histtype ='stepfilled',label="Outliers")    
+
+    #print(Re_1Sersic/Rmax)
+    plt.xlabel(r"$R_\mathrm{e} / \rm R_{max}$", fontsize=16)
+    plt.ylabel(r"$\rm Number~of~galaxies$", fontsize=16)    
+    
+    plt.xlim(0,3)
+    plt.ylim(0.5,30)
+    
+    plt.yscale( 'log' )  
+    #plt.xscale( 'log' )  
+    plt.legend()
+
+    
+    plt.tight_layout()
+
+
+plot_ReRmax_hist()
