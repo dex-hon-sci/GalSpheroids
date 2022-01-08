@@ -1217,7 +1217,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         print("Total:", np.median(total),np.std(total),"({})".format(len(total)))
         return mag_dict
     
-    def draw_interval_line(x,y,int_x,int_y,direction='x'):
+    def draw_interval_line(x,y,int_x,int_y):
         """
         A function to group a scatter plot into predeteremined interval 
         of the same size.
@@ -1246,16 +1246,42 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
         data_dict = {}
         int_p = 0
         
-        if direction == 'x':
-            int_p = int_x
-        elif direction == 'y':
-            int_p = int_y
-            
         #find the min max points of the inputs
         min_x, min_y, max_x, max_y = min(x),min(y),max(x),max(y) 
         
-        #
+        if direction == 'x':
+            int_p = int_x
+            min_val, max_val = max_x, min_x
+        elif direction == 'y':
+            int_p = int_y
+            min_val, max_val = max_y, min_y
+
+        length = (max_val-min_val)/int_p
         
+        # Define the boundary for each bin
+        
+        storage_x, storage_y = [], []
+        median_x, median_y = [], []
+        std_x, std_y = [], []
+
+        # loop 
+        for i in range():
+            x_bin, y_bin =[],[]
+            for j in range(len(x)-1):
+                if x[j] < int_x[i+1] and x[j]> int_x[i] \
+                    and y[j] < int_y[i+1] and y[j] > int_y[i]:
+                    
+                    x_bin.append(x[j])
+                    y_bin.append(y[j])
+                    
+            median_x.append(np.median(x_bin))
+            median_y.append(np.median(y_bin))
+            
+            std_x.append(np.std(x_bin))
+            std_y.append(np.std(y_bin))
+
+                    
+                    
         #create the signmentized array
         
         #calculate median
