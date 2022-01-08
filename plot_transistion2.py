@@ -477,7 +477,9 @@ def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     outlier_S = SSort.selection_generic(E_host_Bin_S, R_host_Bin_S, np.repeat(30.0,len(R_host_Bin_S)),
                                      direction="high", axis="y")
     
-    
+    axt0.plot(mass1_gal,R1_gal,'d',ms=10)
+    axt0.plot(mass2_gal,R2_gal,'d',ms=10)
+    axt0.plot(mass3_gal,R3_gal,'d',ms=10)
     axt0.add_patch(arrow0)
     
     plot_sizemass_trans(axt0,xo_0,yo_0,xn_0,yn_0)
@@ -517,6 +519,11 @@ def plot_sizemass_trans_2plots(xo_0=None,yo_0=None,xn_0=None,yn_0=None, name0=No
     
     arrow1 = mpatches.FancyArrowPatch((med1_xn,med1_yn), (med1_xo,med1_yo),
                                  mutation_scale=100,alpha=0.5,color="b",ec='k')
+    
+    axt1.plot(mass1_gal,R1_gal,'X',ms=10)
+    axt1.plot(mass2_gal,R2_gal,'X',ms=10)
+    axt1.plot(mass3_gal,R3_gal,'X',ms=10)
+
     axt1.add_patch(arrow1)
    # add_arrow(axt1,med_xo,med_yo,med_xn,med_yn)
 

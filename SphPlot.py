@@ -33,6 +33,7 @@ plt.style.use('classic')
 mpl.rcParams['grid.linewidth'] = 1.0
 mpl.rcParams["legend.numpoints"] = 1.0
 mpl.rcParams["legend.scatterpoints"] = 1.0
+mpl.rcParams['axes.unicode_minus'] = False
 # Class declaration
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
          "ShowcaseIndi","ShowcaseCompare2", "PlotHist","Plot2D"]
@@ -331,24 +332,24 @@ class SelectionCut(object):
         
         plt.plot(self.mass,self.Cassata11_cut(),
                  ls = "dashed", color="magenta", linewidth=3,
-                 label="Cassata et al. 2011" )
+                 label=r"$\rm Cassata~et~al.~(2011)$" )
         
         plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
-                 label="Damjanov et al. 2014" )
+                 label=r"$\rm Damjanov~et~al.~(2014)$" )
 
         
         plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
-                 label="Barro et al. 2013" )
+                 label=r"$\rm Barro~et~al.~(2013)$" )
         plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
                    linestyle="dashed", linewidth=3, color='g' )
 
         plt.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
-                 label="van Dokkum et al. 2015" )
+                 label=r"$\rm van~Dokkum~et~al.~(2015)$" )
         plt.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
                    linestyle="dashed", linewidth=3, color='y' )
 
         plt.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
-                 label="van der Wel et al. 2014" )
+                 label=r"$\rm van~der~Wel~et~al.~(2014)$" )
         plt.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
                    linestyle="dashed",linewidth=3, color='b' )
 
@@ -1215,6 +1216,53 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
 
         print("Total:", np.median(total),np.std(total),"({})".format(len(total)))
         return mag_dict
+    
+    def draw_interval_line(x,y,int_x,int_y,direction='x'):
+        """
+        A function to group a scatter plot into predeteremined interval 
+        of the same size.
+        It also calculate the median and std of the points within each 
+        interval.
+
+        e.g. [1,2,4,5,6,....] -->[[],[],[],[],....]
+
+        Parameters
+        ----------
+        x : 1D ndarray
+            DESCRIPTION.
+        y : 1D ndarray
+            DESCRIPTION.
+        int_x : TYPE
+            DESCRIPTION.
+        int_y : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        data_dict : TYPE
+            DESCRIPTION.
+
+        """
+        data_dict = {}
+        int_p = 0
+        
+        if direction == 'x':
+            int_p = int_x
+        elif direction == 'y':
+            int_p = int_y
+            
+        #find the min max points of the inputs
+        min_x, min_y, max_x, max_y = min(x),min(y),max(x),max(y) 
+        
+        #
+        
+        #create the signmentized array
+        
+        #calculate median
+        
+        #calculate the standard deviation
+        
+        return data_dict
         
 #%% tested Structurally
 class ShowcaseCompare2(ShowcaseIndi):
@@ -1375,7 +1423,8 @@ class ShowcaseCompare2(ShowcaseIndi):
     
     def plot_distdist_3points(DD,dc,d, name, l_limit, u_limit, 
                               DD_err=None,dc_err=None, d_err=None, 
-                               d_spec = None, d_spec_name = None , d_spec_err =None,
+                               d_spec = None, d_spec_name = None , 
+                               d_spec_err =None,
                                decision=[]):
         """
         A method to plot the difference in distance estimation 
@@ -1496,13 +1545,13 @@ class ShowcaseCompare2(ShowcaseIndi):
 
 
         axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
-                  label=r"$\rm Cosmicflow-3$")
+                  label="$ Cosmicflow-3$")
         axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
         
         
         axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734",
-                  label=r"$\rm z-independent$")
+                  label="$ z-independent$")
         axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
@@ -1540,10 +1589,10 @@ class ShowcaseCompare2(ShowcaseIndi):
 #
 #    
         axs0.fill(x_edge_l,y_edge_l, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'selection limit')
 
         axs0.fill(x_edge_u,y_edge_u, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'selection limit')
 #    
 #        axs0.fill([np.average(d)-np.std(d),np.average(d)-np.std(d),
 #               np.average(d)+np.std(d),np.average(d)+np.std(d)],
@@ -1674,25 +1723,25 @@ class ShowcaseCompare2(ShowcaseIndi):
         ms0, lw = 12, 4        
         
         axs0.plot(dc,index, "o", ms = ms0, color="green",
-                  label="Willick et al. 1997")
+                  label=r"$\rm Willick~et~al.~(1997)$")
         axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='g',zorder=20,mew=1,capsize=ms0)
 
         axs0.plot(DD,index, "o", ms = ms0, color="blue",
-                  label="Mould et al. 2000")
+                  label=r"$\rm Mould~et~al.~(2000)$")
         axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='b',zorder=20,mew=1,capsize=ms0)
 
 
 
         axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
-                  label="Cosmicflow-3")
+                  label="$ Cosmicflow-3$")
         axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
         
         
         axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734" ,
-                  label="z-independent")
+                  label=r"$z-\mathrm{independent}$")
         axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
@@ -1727,16 +1776,16 @@ class ShowcaseCompare2(ShowcaseIndi):
                     linewidth=5, color='black')           
         
         axs0.fill(x_edge_1,y_edge_1, alpha=0.3, color='green',
-                  label='Bin 1')
+                  label=r'$\rm Bin~1$')
 
         axs0.fill(x_edge_2,y_edge_2, alpha=0.2, color='green',
-                  label='Bin 2')
+                  label=r'$\rm Bin~2$')
         
         axs0.fill(x_edge_3,y_edge_3, alpha=0.1, color='green',
-                  label='Bin 3')
+                  label=r'$\rm Bin~3$')
 
         axs0.fill(x_edge_limit,y_edge_limit, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'$\rm selection~limit$')
     
         axs0.invert_yaxis()
         plt.subplots_adjust(wspace = 0)

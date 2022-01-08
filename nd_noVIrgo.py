@@ -36,14 +36,22 @@ V1,V2,V3 = V1_V,V2_V,V3_V
 #%%
 # Take away the VCC gaalxies from Bin3
 D0_Bin3_table_noVirgo = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3_noVirgo.txt")
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_noVirgo.txt")
 
 D0_Bin3_table_noVirgo_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_3_noVirgo.txt",
+    "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_noVirgo.txt",
     dtype = 'str')
 
+K_table3 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT_noVirgo.dat")
+
 # The apparant magnitude of the galaxy in g- and i-band.
-mag_g3, mag_i3 = D0_Bin3_table_noVirgo[:,11], D0_Bin3_table_noVirgo[:,10]
+mag_g3, mag_i3 = K_table3[:,10], K_table3[:,9]
+g3_EXT, i3_EXT = K_table3[:,23], K_table3[:,24]
+g3_kcorr, i3_kcorr = K_table3[:,25], K_table3[:,26]
+
+# the corrected mag g and i, Kcorrection+EXTINCTIOn
+mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr, mag_i3-i3_kcorr
 
 # The distance (final decision), lower limit and upper limit
 D3, D3_lerr, D3_uerr = D0_Bin3_table_noVirgo[:,29], D0_Bin3_table_noVirgo[:,30], D0_Bin3_table_noVirgo[:,31]
@@ -88,27 +96,20 @@ Re_3_kpc_lerr, Re_3_kpc_uerr = abs(Re_3* scale3_lerr - Re_3_kpc), abs(Re_3* scal
 
 Re_3_kpc_err =[Re_3_kpc_lerr, Re_3_kpc_uerr]
 
+# spheroid mag correction
+sph_mag3 = sph_mag3 - i3_EXT - i3_kcorr
 ################################
-#Calculate mass with K-correction
+#Calculate mass 
 
 # "F_Gal_bundle_equvi_Bin3V_noVirgo_cpt"
 
-K_table3 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_noVirgo.dat")
-K_table3_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_noVirgo.dat", 
-    dtype='str')
 
-K_name3 = K_table3_n[:,4]
+ML_select3_IP13_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Into13_MassRatio
+ML_select3_R15BC_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Roediger15BC03_MassRatio
+ML_select3_Z09_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Zibetti09_MassRatio
+ML_select3_T11_K = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Taylor11_MassRatio
 
-mag_g3_kcorr, mag_i3_kcorr = K_table3[:,19], K_table3[:,18]
-
-ML_select3_IP13_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Into13_MassRatio
-ML_select3_R15BC_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Roediger15BC03_MassRatio
-ML_select3_Z09_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Zibetti09_MassRatio
-ML_select3_T11_K = SPlot.MLRelationIband(mag_g3_kcorr,mag_i3_kcorr).Taylor11_MassRatio
-
-M3_K = SPlot.MassCalculation(sph_mag3, D3, 4.53, mag_g3_kcorr,mag_i3_kcorr)
+M3_K = SPlot.MassCalculation(sph_mag3, D3, 4.53, mag_g3_corr,mag_i3_corr)
 
 E3_IP13_K = M3_K.cal_Mass(ML_select3_IP13_K)
 E3_R15BC_K = M3_K.cal_Mass(ML_select3_R15BC_K)
@@ -125,7 +126,7 @@ mag_e = 0.3 #magnitude error
 
 mass_uerr3 = np.sqrt(((mag_e/2.5)**2)+((2*D3_uerr/(D3*np.log(10)))**2)+((MLR_e3/(MLR3*np.log(10)))**2))
 mass_err3 = mass_uerr3
-mass3 = E3_T11_K
+mass3 = E3_IP13_K
     
 # perform the size-mass cut
 Bcut3_Barro = SPlot.SelectionCut(mass3, D3).Barro13_cut()

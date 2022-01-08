@@ -155,7 +155,6 @@ sph_mag1 = SRead.grab_mag("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"])
 sph_mag2 = SRead.grab_mag("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"])
 sph_mag3 = SRead.grab_mag("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"])
 
-
 mu_e_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 0) 
 mu_e_2 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin2V_cpt", ["Bulge","CoreBulge"], 0) 
 mu_e_3 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin3V_cpt", ["Bulge","CoreBulge"], 0) 
@@ -320,9 +319,9 @@ mag_g1, mag_i1 = K_table1[:,10], K_table1[:,9]
 mag_g2, mag_i2 = K_table2[:,10], K_table2[:,9]
 mag_g3, mag_i3 = K_table3[:,10], K_table3[:,9]
 
-mag_g1_kcorr, mag_i1_kcorr = K_table1[:,19], K_table1[:,18]
-mag_g2_kcorr, mag_i2_kcorr = K_table2[:,19], K_table2[:,18]
-mag_g3_kcorr, mag_i3_kcorr = K_table3[:,19], K_table3[:,18]
+#mag_g1_kcorr, mag_i1_kcorr = K_table1[:,19], K_table1[:,18]
+#mag_g2_kcorr, mag_i2_kcorr = K_table2[:,19], K_table2[:,18]
+#mag_g3_kcorr, mag_i3_kcorr = K_table3[:,19], K_table3[:,18]
 
 g1_EXT, i1_EXT = K_table1[:,23], K_table1[:,24]
 g2_EXT, i2_EXT = K_table2[:,23], K_table2[:,24]
@@ -333,9 +332,9 @@ g2_kcorr, i2_kcorr = K_table2[:,25], K_table2[:,26]
 g3_kcorr, i3_kcorr = K_table3[:,25], K_table3[:,26]
 
 # the corrected mag g and i, Kcorrection+EXTINCTIOn
-mag_g1_corr, mag_i1_corr = mag_g1-g1_kcorr-g1_EXT, mag_i1-i1_kcorr-i1_EXT
-mag_g2_corr, mag_i2_corr = mag_g2-g2_kcorr-g2_EXT, mag_i2-i2_kcorr-i2_EXT
-mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr-g3_EXT, mag_i3-i3_kcorr-i3_EXT
+mag_g1_corr, mag_i1_corr = mag_g1-g1_kcorr, mag_i1-i1_kcorr
+mag_g2_corr, mag_i2_corr = mag_g2-g2_kcorr, mag_i2-i2_kcorr
+mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr, mag_i3-i3_kcorr
 
 Mag_i1_kcorr_cDis = mag_i1_corr-25-5*np.log10(corr_D1) 
 Mag_i2_kcorr_cDis = mag_i2_corr-25-5*np.log10(corr_D2) 
@@ -398,12 +397,6 @@ sph_mag3 = sph_mag3 - i3_EXT - i3_kcorr
 sph_abs_mag1 = SPlot.MassCalculation(mag_g1_corr, mag_i1_corr, sph_mag1, D1, M_sun).cal_abs_mag(sph_mag1, D1)
 sph_abs_mag2 = SPlot.MassCalculation(mag_g2_corr, mag_i2_corr, sph_mag2, D2, M_sun).cal_abs_mag(sph_mag2, D2)
 sph_abs_mag3 = SPlot.MassCalculation(mag_g3_corr, mag_i3_corr, sph_mag3, D3, M_sun).cal_abs_mag(sph_mag3, D3)
-
-
-sph_abs_mag1 = SPlot.MassCalculation(mag_g1_corr, mag_i1_corr,sph_mag1, D1, M_sun).cal_abs_mag(sph_mag1, D1)
-sph_abs_mag2 = SPlot.MassCalculation(mag_g2_corr, mag_i2_corr,sph_mag2, D2, M_sun).cal_abs_mag(sph_mag2, D2)
-sph_abs_mag3 = SPlot.MassCalculation(mag_g3_corr, mag_i3_corr,sph_mag3, D3, M_sun).cal_abs_mag(sph_mag3, D3)
-
 
 #######################
 M1_K = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1_corr,mag_i1_corr)
@@ -546,10 +539,10 @@ Zahid2015_mass  = np.array(10**Zahid2015[:,4])
 #mass1,mass2,mass3 = E1_Z09_K, E2_Z09_K, E3_Z09_K
 
 #RC15 for mass
-mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
+#mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
 
 #IP13 for mass
-#mass1, mass2, mass3 = E1_IP13_K, E2_IP13_K, E3_IP13_K
+mass1, mass2, mass3 = E1_IP13_K, E2_IP13_K, E3_IP13_K
 
 
 ##################################
@@ -767,7 +760,7 @@ print('morph3_out',morph3_out)
 
 #plotting function 
 def plot_gi_outliers(A,scale='log',alpha=0.65):
-    A.plot(mass1_out, R1_out,marker='*',color='k',label='outliers', 
+    A.plot(mass1_out, R1_out,marker='*',color='k',label=r'$\rm outliers$', 
               ms =15, alpha=1.0,linestyle="None")
     A.plot(mass2_out, R2_out,marker='*',color='k',label='', 
               ms =15, alpha=1.0,linestyle="None")    
@@ -782,7 +775,7 @@ def plot_gi_outliers(A,scale='log',alpha=0.65):
     A.set_yscale( 'log' )
     
 def plot_gi_outliers_major(A,scale='log',alpha=0.65):
-    A.plot(mass1_out, R1_out_m,marker='*',color='k',label='outliers', 
+    A.plot(mass1_out, R1_out_m,marker='*',color='k',label=r'$\rm outliers$', 
               ms =15, alpha=1.0,linestyle="None")
     A.plot(mass2_out, R2_out_m,marker='*',color='k',label='', 
               ms =15, alpha=1.0,linestyle="None")    
@@ -1023,7 +1016,7 @@ def plot_sizemass_CasCut_mine(ax):
 
     plot_Cassata_cut_all(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Cassata",
-                                                      "Cassata et al. 2011",
+                                                      r"\rm Cassata~et~al.~(2011)$",
                                                       alpha0=0, AX=ax)
     plot_dexter_sample_all2(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Cassata","", AX=ax)
@@ -1036,7 +1029,7 @@ def plot_sizemass_DamCut_mine(ax):
 
     plot_Damjanov_cut_all(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Damjanov",
-                                                      "Damjanov et al. 2014",
+                                                      r"$\rm Damjanov~et~al.~(2014)$",
                                                       alpha0=0, AX=ax)
     plot_dexter_sample_all2(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Damjanov","", AX=ax)
@@ -1048,7 +1041,7 @@ def plot_sizemass_DamCut_mine(ax):
 def plot_sizemass_BarroCut_mine(ax):
     plot_Barro_cut_all(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro", 
-                                                      "Barro et al. 2013", 
+                                                      r"$\rm Barro~et~al.~(2013)$", 
                                                       alpha0=0,AX=ax)
     plot_dexter_sample_all2(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Barro","", AX=ax)
@@ -1062,7 +1055,7 @@ def plot_sizemass_vDokkumCut_mine(ax):
     plot_vDokkum_cut_all(ax)
 
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum",
-                                                      "van Dokkum et al. 2015",
+                                                      r"$\rm van~Dokkum~et~al.~(2015)$",
                                                       alpha0=0, AX=ax)
     plot_dexter_sample_all2(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vDokkum", "", AX=ax)
@@ -1075,7 +1068,7 @@ def plot_sizemass_vdWelCut_mine(ax):
     plot_vdWel_cut_all(ax)
 
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", 
-                                                      "van der Wel et al. 2014",
+                                                      r"$\rm van~der~Wel~et~al.~(2014)$",
                                                       alpha0=0, AX=ax)
     plot_dexter_sample_all2_major(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("vdWel", "", AX=ax)
@@ -1087,7 +1080,7 @@ def plot_sizemass_vdWelCut_mine(ax):
 
 def plot_sizemass_GrahamCut_mine(ax):
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Graham", 
-                                                      "Graham et al. 2015",
+                                                      r"$\rm Graham~et~al.~(2015)$",
                                                       alpha0=0, AX=ax)
     plot_dexter_sample_all2(ax)
     SPlot.SelectionCut(mass0,Dist0).plot_cut_specific("Graham", "", AX=ax)
@@ -1136,14 +1129,14 @@ def plot_dexter_sample_Bin2(A):
 def plot_dexter_sample_all2(A,alpha=0.65):
     
     # Plot E galaxies
-    A.plot(mass_E, Re_kpc_E ,marker='s',color='#1b872a',label='E', 
+    A.plot(mass_E, Re_kpc_E ,marker='s',color='#1b872a',label=r'$\rm E$', 
               ms =10, alpha=1.0,linestyle="None")   
     # Plot ES galaxies
-    A.plot(mass_ES, Re_kpc_ES,marker='s',color='#ccab05',label='ES', 
+    A.plot(mass_ES, Re_kpc_ES,marker='s',color='#ccab05',label=r'$\rm ES$', 
               ms =10, alpha=1.0,linestyle="None")
     
     #Bin1
-    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label='Spheroids', 
+    A.scatter(mass1, Re_1_kpc,marker='o',c='#a5200b',label=r'$\rm Spheroids$', 
               s =70, alpha=alpha)
     A.errorbar(mass1, Re_1_kpc, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
@@ -1178,14 +1171,14 @@ def plot_dexter_sample_all2(A,alpha=0.65):
 
 def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
     # Plot E galaxies
-    A.plot(mass_E, Re_kpc_major_E ,marker='s',color='#1b872a',label='E', 
+    A.plot(mass_E, Re_kpc_major_E ,marker='s',color='#1b872a',label=r'$\rm E$', 
               ms =10, alpha=1.0,linestyle="None")   
     # Plot ES galaxies
-    A.plot(mass_ES, Re_kpc_major_ES,marker='s',color='#ccab05',label='ES', 
+    A.plot(mass_ES, Re_kpc_major_ES,marker='s',color='#ccab05',label=r'$\rm ES$', 
               ms =10, alpha=1.0,linestyle="None")
     
     #Bin1
-    A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label='Spheroids', 
+    A.scatter(mass1, Re_1_kpc_major, marker='o',c='#a5200b',label=r'$\rm Spheroids$', 
               s =70, alpha=alpha)
     A.errorbar(mass1, Re_1_kpc_major, yerr = Re_1_kpc_err, 
                   xerr = mass_err1*mass1, ls='none',linewidth=4, 
@@ -1217,8 +1210,8 @@ def plot_dexter_sample_all2_major(A,scale='log',alpha=0.65):
 
 ###### Ploting ##################
 
-xlim = [3e8,1.3e12]
-ylim = [0.08,167]
+xlim = [6.4e8,1.6e12]
+ylim = [0.07,175]
 
 mass0 = np.linspace(2e8,0.5e13,2000)
 Dist0 = np.linspace(0,120,2000)
@@ -1241,14 +1234,14 @@ def plot_sizemass_6plot():
     #plot Panel (1)
     axs0 = plt.subplot(gs[0])
     plot_dexter_sample_Bin2(axs0)
-    axs0.legend(fontsize = 10, loc=2)
+    axs0.legend(fontsize = 11, loc=2)
     axs0.set_ylabel(r"$R_\mathrm{e,Sph} \rm~(kpc)$",fontsize=16)
     #axs0.grid(True)
 
     #plot Panel (2)
     axs1 = plt.subplot(gs[1],sharey=axs0)
     plot_sizemass_DamCut_mine(axs1)
-    axs1.legend(fontsize = 10, loc=4)
+    axs1.legend(fontsize = 11, loc=4)
     plt.setp(axs1.get_yticklabels(), visible=False)
     #axs1.set_yticks([])
     #axs1.grid(True)
@@ -1264,14 +1257,14 @@ def plot_sizemass_6plot():
     #plot Panel (3)
     axs2 = plt.subplot(gs[2])
     plot_sizemass_BarroCut_mine(axs2)
-    axs2.legend(fontsize = 10, loc=4)
+    axs2.legend(fontsize = 11, loc=4)
     axs2.set_ylabel(r"$R_\mathrm{e,Sph} \rm~(kpc)$",fontsize=16)
     #axs2.grid(True)
     
     #plot Panel (4)
     axs3 = plt.subplot(gs[3],sharey=axs2)
     plot_sizemass_vDokkumCut_mine(axs3)
-    axs3.legend(fontsize = 10, loc=4)
+    axs3.legend(fontsize = 11, loc=4)
     #axs3.set_yticks([])
     plt.setp(axs3.get_yticklabels(), visible=False)
     #axs3.grid(True)
@@ -1279,18 +1272,18 @@ def plot_sizemass_6plot():
     #plot Panel (5)
     axs4 = plt.subplot(gs[4])
     plot_sizemass_vdWelCut_mine(axs4)
-    axs4.legend(fontsize = 10, loc=4)
+    axs4.legend(fontsize = 11, loc=4)
     axs4.set_ylabel(r"$ R_\mathrm{e,Sph} \rm~(kpc)$", fontsize=16)
-    axs4.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (RC15)$", fontsize=16)
+    axs4.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (IP13)$", fontsize=16)
     #axs4.grid(True)
    
     #plot Panel (6)
     axs5 = plt.subplot(gs[5],sharey=axs4)
     plot_sizemass_GrahamCut_mine(axs5)
-    axs5.legend(fontsize = 10, loc=4)
+    axs5.legend(fontsize = 11, loc=4)
     plt.setp(axs5.get_yticklabels(), visible=False)
     #axs5.set_yticks([])
-    axs5.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (RC15)$", fontsize=16)
+    axs5.set_xlabel(r"$ M_\mathrm{*,Sph} / \rm M_{\odot} (IP13)$", fontsize=16)
     #axs5.grid(True)
 
     plt.show()
@@ -1333,15 +1326,16 @@ Sahu_name = Sahu_data_n[:,0]
 Sahu_size_eq_kpc = Sahu_data[:,8]
 Sahu_mass_36 = Sahu_data[:,10]
 
+
 Sahu_mass_T11 = 10**(0.88 * Sahu_mass_36+1.02)
 
 import SphAnalysis as SAnalysis
 #Shen 2003 size-mass relation
 
 # Lange 2016 size-mass relation
-Lange2016_E = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,2.114,0.329)
-Lange2016_E_M1e10 = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.382,0.643)
-Lange2016_ETG_bulge = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0,1.836,0.267)
+Lange2016_E = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0/1e10,2.114,0.329)
+Lange2016_E_M1e10 = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0/1e10,1.382,0.643)
+Lange2016_ETG_bulge = SAnalysis.AnalyticFunctions.size_mass_powerlaw(mass0/1e10,1.836,0.267)
 
 s = SAnalysis.AnalyticFunctions.size_mass_powerlaw
 
@@ -1527,41 +1521,41 @@ ss = graham_equ
 def plot_sizemass_z0comparison():
     fig, ax = plt.subplots()
     
-    plot_dexter_sample_all2_T11(ax,alpha = 0.2)
+    plot_dexter_sample_all2(ax,alpha = 0.45)
 
-    ax.plot(mass0,Lange2016_E, '--', label=r"E in Lange et al. 2016")
-    ax.plot(mass0,Lange2016_ETG_bulge, '--', label=r"early-type bulge in Lange et al. 2016")
-    ax.plot(mass0,Lange2016_E_M1e10, '--', label=r"E ($M_*<10^{10}$)in Lange et al. 2016")
+    #ax.plot(mass0,Lange2016_E, '--', label=r"E in Lange et al. 2016")
+    #ax.plot(mass0,Lange2016_ETG_bulge, '--', label=r"early-type bulge in Lange et al. 2016")
+    #ax.plot(mass0,Lange2016_E_M1e10, '--', label=r"E ($M_*<10^{10}$)in Lange et al. 2016")
   
-    ax.plot(mass0,s(mass0, *popt), "-",linewidth=6, label=r"our fit")
-    ax.plot(mass0,s(mass0, *popt2), "-",linewidth=6, label=r"my fit", color='#a5200b')
-    ax.plot(mass0,ss(mass0, *popt_g),"--",linewidth=10, label=r"Graham equ.")
+  #  ax.plot(mass0,s(mass0, *popt), "-",linewidth=6, label=r"our fit")
+  #  ax.plot(mass0,s(mass0, *popt2), "-",linewidth=6, label=r"my fit", color='#a5200b')
+  #  ax.plot(mass0,ss(mass0, *popt_g),"--",linewidth=10, label=r"Graham equ.")
 
    # ax.plot(mass0,s(mass0, *popt3), "-", linewidth=6, label=r"Savorgnan et al. 2016 fit", color='#b940c8')
    # ax.plot(mass0,s(mass0, *popt4), "-", linewidth=6, label=r"Davis et al. 2019 fit", color='#2e417b')
    # ax.plot(mass0,s(mass0, *popt5), "-", linewidth=6, label=r"Sahu et al. 2019 fit", color='#e1a000')
     
     
-    SPlot.ShowcaseIndi.Mass_Re_plot(Savorgnan_mass_T11, Savorgnan_size_eq_kpc, 
+    SPlot.ShowcaseIndi.Mass_Re_plot(10**Savorgnan_mass_36, Savorgnan_size_eq_kpc, 
                                     yerr = None,
                                 xerr = None,
                                 colour='#b940c8',
-                                name=None,legend='Savorgnan et al. 2016',
-                                ms=10,alpha0 = 0.4,lw=3)
+                                name=None,legend=r'$\rm Savorgnan~et~al.~(2016)$',
+                                ms=10,alpha0 = 0.6,lw=3)
         
-    SPlot.ShowcaseIndi.Mass_Re_plot(Davis_mass_T11, Davis_size_eq_kpc, 
+    SPlot.ShowcaseIndi.Mass_Re_plot(10**Davis_mass_36, Davis_size_eq_kpc, 
                                     yerr = None,
                                 xerr = None,
                                 colour='#2e417b',
-                                name=None,legend='Davis et al. 2019',
-                                ms=10,alpha0 = 0.4,lw=3)
+                                name=None,legend=r'$\rm Davis~et~al.~(2019)$',
+                                ms=10,alpha0 = 0.6,lw=3)
 
-    SPlot.ShowcaseIndi.Mass_Re_plot(Sahu_mass_T11, Sahu_size_eq_kpc, 
+    SPlot.ShowcaseIndi.Mass_Re_plot(10**Sahu_mass_36, Sahu_size_eq_kpc, 
                                     yerr = None,
                                 xerr = None,
                                 colour='#e1a000',
-                                name=None,legend='Sahu et al. 2019',
-                                ms=10,alpha0 = 0.4,lw=3)
+                                name=None,legend=r'$\rm Sahu~et~al.~(2019)$',
+                                ms=10,alpha0 = 0.6,lw=3)
 
 
     ax.set_xlim(left = xlim[0], right = xlim[1])
@@ -1570,13 +1564,13 @@ def plot_sizemass_z0comparison():
     ax.legend(fontsize = 12,loc=2)
     #plt.grid(True)
     
-    plt.xlabel(r"$\rm M_{*,sph}$ / $M_{\odot}$",fontsize=16)
-    plt.ylabel("$R_{e,sph}$ (kpc)",fontsize=16)
+    plt.xlabel(r"$ M_\mathrm{*,Sph} /\rm M_{\odot} (RC15)$",fontsize=16)
+    plt.ylabel(r"$R_\mathrm{e,Sph}\rm (kpc)$",fontsize=16)
     
     plt.show()
     
     
-#plot_sizemass_z0comparison()
+plot_sizemass_z0comparison()
 
 
 ########################

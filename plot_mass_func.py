@@ -91,10 +91,11 @@ def plot_solid_circles():
     Solid_Bin1_nudens = np.array([3,2])/V1_V/0.3
 
     Solid_Bin2_mass = 10**np.array([np.average(box[10]),np.average(box[11])])
-    Solid_Bin2_nudens = np.array([5,1])/V2_V/0.3
+    Solid_Bin2_nudens = np.array([6,1])/V2_V/0.3
 
-    Solid_Bin3_mass = 10**np.array([np.average(box[9]), np.average(box[11])])
-    Solid_Bin3_nudens = np.array([9,1])/V3_V/0.3
+    Solid_Bin3_mass = 10**np.array([np.average(box[9]), np.average(box[10]), 
+                                    np.average(box[11])])
+    Solid_Bin3_nudens = np.array([8,1,1])/V3_V/0.3
     
     ax.plot(Solid_Bin3_mass, Solid_Bin3_nudens, "o", color='#2a3236',label=r"$\rm Bin~3$",ms=14)
     ax.plot(Solid_Bin2_mass, Solid_Bin2_nudens, "o", color='#0b5786',label=r"$\rm Bin~2$",ms=14)
@@ -108,7 +109,7 @@ def plot_half_circles():
     HalfSolid_Bin2_nudens = np.array([4])/V2_V/0.3
 
     HalfSolid_Bin3_mass = 10**np.array([np.average(box[7]), np.average(box[8])])
-    HalfSolid_Bin3_nudens = np.array([9,13])/V3_V/0.3
+    HalfSolid_Bin3_nudens = np.array([7,15])/V3_V/0.3
     
     ax.plot(HalfSolid_Bin3_mass, HalfSolid_Bin3_nudens, "o", fillstyle = "bottom",color='#2a3236',ms=14, alpha=0.3)
     ax.plot(HalfSolid_Bin2_mass, HalfSolid_Bin2_nudens, "o", fillstyle = "bottom",color='#0b5786',ms=14, alpha=0.3)
@@ -134,6 +135,12 @@ D0_Bin2_table_n = SRead.read_table(
 D0_Bin3_table_n = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_Bin3V_4_2.txt",dtype="str")
 
+K_table1 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr_EXT.dat")
+K_table2 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr_EXT.dat")
+K_table3 = SRead.read_table(
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT.dat")
 
 mag_g1, mag_i1 = D0_Bin1_table[:,11], D0_Bin1_table[:,10]
 mag_g2, mag_i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
@@ -147,6 +154,21 @@ D3, D3_lerr, D3_uerr = D0_Bin3_table[:,29], D0_Bin3_table[:,30], D0_Bin3_table[:
 cosmo = FlatLambdaCDM(H0=68.0, Om0=0.3)
 
 #z_1 = z_at_value(Planck13.distmod,100*u.Mpc)
+mag_g1, mag_i1 = K_table1[:,10], K_table1[:,9]
+mag_g2, mag_i2 = K_table2[:,10], K_table2[:,9]
+mag_g3, mag_i3 = K_table3[:,10], K_table3[:,9]
+
+g1_EXT, i1_EXT = K_table1[:,23], K_table1[:,24]
+g2_EXT, i2_EXT = K_table2[:,23], K_table2[:,24]
+g3_EXT, i3_EXT = K_table3[:,23], K_table3[:,24]
+
+g1_kcorr, i1_kcorr = K_table1[:,25], K_table1[:,26]
+g2_kcorr, i2_kcorr = K_table2[:,25], K_table2[:,26]
+g3_kcorr, i3_kcorr = K_table3[:,25], K_table3[:,26]
+
+mag_g1_corr, mag_i1_corr = mag_g1-g1_kcorr, mag_i1-i1_kcorr
+mag_g2_corr, mag_i2_corr = mag_g2-g2_kcorr, mag_i2-i2_kcorr
+mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr, mag_i3-i3_kcorr
 
 # convert to Luminosity distance
 
@@ -187,13 +209,15 @@ Extinction_i1 = list(D0_Bin1_table[:,-3])
 Extinction_i2 = list(D0_Bin2_table[:,-3])
 Extinction_i3 = list(D0_Bin3_table[:,-3])
 
-sph_mag1 = sph_mag1 - Extinction_i1
-sph_mag2 = sph_mag2 - Extinction_i2
-sph_mag3 = sph_mag3 - Extinction_i3
-
-mag_g1, mag_i1 = mag_g1 - Extinction_g1, mag_i1 - Extinction_i1
-mag_g2, mag_i2 = mag_g2 - Extinction_g2, mag_i2 - Extinction_i2
-mag_g3, mag_i3 = mag_g3 - Extinction_g3, mag_i3 - Extinction_i3
+#sph_mag1 = sph_mag1 - Extinction_i1 
+#sph_mag2 = sph_mag2 - Extinction_i2
+#sph_mag3 = sph_mag3 - Extinction_i3
+sph_mag1 = sph_mag1 - i1_EXT - i1_kcorr
+sph_mag2 = sph_mag2 - i2_EXT - i2_kcorr
+sph_mag3 = sph_mag3 - i3_EXT - i3_kcorr
+#mag_g1, mag_i1 = mag_g1 - Extinction_g1, mag_i1 - Extinction_i1
+#mag_g2, mag_i2 = mag_g2 - Extinction_g2, mag_i2 - Extinction_i2
+#mag_g3, mag_i3 = mag_g3 - Extinction_g3, mag_i3 - Extinction_i3
 
 # extinction correction
 Re_1 = SRead.grab_parameter("F_Gal_bundle_equvi_Bin1V_cpt", ["Bulge","CoreBulge"], 1) #get Re
@@ -211,12 +235,12 @@ Re_2_kpc = Re_2* scale2
 Re_3_kpc = Re_3* scale3
 
 # Calculate mass
-ML_select1_IP13 = SPlot.MLRelationIband(mag_g1,mag_i1).Into13_MassRatio
-ML_select1_R15BC = SPlot.MLRelationIband(mag_g1,mag_i1).Roediger15BC03_MassRatio
-ML_select1_Z09 = SPlot.MLRelationIband(mag_g1,mag_i1).Zibetti09_MassRatio
-ML_select1_T11 = SPlot.MLRelationIband(mag_g1,mag_i1).Taylor11_MassRatio
+ML_select1_IP13 = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Into13_MassRatio
+ML_select1_R15BC = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Roediger15BC03_MassRatio
+ML_select1_Z09 = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Zibetti09_MassRatio
+ML_select1_T11 = SPlot.MLRelationIband(mag_g1_corr,mag_i1_corr).Taylor11_MassRatio
 
-M1 = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1,mag_i1)
+M1 = SPlot.MassCalculation(sph_mag1, D1, 4.53,mag_g1_corr,mag_i1_corr)
 
 E1_IP13 = M1.cal_Mass(ML_select1_IP13)
 E1_R15BC = M1.cal_Mass(ML_select1_R15BC)
@@ -224,12 +248,12 @@ E1_Z09 = M1.cal_Mass(ML_select1_Z09)
 E1_T11 = M1.cal_Mass(ML_select1_T11)
 
 
-ML_select2_IP13 = SPlot.MLRelationIband(mag_g2,mag_i2).Into13_MassRatio
-ML_select2_R15BC = SPlot.MLRelationIband(mag_g2,mag_i2).Roediger15BC03_MassRatio
-ML_select2_Z09 = SPlot.MLRelationIband(mag_g2,mag_i2).Zibetti09_MassRatio
-ML_select2_T11 = SPlot.MLRelationIband(mag_g2,mag_i2).Taylor11_MassRatio
+ML_select2_IP13 = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Into13_MassRatio
+ML_select2_R15BC = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Roediger15BC03_MassRatio
+ML_select2_Z09 = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Zibetti09_MassRatio
+ML_select2_T11 = SPlot.MLRelationIband(mag_g2_corr,mag_i2_corr).Taylor11_MassRatio
 
-M2 = SPlot.MassCalculation(sph_mag2, D2, 4.53,mag_g2,mag_i2)
+M2 = SPlot.MassCalculation(sph_mag2, D2, 4.53,mag_g2_corr,mag_i2_corr)
 
 E2_IP13 = M2.cal_Mass(ML_select2_IP13)
 E2_R15BC = M2.cal_Mass(ML_select2_R15BC)
@@ -237,12 +261,12 @@ E2_Z09 = M2.cal_Mass(ML_select2_Z09)
 E2_T11 = M2.cal_Mass(ML_select2_T11)
 
 
-ML_select3_IP13 = SPlot.MLRelationIband(mag_g3,mag_i3).Into13_MassRatio
-ML_select3_R15BC = SPlot.MLRelationIband(mag_g3,mag_i3).Roediger15BC03_MassRatio
-ML_select3_Z09 = SPlot.MLRelationIband(mag_g3,mag_i3).Zibetti09_MassRatio
-ML_select3_T11 = SPlot.MLRelationIband(mag_g3,mag_i3).Taylor11_MassRatio
+ML_select3_IP13 = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Into13_MassRatio
+ML_select3_R15BC = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Roediger15BC03_MassRatio
+ML_select3_Z09 = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Zibetti09_MassRatio
+ML_select3_T11 = SPlot.MLRelationIband(mag_g3_corr,mag_i3_corr).Taylor11_MassRatio
 
-M3 = SPlot.MassCalculation(sph_mag3, D3, 4.53,mag_g3,mag_i3)
+M3 = SPlot.MassCalculation(sph_mag3, D3, 4.53,mag_g3_corr,mag_i3_corr)
 
 E3_IP13 = M3.cal_Mass(ML_select3_IP13)
 E3_R15BC = M3.cal_Mass(ML_select3_R15BC)
