@@ -321,11 +321,15 @@ class AnalyticFunctions(object):
         
         return log10_R
     
-    def size_mass_Graham_equ(X,a,b,c,d):
-        M_sun = 4.53
+    def size_mass_Graham_equ(X,a,b,c,d,ML=8.0,M_sun = 5.44,A=0):
+        #M_sun = 4.53 #i-band
+         # B-band
+        # M_sun = 5.44 Mann & von Braun, 2015 
         z = 0.5
-        M_tot = X
+        mass = X 
         
+        M_tot = np.repeat(M_sun,len(X)) - 2.5*np.log10(mass/ML) - A
+        print("M_tot",M_tot)
         #a,b = -3.17494375, -19.68533227
         #c,d = 0.41014974, -26.66465701
         
@@ -377,14 +381,14 @@ class AnalyticFunctions(object):
         for i in range(len(n)):        
             #print("M_tot,n",M_tot[i],n[i])
 
-            bn_i = get_bn_Nandini(n[i])
+            bn_i = get_bn(n[i])
             bn.append(bn_i)
         bn = np.array(bn)
         
         f = (z*2*n*np.exp(bn)*gamma(2*n))/((bn)**(2*n))
 
         #log10_R = (M_tot/10) + ((np.log10(z)-np.log10(f))/2) + A*bn +B
-        log10_R = ((mu0-M_tot)/5)+ ((np.log10(z)-np.log10(f))/2) + (bn/(2*np.log(10)))-7.065
+        log10_R = ((mu0-M_tot)/5)+ ((np.log10(z)-np.log10(f))/2) + (bn/(2*np.log(10)))-7.562
         #(36.57+2.5*np.log10(np.pi))*0.5*0.5#
         return 10**(log10_R)
     

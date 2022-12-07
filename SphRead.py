@@ -12,8 +12,9 @@ import numpy as np
 import pandas as pd
 import pickle
 
-from astropy.table import Table
-from astropy.io import ascii
+import astropy as astropy 
+#from astropy.table import Table
+#from astropy.io import ascii
 
 __all__ = ["read_list", "read_table", "match_list_dim", "convert_dict_ascii", 
            "convert_list_textable","lookup_bundle", "grab_name",
@@ -130,8 +131,8 @@ def convert_dict_ascii(input_name,output_name):
     #print(value)
     #print(key)
 
-    data = Table(value, names=key)
-    ascii.write(data, output_name ,overwrite=True)
+    data = astropy.table.Table(value, names=key)
+    astropy.io.ascii.write(data, output_name ,overwrite=True)
     
 #%%WIP
 def convert_list_textable(input_file, output_name):
@@ -146,9 +147,13 @@ def convert_list_textable(input_file, output_name):
     
     with open(input_file, 'wb') as f:
         mylist = pickle.load(f)
-    data = Table(value, names=key)
+        
+    value = mylist.values()
+    key =mylist.key()
+    
+    data = astropy.table.Table(value, names=key)
 
-    ascii.write(data, output_name ,overwrite=True)
+    astropy.io.ascii.write(data, output_name ,overwrite=True)
 
         
     return None
@@ -210,7 +215,42 @@ def grab_name(filename):
                 
     storage = np.array(storage)       
     return storage
+#%%
+def grab_name_specific(filename,keyword):
+    """
+    A function to grab the name of the galaxies from a galaxy bundle if it has 
+    a specific keyword component
 
+    Parameters
+    ----------
+    filename : str
+        The file name of the galaxy bundle.
+    keyword : str, list
+        The name of the componets, such as: "Bulge", "Disk", "PrimBar", etc.
+
+    Returns
+    -------
+    storage : list
+        A 1D numpy array of the apparant magnitude of set component.
+
+
+    """
+    storage = []
+    if type(filename) == str:
+        table = read_list(filename)
+    elif type(filename) == list:
+        table = filename
+        
+    storage = []
+    #generate a list of singular parameter
+    for row in range(len(table)):
+        for item in range(len(table[row])):
+            if table[row][item] in (keyword):
+                storage.append(table[row][0])
+                
+    storage = np.array(storage) 
+    
+    return storage
 
 #%% tested
 def grab_parameter(filename, keyword, number):

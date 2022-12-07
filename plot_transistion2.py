@@ -755,9 +755,10 @@ mag_one_sersic = ReRmax[:,3]
 mag_multi_cpt= ReRmax[:,4]
 name_ReRmax = ReRmax_n[:,0]
 
-SPlot.ShowcaseCompare2.plot_compare_generic(mag_one_sersic, 
-                                            mag_multi_cpt,para_name="mag", 
-                                            name=name_ReRmax,label=["{1-S{\'e}rsic}","{multi-cpt}"])
+# compare the total magnitude  by one Sersic and multi-cpt
+#SPlot.ShowcaseCompare2.plot_compare_generic(mag_one_sersic, 
+#                                            mag_multi_cpt,para_name="mag", 
+#                                            name=name_ReRmax,label=["{1-S{\'e}rsic}","{multi-cpt}"])
 
 # Find the insider in Re/Rmax
 ReRmax_insiders = SSort.selection_generic(
@@ -843,6 +844,63 @@ def plot_ReRmax_hist():
 
     
     plt.tight_layout()
+    
+def plot_size_hist():
+    # plot size distribution
+    fig = plt.figure(figsize=(6.4, 4.8))
+    
+    space = np.linspace(0.0,150.0,num=400)
 
 
-plot_ReRmax_hist()
+    plt.hist(np.array(Re_3_kpc),space, 
+                                facecolor='#2a3236',
+                                alpha=0.8, histtype ='stepfilled',
+                                label=r"$\rm Bin~3$")
+
+    plt.hist(np.array(Re_2_kpc),space, 
+                                facecolor='#0b5786',
+                                alpha=0.6, histtype ='stepfilled',
+                                label=r"$\rm Bin~2$")
+    
+    plt.hist(np.array(Re_1_kpc),space, 
+                                facecolor='#a5200b',
+                                alpha=0.6, histtype ='stepfilled',
+                                label=r"$\rm Bin~1$")
+    plt.hist(np.concatenate((Re_1_kpc,Re_2_kpc,Re_3_kpc)),space, 
+                                color='k', lw = 6,
+                                alpha=1.0, histtype ='step',
+                                label=r"$\rm ALL$")
+    
+    outlier = SSort.selection_generic(
+        np.concatenate((Re_1_kpc,Re_2_kpc,Re_3_kpc)), 
+        np.concatenate((Re_1_kpc,Re_2_kpc,Re_3_kpc)), 
+        np.repeat(7,len(np.concatenate((Re_1_kpc,Re_2_kpc,Re_3_kpc)))),
+                                     direction="high", axis="y")
+    
+    
+    print('median_Bin1',np.median(Re_1_kpc))
+    print('median_Bin2',np.median(Re_2_kpc))
+    print('median_Bin3',np.median(Re_3_kpc))
+    print('median_ALL',np.median(np.concatenate((Re_1_kpc,Re_2_kpc,Re_3_kpc))))
+    print("outlier:",len(outlier['index']),outlier)
+    
+    plt.xlabel(r"$R_\mathrm{e,Sph}~(\rm kpc)$", fontsize=16)
+    plt.ylabel(r"$\rm Number~of~Spheroids$", fontsize=16)  
+    
+    plt.ylim(0.5,30)
+    plt.xlim(-0.5,10)
+
+    #plt.yscale( 'log' )  
+   # plt.xscale( 'log' )  
+    
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
+    return fig
+
+
+#plot_ReRmax_hist()
+
+
+plot_size_hist()
