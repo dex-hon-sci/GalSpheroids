@@ -5,9 +5,36 @@
 
 Introduction
 ============
-*GalSpheroids* is a pacakage desgined to analyse galaxy structure from multi-componenets sttructural decomposition.
-It contains the utility functions to manipulate
+*GalSpheroids* is a pacakage desgined to analyse galaxy structure from multi-componenets structural decomposition.
+Galaxies are complex systems that are made of trillion of stars. 
+While it is difficult to model such a system by tracking the dynamics of individaul stars, it is possible to use a series of mathematical function to depict the shape and feature of its surface brightness profile. 
+This practise is known as multi-components structural decomposition. 
 
+These are a few common components astronomer describe a galaxy with,
+
+Galaxy Bundle
+-------------
+*GalSpheroid* operate on what I called a *Galaxy Bundle*, a list-based data format that contains all the model parameters of galaxy structural components.
+
+
+data format
+Galaxy Bundle are formatted as follows,
+
+[[NGC0001, residual_rms,"Component_1", [parameter_1,parameter_2,..], component_1_magnitude, "Component_2",...,Total_magnitude], 
+ [NGC0002, residual_rms,"Component_1", [parameter_1,..], component_1_magnitude,...,Total_magnitude], ...]
+ 
+Each row contains the information of one galaxy. 
+
+Modules
+-------
+This package contains four main modules, each with a specific functionality:
+    *SphRead.py: It contains the functions used in reading the galaxy bundle,
+    *SphSort.py: It contains the functions used in sorting and manipulate the data in the galaxy bundle,
+    *SphPlot.py: It contains the functions used in plotting the data in the galaxy bundle,
+    *SphAnalysis.py: It contains the functions used in analyzing, fitting, and modelling of the data in the galaxy bundle.
+    
+
+Utility example
 
 Getting started
 ===============
