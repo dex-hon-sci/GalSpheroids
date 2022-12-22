@@ -65,6 +65,8 @@ To add, read, replace, or remove data from a galaxy bundle.
     import SphSort as SSort
     
     # Read a galaxy bundle
+    
+    # L
   
 To make a plot with the data
 ----------------------------
@@ -82,11 +84,13 @@ To make a plot with the data
     
     # Plot galaxy image, model, and residual
     SPlot.Plot2D.plot_galaxy_3plot(image_name,md_name, res_name, 
-                               centre,r_max=400, alp=15)
+                               centre,r_max=400, alp=15)  
 
 >>> 
 .. image:: 
 
+To make a Galaxy Bundle
+-----------------------
 .. code:: python
 
     # Imports
@@ -113,27 +117,25 @@ To make a plot with the data
     SSort.cpt_classifier_demo('F_Gal_bundle_equvi_Bin1V',C2,'F_Gal_bundle_equvi_Bin1V_cpt',override_list_equ)
     
     
+>>> [['IC00983',0.0576173775624,'Bulge', array([19.20348468,  3.57098939,  1.70405518]), 13.4886302019,
+  'Disk', array([21.6, 50.34337508]), 11.0948540004,'Ring',  array([23.40194399, 38.58954655,  8.01304625]), 15.1130784521,
+  'Ring',array([24.28387892, 25.44196011,  6.30355541]),  16.7078413371,
+  'Ring', array([23.50085385, 55.58167158, 12.02601045]), 14.3750236666,
+  'Ring',  array([24.34763182, 67.56223984,  5.24776207]),15.9102391492,
+  'PrimBar',array([20.77187614, 13.02105021,  2.00679133,  0.21960181]),14.6499487471,'Total_mag',[10.861464728]],
+   ...
+ ['NGC2796', 0.06062014856064842, 'CoreBulge', array([13.44195809,  4.01365186,  2.78400144,  0.66268723,  3.84146707, 0.12541042]),
+  12.958529155512657,'Disk',  array([20.81851904, 15.93231547]), 12.811674436254169,'Total_mag', [12.128826141806979]]]
   
-To add, read, replace, or remove data from a galaxy bundle.
------------------------------------------------------------
-.. code:: python
-
-    # Import 
-    import SphRead as SRead
-    import SphSort as SSort
-    
-    # Read a galaxy bundle
-  
-To make a plot with the data
-----------------------------
-.. code:: python
-
-    # Import 
-    import SphPlot as Splot
-
 Community guidelines
 ====================
-To cite the use of the original gaalxy structure data, please cite the following
+PRISM is an open-source and free-to-use software package (and it always will be), provided under the BSD-3 license.
+
+Users are highly encouraged to make contributions to the package or request new features by opening a GitHub issue. 
+If you would like to contribute to the package, but do not know what, then there are quite a few ToDos in the code that may give you some inspiration. 
+As with contributions, if you find a problem or issue with PRISM, please do not hesitate to open a GitHub issue about it or post it on Gitter.
+
+To acknowledge this work and reference the original galaxy structure data, please cite the following:
 
 ::
 
