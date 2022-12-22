@@ -56,6 +56,37 @@ Example usage
 =============
 To create a Galaxy Bundle
 -------------------------
+To add, read, replace, or remove data from a galaxy bundle.
+-----------------------------------------------------------
+.. code:: python
+
+    # Import 
+    import SphRead as SRead
+    import SphSort as SSort
+    
+    # Read a galaxy bundle
+  
+To make a plot with the data
+----------------------------
+.. code:: python
+
+    # Import 
+    import SphPlot as Splot
+    
+    # input files
+    image_name = "./NGC3805.fits" # Raw telescope image file (in fits format)
+    md_name = "./md1_NGC3805.fits" # Isophotal model file (in fits format)
+    res_name= "./res1_NGC3805.fits" # The residual image file (in fits format) by sutracting image with model
+    
+    centre = (1828.328, 996.8774) # The pixel indices for the centre of the galaxy 
+    
+    # Plot galaxy image, model, and residual
+    SPlot.Plot2D.plot_galaxy_3plot(image_name,md_name, res_name, 
+                               centre,r_max=400, alp=15)
+
+>>> 
+.. image:: 
+
 .. code:: python
 
     # Imports
