@@ -21,10 +21,11 @@ Galaxy Bundle
 data format
 Galaxy Bundle are formatted as follows,
 
-[[NGC0001, residual_rms,"Component_1", [parameter_1,parameter_2,..], component_1_magnitude, "Component_2",...,Total_magnitude], 
- [NGC0002, residual_rms,"Component_1", [parameter_1,..], component_1_magnitude,...,Total_magnitude], ...]
+[[NGC0001, residual_rms,"Component_1", [parameter_1,parameter_2,..], component_1_magnitude, "Component_2",...,"Total_mag", [Total_magnitude]], 
+ [NGC0002, residual_rms,"Component_1", [parameter_1,..], component_1_magnitude,...,"Total_mag", [Total_magnitude], ...]
  
 Each row contains the information of one galaxy. 
+
 
 Modules
 -------
@@ -162,3 +163,6 @@ To acknowledge this work and reference the original galaxy structure data, pleas
 
 Acknowledgements
 ================
+The project is made possible by using the following software packages: AstroPy (Astropy Collaboration et al. 2013, 2018), Cmasher
+(van der Velden 2020), IRAF (Tody 1986, 1993), ISOFIT (Ciambur2015), Linmix (Kelly 2007),  Matplotlib (Hunter 2007), pandas (Mckinney et al. 2010), pickle (Van Rossum, G. 2020), NumPy (Harris et al. 2020), Profiler (Ciambur 2016), SAOImageDS9 (Joye & Mandel 2003), and SciPy (Virtanen et al. 2020)
+ 
