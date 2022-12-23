@@ -1,4 +1,4 @@
-|PyPI| |Python| |arXiv|
+ |arXiv|
 
 *GalSpheroirds*, an utility package that analyse galaxy structures.
 ===================================================================
@@ -164,4 +164,8 @@ Acknowledgements
 ================
 The project is made possible by using the following software packages: AstroPy (Astropy Collaboration et al. 2013, 2018), Cmasher
 (van der Velden 2020), IRAF (Tody 1986, 1993), ISOFIT (Ciambur2015), Linmix (Kelly 2007),  Matplotlib (Hunter 2007), pandas (Mckinney et al. 2010), pickle (Van Rossum, G. 2020), NumPy (Harris et al. 2020), Profiler (Ciambur 2016), SAOImageDS9 (Joye & Mandel 2003), and SciPy (Virtanen et al. 2020)
+
+.. |arXiv| image:: https://img.shields.io/badge/arXiv-1901.08725-brightgreen
+    :target: https://arxiv.org/abs/2204.13408
+    :alt: arXiv - Paper
  
