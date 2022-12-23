@@ -69,7 +69,7 @@ g1_kcorr, i1_kcorr = K_table1[:,25], K_table1[:,26]
 g2_kcorr, i2_kcorr = K_table2[:,25], K_table2[:,26]
 g3_kcorr, i3_kcorr = K_table3[:,25], K_table3[:,26]
 
-# the corrected mag g and i, Kcorrection+EXTINCTIOn
+# the corrected mag g and i, Kcorrection+EXTINCTION
 mag_g1_corr, mag_i1_corr = mag_g1-g1_kcorr, mag_i1-i1_kcorr
 mag_g2_corr, mag_i2_corr = mag_g2-g2_kcorr, mag_i2-i2_kcorr
 mag_g3_corr, mag_i3_corr = mag_g3-g3_kcorr, mag_i3-i3_kcorr
@@ -540,9 +540,7 @@ def mass_distance_2plots():
     axs1.plot(corr_dist2,10**E2,'bo',label='Bin2 samples', ms=12,alpha=1.0)
     axs1.plot(corr_dist3,10**E3,'ko',label='Bin3 samples', ms=12,alpha=1.0)
     
-    
-    QQQ1
-    
+        
     #plot also the outliers, overlay on the old points
     axs1.plot(Bin2_out['bag_x'],Bin2_out['bag_y'],'ro', ms=12,alpha=1.0)
     axs1.plot(Bin3_out['bag_x'],Bin3_out['bag_y'],'bo', ms=12,alpha=1.0)
@@ -559,8 +557,8 @@ def mass_distance_2plots():
     axs1.fill(x_edge2,y_edge2, alpha=0.2, color='green')
     axs1.fill(x_edge3,y_edge3, alpha=0.1, color='green')
 
-    axs0.set_ylim(top =5e12 , bottom = 1e9)
-    axs0.set_xlim(left=0, right = 120)
+    #axs0.set_ylim(top =5e12 , bottom = 1e9)
+    #axs0.set_xlim(left=0, right = 120)
 
     axs0.set_ylabel(r"$  M_*/\rm M_\odot(IP13)$",fontsize=16)
     axs0.set_xlabel(r"$ \rm Distance/Mpc$",fontsize=16)

@@ -23,7 +23,7 @@ import matplotlib.patches as mpatches
 
 import matplotlib.pyplot as plt
 
-from scipy.special import gammainc, k1
+from scipy.special import gammainc, k1, gamma
 from math import cosh
 
 import SphRead as SRead
@@ -40,24 +40,24 @@ def closest(lst, K):
     return lst[idx]
 
 #%% The two function from Profiler. For the sake of consistency I do not attempt to write my own functions
-def gammadif(a, x):
-    out = gammainc(a, x) - 0.5
+def gammadif(a, x,target=0.5):
+    out = gammainc(a, x) - target
     return out
 
-def get_bn(n):
+def get_bn(n,t=0.5):
     precision = 1e-06
     a = 2.0 * n
     bn = 2.0 * n - 0.333
     if bn < 0:
         bn = 0.0
-    d = gammadif(a, bn)
+    d = gammadif(a, bn, target=t)
     inc = 1.0
     while abs(d) > precision:
-        d = gammadif(a, bn)
+        d = gammadif(a, bn,t)
         bnplus, bnminus = bn + inc, bn - inc
         if bnminus < 0:
             bnminus = 0.0
-        dplus, dminus = gammadif(a, bnplus), gammadif(a, bnminus)
+        dplus, dminus = gammadif(a, bnplus,t), gammadif(a, bnminus,t)
         if abs(dplus) < precision:
             bn = bnplus
             break
@@ -72,6 +72,36 @@ def get_bn(n):
             inc = inc / 2.0
     return bn
 
+def get_bn_dex(n,t=0.5):
+
+    return None
+
+def get_bn_Nandini(n,z=0.5):
+   bn, diff=[],[]
+   x=1.0/z
+   b= np.linspace(0.1, 50.0, 50000) # works for most z
+#   x=1/z=10 # 10, 2, 10/9   ** 
+
+#   b= np.linspace(0.1, 25.0, 2500)  #Re  2
+#   b= np.linspace(0.1, 50.0, 25000)  #R10  10
+#   b= np.linspace(0.1, 100.0, 50000)  #R90  10/9
+   for j in b:        
+        g2= x*gammainc(2*n,j)
+        #g22=np.round(g2,2)
+        #if g22==1.00: ## gammainc(2*n,j) is normalized by dividing with gamma(2*n)
+        k=np.round(j,4)
+        bn.append(k)
+        dif=abs(1-g2)
+        diff.append(dif)
+   
+   diff_min= min(diff)
+   for s, d in zip(bn, diff):
+       if d==diff_min:
+           b_final=s
+       else:
+           continue     
+   
+   return b_final
 #%%
 class AnalyticFunctions(object):
     """
@@ -106,6 +136,7 @@ class AnalyticFunctions(object):
         """
         b_n = get_bn(n_Ser)
         return (mu_e + 1.0857362*b_n*((r / r_e)**(1.0/n_Ser)-1))
+    
     def simple_mu_core_sersic(r, mu_p, r_e, n_ser, r_b, al, ga):
         
         b_n = get_bn(n_ser)
@@ -265,9 +296,9 @@ class AnalyticFunctions(object):
         Effective radius.
 
         """
-        return a*(M/1e10)**b
+        return a*(M)**b
     
-    def size_mass_twopowerlaw(M,a,b,c,Mo,M_sun):
+    def size_mass_2powerlaw(M,a,b,c,Mo):
         """
         R_e = c*(M_*/(M_{\odot})*(1+(M/Mo))**(b-a)
         
@@ -281,7 +312,85 @@ class AnalyticFunctions(object):
         Effective radius.
 
         """
-        return c*(M/M_sun)*(1+(M/Mo))**(b-a)
+        M_sun = 4.53
+        return c*((M/M_sun)**a)*((1+(M/Mo))**(b-a))
+    
+    def log10_size_mass_2powerlaw(M,a,b,c,Mo):
+        
+        log10_R = np.log10(c) + a*np.log10(M) + (b-a)*np.log10(Mo+M)+(b-a)*np.log10(Mo)
+        
+        return log10_R
+    
+    def size_mass_Graham_equ(X,a,b,c,d,ML=8.0,M_sun = 5.44,A=0):
+        #M_sun = 4.53 #i-band
+         # B-band
+        # M_sun = 5.44 Mann & von Braun, 2015 
+        z = 0.5
+        mass = X 
+        
+        M_tot = np.repeat(M_sun,len(X)) - 2.5*np.log10(mass/ML) - A
+        print("M_tot",M_tot)
+        #a,b = -3.17494375, -19.68533227
+        #c,d = 0.41014974, -26.66465701
+        
+        #a,b =-2.24392729, -20.6077157
+        #c,d =  0.06839616, -22.30590294
+        
+        #B-band from Graham 2019
+        #a,b = -9.4, -14.3
+        #c,d = 2/3, -29.5
+        
+        # g-band
+        #a, b = -10.5, -14.0
+        #c, d = 0.63,-28.4    
+        
+        # i-band S
+        #a, b = -4.35029071, -19.13050166
+        #c, d = 0.59445763, -29.299029
+        
+        # i-band S0
+        #a, b = -2.13714523, -20.81385097
+        #c, d =  0.0436453, -22.2055546
+        
+        # i-band Core Sersic
+        #a, b = -2.55158269, -20.94292143
+        #c, d =  0.10998085, -23.71212895    
+        
+        #i-band BD S
+        #a, b = -4.35029071, -19.13050166
+        #c, d =  0.59445763, -29.299029        
+        
+        #i-band multi total mag E
+        #a, b = -1.88308736, -21.67940913
+        #c, d = 0.03668762, -23.45168855
+        
+        #i-band trial
+        #a, b = -3.682932115703277, -19.69691997342094
+        #c, d = 0.31773867, -24.72777048
+       # a, b = -12.300000000000002, -15.446326
+        #c, d =6,-87.4 
+        #c, d = 6.000000000000007, -104.5867613064
+
+        #M_tot = M_sun - 2.5*np.log10(Mass/ML)  
+
+        # The two empirical relations
+        n = 10**((M_tot-b)/a)
+        mu0 = (M_tot-d)/c
+                
+        bn = []
+        for i in range(len(n)):        
+            #print("M_tot,n",M_tot[i],n[i])
+
+            bn_i = get_bn(n[i])
+            bn.append(bn_i)
+        bn = np.array(bn)
+        
+        f = (z*2*n*np.exp(bn)*gamma(2*n))/((bn)**(2*n))
+
+        #log10_R = (M_tot/10) + ((np.log10(z)-np.log10(f))/2) + A*bn +B
+        log10_R = ((mu0-M_tot)/5)+ ((np.log10(z)-np.log10(f))/2) + (bn/(2*np.log(10)))-7.562
+        #(36.57+2.5*np.log10(np.pi))*0.5*0.5#
+        return 10**(log10_R)
     
     
 #%%

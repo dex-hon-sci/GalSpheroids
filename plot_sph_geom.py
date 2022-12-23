@@ -70,6 +70,22 @@ core_sersic_mu_p = SRead.grab_parameter("F_Gal_bundle_equvi_V_cpt", ["CoreBulge"
 
 total_mag = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_equvi_V_cpt")
 
+# Read the data from the galaxy bundle from B+D model
+sph_mag_BD = SRead.grab_mag("F_Gal_bundle_BD_equvi_V_cpt", ["Bulge","CoreBulge"])
+Re_BD = SRead.grab_parameter("F_Gal_bundle_BD_equvi_V_cpt", ["Bulge","CoreBulge"], 1) 
+Sersic_n_BD = SRead.grab_parameter("F_Gal_bundle_BD_equvi_V_cpt", ["Bulge","CoreBulge"], 2) 
+mu_e_BD = SRead.grab_parameter("F_Gal_bundle_BD_equvi_V_cpt", ["Bulge","CoreBulge"], 0) 
+
+total_mag_BD = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_BD_equvi_V_cpt")
+
+# Read the data from the galaxy bundle from B+D model
+sph_mag_1Sersic = SRead.grab_mag("F_Gal_bundle_1Sersic_equvi_V_cpt", ["Bulge","CoreBulge"])
+Re_1Sersic = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_V_cpt", ["Bulge","CoreBulge"], 1) 
+Sersic_n_1Sersic = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_V_cpt", ["Bulge","CoreBulge"], 2) 
+mu_e_1Sersic = SRead.grab_parameter("F_Gal_bundle_1Sersic_equvi_V_cpt", ["Bulge","CoreBulge"], 0) 
+
+total_mag_1Sersic = SRead.grab_total_mag("/home/dexter/SphProject/F_Gal_bundle_1Sersic_equvi_V_cpt")
+
 # Get the distance from the parent sample completeness
 D0_all_table = SRead.read_table(
     "/home/dexter/result/stat/completeness/vel_disp_list_all_mag_NEW_4.txt")
@@ -96,6 +112,7 @@ disc_mag_i_BD = SRead.grab_mag(bundle_BD_name, ["Disk"])
 Abs_sph_mag_i_BD = sph_mag_i_BD-25-5*np.log10(D) 
 Abs_disc_mag_i_BD = disc_mag_i_BD-25-5*np.log10(D)
 
+############################################################################################
 # Calculate the absoulte magnitude and the stellar mass
 ML_select_T11 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Taylor11_MassRatio
 ML_select_RC15 = SPlot.MLRelationIband(mag_g_kcorr,mag_i_kcorr).Roediger15BC03_MassRatio
@@ -164,7 +181,7 @@ ML_select_IP13_dustcorr =  SPlot.MLRelationIband(mag_g_dustcorr,mag_i_dustcorr).
 
 # Calculate the error of the Re and stellar mass
 MLR = ML_select_RC15
-MLR_dust = ML_select_RC15_dustcorr
+MLR_dust = ML_select_T11_dustcorr
 MLR_e = 10**0.1    
 mag_e = 0.3 #magnitude errorNote that the y-axis of (1) is the same range of the x-axis of (2)
 
@@ -187,6 +204,8 @@ scale = D* ars
 
 scale_lerr, scale_uerr = (D-D_lerr)*ars, (D+D_uerr)*ars
 Re_kpc = Re* scale
+Re_kpc_BD = Re_BD* scale
+Re_kpc_1Sersic = Re_1Sersic* scale
 
 Re_kpc_lerr, Re_kpc_uerr = abs(Re_kpc - Re* scale_lerr) , abs(Re* scale_uerr - Re_kpc)
 Re_kpc_err =[Re_kpc_lerr, Re_kpc_uerr]

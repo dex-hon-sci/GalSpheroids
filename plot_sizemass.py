@@ -256,20 +256,20 @@ Abs_sph_mag3 = M3.cal_abs_mag(sph_mag3,D3)
 ################################
 #Calculate mass with K-correction
 K_table1 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr_EXT.dat")
 K_table2 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr_EXT.dat")
 K_table3 = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat")
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT.dat")
 
 K_table1_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin1V_Kcorr_EXT.dat", 
     dtype='str')
 K_table2_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr.dat",
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin2V_Kcorr_EXT.dat",
     dtype='str')
 K_table3_n = SRead.read_table(
-    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr.dat", 
+    "/home/dexter/result/stat/completeness/diagonal_selection_bag3_Bin3V_Kcorr_EXT.dat", 
     dtype='str')
 
 K_name1, K_name2, K_name3 = K_table1_n[:,4], K_table2_n[:,4], K_table3_n[:,4]
@@ -449,13 +449,13 @@ Zahid2015_mass  = np.array(10**Zahid2015[:,4])
 
 #################################
 #T11 for mass
-#mass1,mass2,mass3 = E1_T11_K, E2_T11_K, E3_T11_K
+mass1,mass2,mass3 = E1_T11_K, E2_T11_K, E3_T11_K
 
 #Z09 for mass
 #mass1,mass2,mass3 = E1_Z09_K, E2_Z09_K, E3_Z09_K
 
 #RC15 for mass
-mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
+#mass1, mass2, mass3 = E1_R15BC_K, E2_R15BC_K, E3_R15BC_K
 
 #IP13 for mass
 #mass1, mass2, mass3 = E1_IP13_K, E2_IP13_K, E3_IP13_K
@@ -1436,15 +1436,15 @@ ss = graham_equ
 def plot_sizemass_z0comparison():
     fig, ax = plt.subplots()
     
-    plot_dexter_sample_all2_T11(ax,alpha = 0.2)
+    plot_dexter_sample_all2(ax,alpha = 0.7)
 
     ax.plot(mass0,Lange2016_E, '--', label=r"E in Lange et al. 2016")
     ax.plot(mass0,Lange2016_ETG_bulge, '--', label=r"early-type bulge in Lange et al. 2016")
     ax.plot(mass0,Lange2016_E_M1e10, '--', label=r"E ($M_*<10^{10}$)in Lange et al. 2016")
   
-    ax.plot(mass0,s(mass0, *popt), "-",linewidth=6, label=r"our fit")
-    ax.plot(mass0,s(mass0, *popt2), "-",linewidth=6, label=r"my fit", color='#a5200b')
-    ax.plot(mass0,ss(mass0, *popt_g),"--",linewidth=10, label=r"Graham equ.")
+    #ax.plot(mass0,s(mass0, *popt), "-",linewidth=6, label=r"our fit")
+    #ax.plot(mass0,s(mass0, *popt2), "-",linewidth=6, label=r"my fit", color='#a5200b')
+    #ax.plot(mass0,ss(mass0, *popt_g),"--",linewidth=10, label=r"Graham equ.")
 
    # ax.plot(mass0,s(mass0, *popt3), "-", linewidth=6, label=r"Savorgnan et al. 2016 fit", color='#b940c8')
    # ax.plot(mass0,s(mass0, *popt4), "-", linewidth=6, label=r"Davis et al. 2019 fit", color='#2e417b')
@@ -1479,13 +1479,13 @@ def plot_sizemass_z0comparison():
     ax.legend(fontsize = 12,loc=2)
     #plt.grid(True)
     
-    plt.xlabel(r"$\rm M_{*,sph}$ / $M_{\odot}$",fontsize=16)
-    plt.ylabel("$R_{e,sph}$ (kpc)",fontsize=16)
+    plt.xlabel(r"$\rm M_\mathrm{*,Sph}$ / $M_{\odot}$",fontsize=16)
+    plt.ylabel("$R_\mathrm{e,sph}$ (kpc)",fontsize=16)
     
     plt.show()
     
     
-#plot_sizemass_z0comparison()
+plot_sizemass_z0comparison()
 
 
 ########################

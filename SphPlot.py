@@ -13,7 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-from astropy.io import ascii
+import astropy as astropy
 import pandas as pd
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
@@ -24,6 +24,7 @@ from astropy.table import Table, Column, MaskedColumn
 import matplotlib.patches as mpatches
 from scipy.signal import find_peaks
 import matplotlib.image as mpimg
+from matplotlib.patches import Ellipse
 
 import SphRead as SRead
 import SphSort as SSort
@@ -33,6 +34,7 @@ plt.style.use('classic')
 mpl.rcParams['grid.linewidth'] = 1.0
 mpl.rcParams["legend.numpoints"] = 1.0
 mpl.rcParams["legend.scatterpoints"] = 1.0
+mpl.rcParams['axes.unicode_minus'] = False
 # Class declaration
 __all__=["ImageProcessing","MLRelationIband","MassCalculation", "SelectionCut", 
          "ShowcaseIndi","ShowcaseCompare2", "PlotHist","Plot2D"]
@@ -310,10 +312,10 @@ class SelectionCut(object):
     def Graham15_broad_cut(self):
         cut=np.zeros(np.size(self.mass))
         i=0
-        a = 10.845
+        a = 10.903#10.845
         for i in range(np.size(self.mass)):
             if (np.log10(self.mass[i])>=a):
-                cut[i] = 2
+                cut[i] = 1.5#2
             elif (np.log10(self.mass[i])<a):
                 cut[i] = np.nan
         return cut
@@ -331,24 +333,24 @@ class SelectionCut(object):
         
         plt.plot(self.mass,self.Cassata11_cut(),
                  ls = "dashed", color="magenta", linewidth=3,
-                 label="Cassata et al. 2011" )
+                 label=r"$\rm Cassata~et~al.~(2011)$" )
         
         plt.plot(self.mass,self.Damjanov14_cut(),"r--" , linewidth=3,
-                 label="Damjanov et al. 2014" )
+                 label=r"$\rm Damjanov~et~al.~(2014)$" )
 
         
         plt.plot(self.mass,self.Barro13_cut(),"g--" , linewidth=3,
-                 label="Barro et al. 2013" )
+                 label=r"$\rm Barro~et~al.~(2013)$" )
         plt.vlines(1e10, 0, 10**((np.log10(1e10)-10.3)/1.5), 
                    linestyle="dashed", linewidth=3, color='g' )
 
         plt.plot(self.mass,self.vDokkum15_cut(),"y--" , linewidth=3, 
-                 label="van Dokkum et al. 2015" )
+                 label=r"$\rm van~Dokkum~et~al.~(2015)$" )
         plt.vlines(10**10.6, 0, 10**(np.log10(10**10.6)-10.7), 
                    linestyle="dashed", linewidth=3, color='y' )
 
         plt.plot(self.mass,self.vdWel14_cut(),"b--" , linewidth=3, 
-                 label="van der Wel et al. 2014" )
+                 label=r"$\rm van~der~Wel~et~al.~(2014)$" )
         plt.vlines(10**10.7, 0, 2.5*(((10**10.7)/1e11)**0.75), 
                    linestyle="dashed",linewidth=3, color='b' )
 
@@ -1080,7 +1082,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 
         # Bin by morphology
         type_dict = ["E","0","S"]
-        morph_list = ["EAS","EABS","EBS","SA0","SAB0","SB0","SA","SAB","SB"]
+        morph_list = ["E","EAS","EABS","EBS","SA0","SAB0","SB0","SA","SAB","SB"]
         gal_bin = []
         
         # loop for morphology type
@@ -1094,9 +1096,10 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             gal_bin.append(np.array(morph_bin))
             #gal_bin = np.array(gal_bin)
         
-        mag_dict={r"$\rm EAS$": gal_bin[0], r"$\rm EABS$": gal_bin[1], r"$\rm EBS$": gal_bin[2],
-                  r"$\rm SA0$": gal_bin[3], r"$\rm SAB0$": gal_bin[4],r"$ \rm SB0$": gal_bin[5],
-                  r"$\rm SA$" : gal_bin[6], r"$\rm SAB$": gal_bin[7], r"$ \rm SB$": gal_bin[8]}
+        mag_dict={r"$\rm E$": gal_bin[0],
+            r"$\rm EAS$": gal_bin[1], r"$\rm EABS$": gal_bin[2], r"$\rm EBS$": gal_bin[3],
+                  r"$\rm SA0$": gal_bin[4], r"$\rm SAB0$": gal_bin[5],r"$ \rm SB0$": gal_bin[6],
+                  r"$\rm SA$" : gal_bin[7], r"$\rm SAB$": gal_bin[8], r"$ \rm SB$": gal_bin[9]}
                                    
         average_bin, std_bin = [], []        
         
@@ -1126,8 +1129,10 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                       
                 if len(gal_bin[i]) > 1 :
                     print('min',min(10**gal_bin[i]),'max', max(10**gal_bin[i]))
-                    print('median',10**average_bin[i],'std', 10**std_bin[i], "({})".format(len(gal_bin[i])))
-                    print('Q1',10**average_bin[i]-Q1_bin[i],'Q3', Q3_bin[i]-10**average_bin[i])
+                    print('median',10**average_bin[i],'std', 10**std_bin[i], 
+                          "({})".format(len(gal_bin[i])))
+                    print('Q1',10**average_bin[i]-Q1_bin[i],'Q3', 
+                          Q3_bin[i]-10**average_bin[i])
                     #print(average_bin,std_bin)
                 else:
                     pass
@@ -1183,7 +1188,7 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             AX.set_xlim(-1,10)
             AX.set_ylim(-2,0.2)
         #AX.set_xticks(mag_)
-            plt.xticks([1,2,3,4,5,6,7,8,9], list(mag_dict.keys()), fontsize=18, 
+            plt.xticks([1,2,3,4,5,6,7,8,9,10], list(mag_dict.keys()), fontsize=18, 
                    rotation=70)
             plt.legend(loc=1)
             #[0,1,2,3,4,5,6,7,8], 
@@ -1192,12 +1197,13 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
             pass
 
         # S0 and S B/T ratio in general
-        ES = 10**np.concatenate((gal_bin[0], gal_bin[1], gal_bin[2]))
-        S0 = 10**np.concatenate((gal_bin[3], gal_bin[4], gal_bin[5]))
-        S = 10**np.concatenate((gal_bin[6], gal_bin[7], gal_bin[8]))
+        ES = 10**np.concatenate((gal_bin[1], gal_bin[2], gal_bin[3]))
+        S0 = 10**np.concatenate((gal_bin[4], gal_bin[5], gal_bin[6]))
+        S = 10**np.concatenate((gal_bin[7], gal_bin[8], gal_bin[9]))
         
         # make an array of B/T ratio for E galaxies
-        E = np.repeat(1.0,num_E)
+        #E = np.repeat(1.0,num_E)
+        E = 10**gal_bin[0]
         
         #make an array with all the B/T ratio in this bundle
         total = np.array([])
@@ -1209,12 +1215,19 @@ class ShowcaseIndi(SelectionCut, MassCalculation):
                 
         total = np.concatenate((E,ES,S0,S))
         
+        print("E:", np.median(E),np.std(E),"({})".format(len(E)))
         print("ES:", np.median(ES),np.std(ES),"({})".format(len(ES)))
         print("S0:", np.median(S0),np.std(S0),"({})".format(len(S0)))
         print("S:",np.median(S),np.std(S),"({})".format(len(S)))
 
         print("Total:", np.median(total),np.std(total),"({})".format(len(total)))
         return mag_dict
+    
+    def draw_boxes(int_x,int_y,AX=plt):
+    
+        #AX.fill(int_x[],int_"g",alpha=0.3)
+        return None
+        
         
 #%% tested Structurally
 class ShowcaseCompare2(ShowcaseIndi):
@@ -1375,7 +1388,8 @@ class ShowcaseCompare2(ShowcaseIndi):
     
     def plot_distdist_3points(DD,dc,d, name, l_limit, u_limit, 
                               DD_err=None,dc_err=None, d_err=None, 
-                               d_spec = None, d_spec_name = None , d_spec_err =None,
+                               d_spec = None, d_spec_name = None , 
+                               d_spec_err =None,
                                decision=[]):
         """
         A method to plot the difference in distance estimation 
@@ -1496,13 +1510,13 @@ class ShowcaseCompare2(ShowcaseIndi):
 
 
         axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
-                  label=r"$\rm Cosmicflow-3$")
+                  label="$ Cosmicflow-3$")
         axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
         
         
         axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734",
-                  label=r"$\rm z-independent$")
+                  label="$ z-independent$")
         axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
@@ -1540,10 +1554,10 @@ class ShowcaseCompare2(ShowcaseIndi):
 #
 #    
         axs0.fill(x_edge_l,y_edge_l, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'selection limit')
 
         axs0.fill(x_edge_u,y_edge_u, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'selection limit')
 #    
 #        axs0.fill([np.average(d)-np.std(d),np.average(d)-np.std(d),
 #               np.average(d)+np.std(d),np.average(d)+np.std(d)],
@@ -1674,25 +1688,25 @@ class ShowcaseCompare2(ShowcaseIndi):
         ms0, lw = 12, 4        
         
         axs0.plot(dc,index, "o", ms = ms0, color="green",
-                  label="Willick et al. 1997")
+                  label=r"$\rm Willick~et~al.~(1997)$")
         axs0.errorbar(dc,index,xerr=dc_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='g',zorder=20,mew=1,capsize=ms0)
 
         axs0.plot(DD,index, "o", ms = ms0, color="blue",
-                  label="Mould et al. 2000")
+                  label=r"$\rm Mould~et~al.~(2000)$")
         axs0.errorbar(DD,index,xerr=DD_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='b',zorder=20,mew=1,capsize=ms0)
 
 
 
         axs0.plot(d,index, "o", ms = ms0,  color="#ab005a",
-                  label="Cosmicflow-3")
+                  label="$ Cosmicflow-3$")
         axs0.errorbar(d,index,xerr=d_err,yerr=None,ls='none',linewidth=lw,
                      ecolor='#ab005a',zorder=20,mew=1,capsize=ms0)
         
         
         axs0.plot(d_spec_d,d_spec_index, "o", ms = ms0, color="#d79734" ,
-                  label="z-independent")
+                  label=r"$z-\mathrm{independent}$")
         axs0.errorbar(d_spec_d,d_spec_index,xerr=d_spec_d_err,yerr=None,
                       ls='none',linewidth=lw, ecolor='#d79734', zorder=20,
                       mew=1,capsize=ms0)
@@ -1727,16 +1741,16 @@ class ShowcaseCompare2(ShowcaseIndi):
                     linewidth=5, color='black')           
         
         axs0.fill(x_edge_1,y_edge_1, alpha=0.3, color='green',
-                  label='Bin 1')
+                  label=r'$\rm Bin~1$')
 
         axs0.fill(x_edge_2,y_edge_2, alpha=0.2, color='green',
-                  label='Bin 2')
+                  label=r'$\rm Bin~2$')
         
         axs0.fill(x_edge_3,y_edge_3, alpha=0.1, color='green',
-                  label='Bin 3')
+                  label=r'$\rm Bin~3$')
 
         axs0.fill(x_edge_limit,y_edge_limit, alpha=0.3, color='red',
-                  label='selection limit')
+                  label=r'$\rm selection~limit$')
     
         axs0.invert_yaxis()
         plt.subplots_adjust(wspace = 0)
@@ -2498,9 +2512,13 @@ class Plot2D(object):
         
         canvas = np.array(np.zeros((canvas_dim[0],canvas_dim[1])))
         # centring
-        half_x, half_y = len(data[0]) / 2, len(data)/2  # the half length of the canvas x-axis
-        start_x, end_x = int(canvas_dim[1] / 2  - half_x),int(canvas_dim[1] / 2  + half_x)
-        start_y, end_y = int(canvas_dim[0] / 2  - half_y),int(canvas_dim[0] / 2  + half_y)
+        half_x, half_y = len(data[0]) / 2, len(data)/2  
+        
+        # the half length of the canvas x-axis
+        start_x, end_x = int(canvas_dim[1] / 2  - half_x),int(
+            canvas_dim[1] / 2  + half_x)
+        start_y, end_y = int(canvas_dim[0] / 2  - half_y),int(
+            canvas_dim[0] / 2  + half_y)
         # copy the image onto the canvas, row by row
         for i in range(len(data)):
             canvas[start_y:end_y][i][start_x:end_x] = data[i]
@@ -2547,7 +2565,67 @@ class Plot2D(object):
         plt.xlabel(r"$\rm arcsec$")
         plt.ylabel(r"$\rm arcsec$")
         plt.show()
+    
+    def confidence_ellipse(x, y, ax, n_std=3.0, facecolor='none', angle=90,
+                           edgecolor='red'):
+        """
+        Create a plot of the covariance confidence ellipse of `x` and `y`
         
+        Parameters
+        ----------
+        x, y : array_like, shape (n, )
+            Input data.
+            
+        ax : matplotlib.axes.Axes
+            The axes object to draw the ellipse into.
+            
+        n_std : float
+            The number of standard deviations to determine the ellipse's 
+            radii.
+
+        Returns
+        -------
+        matplotlib.patches.Ellipse
+        
+        Other parameters
+        ----------------
+        kwargs : `~matplotlib.patches.Patch` properties
+        """
+        if x.size != y.size:
+            raise ValueError("x and y must be the same size")
+
+        cov = np.cov(x, y)
+        pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+        # Using a special case to obtain the eigenvalues of this
+        # two-dimensionl dataset.
+        ell_radius_x = np.sqrt(1 + pearson)
+        ell_radius_y = np.sqrt(1 - pearson)
+        ellipse = Ellipse((0, 0),
+                          width=ell_radius_x * 2,
+                          height=ell_radius_y * 2,
+                          facecolor=facecolor,edgecolor=edgecolor)
+
+        # Calculating the stdandard deviation of x from
+        # the squareroot of the variance and multiplying
+        # with the given number of standard deviations.
+        scale_x = np.sqrt(cov[0, 0]) * n_std
+        mean_x = np.median(x)
+
+        # calculating the stdandard deviation of y ...
+        scale_y = np.sqrt(cov[1, 1]) * n_std
+        mean_y = np.median(y)
+        
+        import matplotlib.transforms as transforms
+
+        transf = transforms.Affine2D() \
+            .rotate_deg(angle) \
+                .scale(scale_x, scale_y) \
+                    .translate(mean_x, mean_y)
+                    
+        ellipse.set_transform(transf + ax.transData)
+        return ax.add_patch(ellipse)   
+    
+
     #wip
     def plot_galaxy_3plot(file_name,md_file_name, res_file_name,
                          centre,r_max=400,name="", alp=15):

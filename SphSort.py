@@ -17,20 +17,20 @@ import os
 from SphRead import *
 
 
-__all__ = ["remove_value","trim_value","replace_value",
-           "str_zipping","remove_item", "add_item", "outliers",
-           "selection_generic","cherry_pick" ,"cpt_seperator_demo",
+__all__ = ["remove_value","trim_value","replace_value", "replace_outlier",
+           "str_zipping","str_zipping_generic","remove_item", "add_item", 
+           "outliers",
+           "selection_generic","zone_in_2D","cherry_pick" ,"sigma_clip",
+           "cpt_seperator_demo",
            "cpt_classifier_demo", "plus_minus_seperator", "vdis_match", 
            "LTG_ETG_seperator", "prop_seperation"]
 
-__author__="Dexter S.H. Hon"
-
-#%%
+__author__="Dexter S.-H. Hon"
 
 #%% tested
 def remove_value(input_array,value_list):
     """
-    Remove the sepcfied value in an numpy array.
+    Remove the specfied value in an numpy array.
 
     Parameters
     ----------
@@ -117,7 +117,55 @@ def replace_value(input_array,value1,value2):
     temp=np.array(temp)        
     
     return temp
+#%% tested
+def replace_outliers(input_array,val,condition="<",replace='median'):
+    """
+    A function to replace all elements satisfying 
 
+    Parameters
+    ----------
+    input_array : list, 1D numpy array
+        DESCRIPTION.
+    condition : bool
+        DESCRIPTION.
+    replace : str, optional
+        The value to replace:
+            "median": The median value of the array,
+            "mean": The average value of the array,
+            "zero": replace it with 0
+        
+        The default is 'median'.
+
+    Returns
+    -------
+    A replacement array.
+
+    """
+    #find the outliers
+    if condition == '<':
+        boolArr = (input_array < val)
+    elif condition == ">":
+        boolArr == (input_array < val)
+
+    # get the index array
+    index = np.where(boolArr)
+    
+    # replace value
+    if replace == "median":
+        repl_val = np.median(input_array)
+    elif replace == "mean":
+        repl_val = np.average(input_array)
+    elif replace == "zero":
+        repl_val = 0.0
+    else:
+         TypeError("Huh??")
+    
+    #print(index)
+    #replace the outliers
+    for i in range(len(index[0])):
+        input_array[index[0][i]] = repl_val
+        
+    return input_array
 #%% tested
 def str_zipping(list1,list2,zip_symbol=""):
     """
@@ -326,7 +374,37 @@ def sum_cpt_mag(input_list_name, sum_range="all"):
         
         mag_list.append(mag)
     return mag_list
-#%%
+#%% tested
+def outlier_detect(input_array, value,direction="<"):
+    """
+    A function to find the indices of the outliers
+
+    Parameters
+    ----------
+    input_array : 1D list or ndarray
+        input.
+    value : float
+        The value to detect outliers.
+    direction : str, optional
+        The condition to detect outliers. The default is "<".
+
+    Returns
+    -------
+    index : 1d ndarray
+        A list of indices.
+
+    """
+    for i in range(len(input_array)):
+        if direction == "<":
+            boolArr = (input_array < value)
+            index = np.where(boolArr)[0]
+        elif direction == ">":  
+            boolArr = (input_array > value)
+            index = np.where(boolArr)[0]
+
+    return index
+
+#%% need to be thrown out
 def outliers(name,input_array,limit, direction="large"):
     """
     A generic function to select outliers larger than the limit
@@ -404,7 +482,7 @@ def selection_generic(input_list_x, input_list_y, func,
     
     match_list_dim(input_list_x, func)
     match_list_dim(input_list_x, input_list_y)
-    
+    outliers
     if axis == "y":
         if direction == "high":
             for i in range(len(input_list_y)):
@@ -621,6 +699,88 @@ def cherry_pick(index_list,parent_list):
     for i in range(len(index_list)):
         subsample.append(parent_list[index_list[i]])
     return subsample
+#%% tested (need to account for misalign average and median later)
+def sigma_clip(input_array,sigma=3):
+    """
+    A function to remove data points beyond x sigma limit
+
+    Parameters
+    ----------
+    input_array : 1d ndarray
+        inout.
+    sigma : TYPE, optional
+        The multiplier for sigma. The default is 3.
+
+    Returns
+    -------
+    output_array2 : 1d ndarray
+        An array with all outliers removed.
+
+    """
+    #check if the list is empty
+    if len(input_array) == 0:
+        median_g, std_g = np.nan, np.nan
+    else:
+        # calculate median and the standard deviation
+        median_g, std_g = np.median(input_array), np.std(input_array)
+
+    # remove the elements beyond the limit
+    output_array1 = np.delete(input_array, outlier_detect(
+        input_array, median_g+sigma*std_g,">"))
+    
+    output_array2 = np.delete(output_array1, outlier_detect(
+        output_array1, median_g-sigma*std_g,"<"))    
+    return output_array2
+
+#%% tested
+def sigma_clip2D(input_array_x,input_array_y,sigma=3):
+    """
+    Same method as 'sigma_clip' but for 2D data.
+    The determining array for outliers is the input_array_x
+    
+    Parameters
+    ----------
+    input_array_x : TYPE
+        DESCRIPTION.
+    input_array_y : TYPE
+        DESCRIPTION.
+    sigma : TYPE, optional
+        DESCRIPTION. The default is 3.
+
+    Returns
+    -------
+    output_array2_x : TYPE
+        DESCRIPTION.
+    output_array2_y : TYPE
+        DESCRIPTION.
+
+    """
+    
+    #check if the list is empty
+    if len(input_array_x) == 0:
+        input_array_x.append(np.nan)
+        input_array_y.append(np.nan)
+        median_g, std_g = np.nan, np.nan
+
+    else: # calculate median and the standard deviation
+        median_g, std_g = np.median(input_array_x), np.std(input_array_x)
+        
+    if type(input_array_x) == list and type(input_array_y) == list:
+        input_array_x = np.array(input_array_x)
+        input_array_y = np.array(input_array_y)
+        
+    # remove the elements beyond the limit
+    index1 = outlier_detect(input_array_x, median_g+sigma*std_g,">")
+    
+    output_array1_x = np.delete(input_array_x, index1)
+    output_array1_y = np.delete(input_array_y, index1)
+    
+    index2 = outlier_detect(output_array1_x, median_g-sigma*std_g,"<")
+    
+    output_array2_x = np.delete(output_array1_x, index2)    
+    output_array2_y = np.delete(output_array1_y, index2)   
+    
+    return output_array2_x, output_array2_y
 
 #%% tested
 def morph_str_selection(index_list,morph_list):
@@ -1089,7 +1249,7 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
     return sample
 
 #%%
-def bundle_creation(obj_list,equvi=False,override_list=[]):
+def bundle_creation(obj_list,input_name, output_name, equvi=False,override_list=[]):
     """
     A method to create galaxy bundle, in an single execution.
     If you want to save the in
@@ -1285,7 +1445,151 @@ def vdis_match(input_list_name, vdis_list, Dist_list, output_list_name):
     with open(output_list_name, 'wb') as f:
         pickle.dump(output, f)
     return output
+#%% tested
+def group_to_bin1D(x,y,int_x):
+    """
+    A function to group a data points from two 1D array 
+    into predeteremined bins, defined by the list of interval values.
     
+    The grouping is dependent on both x and y value statisfying both 
+    int_x and int_y values.
+    
+    It also calculate the median and std of the points within each 
+    interval.
+    
+    e.g. [1,2,4,5,6,....] -->[[],[],[],[],....]
+    Parameters
+    ----------
+    x,y : list, 1D ndarray
+            Data from x-axis and y-axis.
+    int_x : list
+            Interval list for x.
+            [[lower_limit],[higher_limit]]
+
+    Returns
+    -------
+    data_dict : dict
+
+    """
+    data_dict = {}
+        
+    #check interval consistency (smallest value the earliest)
+        
+    # define storage        
+    storage_x, median_x, std_x = [], [], []
+    storage_y, median_y, std_y = [], [], []
+
+    # loop 
+    for i in range(len(int_x[1])):
+        x_bin, y_bin =[],[]
+        for j in range(len(x)):
+            if x[j] < int_x[1][i] and x[j]> int_x[0][i]:
+                x_bin.append(x[j])
+                y_bin.append(y[j])
+            
+        # put the data in storage
+        storage_x.append(x_bin)        
+        storage_y.append(y_bin)  
+            
+        median_x.append(np.median(x_bin))
+        median_y.append(np.median(y_bin))
+        
+        std_x.append(np.std(x_bin))
+        std_y.append(np.std(y_bin))
+    
+    # loop through the list and put in np.nan into the empty list
+    #for i in range(len(int_x[1])):  
+    #    if storage_x[i] == None:
+    #        storage_x[i].append(np.nan)
+    
+    # put the data in the dictrionary
+    data_dict["x"] = storage_x
+    data_dict["y"] = storage_y
+    
+    data_dict["median_x"] = median_x
+    data_dict["median_y"] = median_y
+    
+    data_dict["std_x"] = std_x
+    data_dict["std_y"] = std_y
+        
+    return data_dict    
+
+#%% tested
+def group_to_bin2D(x,y,int_x,int_y):
+        """
+        A function to group a data points from two 1D array 
+        into predeteremined bins, defined by the list of interval values.
+        
+        The grouping is dependent on both x and y value statisfying both 
+        int_x and int_y values.
+        
+        It also calculate the median and std of the points within each 
+        interval.
+        
+
+        e.g. [1,2,4,5,6,....] -->[[],[],[],[],....]
+
+        Parameters
+        ----------
+        x : list, 1D ndarray
+            Data from x-axis.
+        y : list, 1D ndarray
+            data from y-axis.
+        int_x : list
+            Interval list for x.
+        int_y : list
+            Interval list for y.
+
+        Returns
+        -------
+        data_dict : dict
+
+        """
+        data_dict = {}
+        
+        # check dimension
+        match_list_dim(x, y)
+        match_list_dim(int_x, int_y)
+        
+        #check interval consistency (smallest value the earliest)
+        
+        # define storage        
+        storage_x, storage_y = [], []
+        median_x, median_y = [], []
+        std_x, std_y = [], []
+
+        # loop 
+        for i in range(len(int_x)-1):
+            x_bin, y_bin =[],[]
+            for j in range(len(x)):
+                if x[j] < int_x[i+1] and x[j]> int_x[i] \
+                    and y[j] < int_y[i+1] and y[j] > int_y[i]:
+                    
+                    x_bin.append(x[j])
+                    y_bin.append(y[j])
+            
+            # put the data in storage
+            storage_x.append(x_bin)        
+            storage_y.append(y_bin)  
+            
+            median_x.append(np.median(x_bin))
+            median_y.append(np.median(y_bin))
+            
+            std_x.append(np.std(x_bin))
+            std_y.append(np.std(y_bin))
+
+        # put the data in the dictrionary
+        data_dict["x"] = storage_x
+        data_dict["y"] = storage_y
+        
+        data_dict["median_x"] = median_x
+        data_dict["median_y"] = median_y
+        
+        data_dict["std_x"] = std_x
+        data_dict["std_y"] = std_y
+        
+        return data_dict
+        
 #%% Under Construction no one allow in
     
     #select base on mass bin 

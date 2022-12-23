@@ -85,9 +85,9 @@ g2 , i2 = D0_Bin2_table[:,11], D0_Bin2_table[:,10]
 g3 , i3 = D0_Bin3_table[:,11], D0_Bin3_table[:,10]
 
 
-SPlot.ShowcaseCompare2.plot_compare_generic(g1, i1,para_name="Bin1",label=["g","i"])
-SPlot.ShowcaseCompare2.plot_compare_generic(g2, i2,para_name="Bin1",label=["g","i"])
-SPlot.ShowcaseCompare2.plot_compare_generic(g3, i3,para_name="Bin1",label=["g","i"])
+SPlot.ShowcaseCompare2.plot_compare_generic(g1, i1,para_name=r"$Bin~1$",label=["g","i"])
+SPlot.ShowcaseCompare2.plot_compare_generic(g2, i2,para_name=r"$Bin~1$",label=["g","i"])
+SPlot.ShowcaseCompare2.plot_compare_generic(g3, i3,para_name=r"$Bin~1$",label=["g","i"])
 
 corr_dist1, corr_E1 = D0_Bin1_table[:,12],  D0_Bin1_table[:,13]
 corr_dist2, corr_E2 = D0_Bin2_table[:,12],  D0_Bin2_table[:,13]

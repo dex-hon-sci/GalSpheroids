@@ -79,6 +79,14 @@ Dam_z3 = Dam_data3[:,0]
 Dam_nd3 = 10**Dam_data3[:,1]
 Dam_nd_uerr3 = 10**Dam_data3[:,2]
 
+Charbonnier_data_vdWel = SRead.read_table("/home/dexter/result/stat/completeness/nd_Charbonnier_vdWel.dat")
+Charbonnier_data_vdWel_z = Charbonnier_data_vdWel[:,0]
+Charbonnier_data_vdWel_nd = Charbonnier_data_vdWel[:,1]
+
+Charbonnier_data_vDokkum = SRead.read_table("/home/dexter/result/stat/completeness/nd_Charbonnier_vDokkum.dat")
+Charbonnier_data_vDokkum_z = Charbonnier_data_vDokkum[:,0]
+Charbonnier_data_vDokkum_nd = Charbonnier_data_vDokkum[:,1]
+
 print("max",max(Barro_nd),max(vDokkum_nd),max(vdWel_nd))
 
 Poggianti_z = 0.06009445742113899
@@ -107,10 +115,10 @@ my_z = np.array([0,0,0])
 
 #####
 #Bin V number density RC15
-my_nd_Barro = np.array([5.23e-5,1.18e-4,7.37e-4])
-my_nd_Dam = np.array([5.23e-5,1.35e-4,8.29e-4])
-my_nd_vDokkum = np.array([1.23e-5, 2.54e-5, 6.14e-5])
-my_nd_vdWel = np.array([1.23e-5,2.54e-5,9.21e-5])
+my_nd_Barro = np.array([5.23e-5,1.07e-4,7.06e-4])
+my_nd_Dam = np.array([5.23e-5,1.35e-4,7.98e-4])
+my_nd_vDokkum = np.array([1.54e-5, 2.54e-5, 3.07e-5])
+my_nd_vdWel = np.array([1.54e-5,2.54e-5,6.14e-5])
 my_nd_Graham = np.array([1.54e-5,1.69e-5,0])
 
 # The lower limit for the overall num dens
@@ -123,25 +131,25 @@ my_nd_sum_Graham_low =  sum(my_nd_Graham*V)/voll[2]
 my_nd_sum_E_low = (7+ 3+ 3)/voll[2]
 
 #Bin V number density T11
-my_nd_Barro_T11 = np.array([3.69e-5,7.61e-5,4.30e-4])
-my_nd_Dam_T11 = np.array([4.92e-5,8.46e-5,5.53e-4])
+my_nd_Barro_T11 = np.array([3.69e-5,7.61e-5,4.61e-4])
+my_nd_Dam_T11 = np.array([4.92e-5,8.46e-5,5.83e-4])
 my_nd_vDokkum_T11 = np.array([0,0,0])
 my_nd_vdWel_T11 = np.array([0,0,0])
 my_nd_Graham_T11 = np.array([3.08e-6,0,0])
 
 #Bin V numbder density Z09
-my_nd_Barro_Z09 = np.array([4.62e-5,1.02e-4,6.45e-4])
-my_nd_Dam_Z09 = np.array([4.92e-5,1.10e-4,7.37e-4])
-my_nd_vDokkum_Z09 = np.array([6.15e-6,8.46e-6,6.14e-5])
-my_nd_vdWel_Z09 = np.array([3.08e-6,2.54e-5,3.07e-5])
+my_nd_Barro_Z09 = np.array([4.62e-5,1.02e-4,6.14e-4])
+my_nd_Dam_Z09 = np.array([5.23e-5,1.10e-4,7.37e-4])
+my_nd_vDokkum_Z09 = np.array([6.15e-6,8.46e-6,0])
+my_nd_vdWel_Z09 = np.array([3.08e-6,2.54e-5,0])
 my_nd_Graham_Z09 = np.array([9.23e-6,8.46e-6,0])
 
 #Bin V numer density IP13
 my_nd_Barro_IP13 = np.array([6.15e-5,1.44e-4,1.04e-3])
 my_nd_Dam_IP13 = np.array([6.46e-5,1.69e-4,1.17e-3])
 my_nd_vDokkum_IP13 = np.array([4.62e-5,8.46e-5,2.76e-4])
-my_nd_vdWel_IP13 = np.array([3.39e-5,5.92e-5,2.15e-4])
-my_nd_Graham_IP13 = np.array([1.85e-5,3.38e-5,9.21e-5])
+my_nd_vdWel_IP13 = np.array([3.39e-5,6.77e-5,1.84e-4])
+my_nd_Graham_IP13 = np.array([1.85e-5,4.23e-5,9.21e-5])
 #my_nd_Barro = my_nd_Barro_T11
 #my_nd_Dam = my_nd_Dam_T11
 #my_nd_vDokkum = my_nd_vDokkum_T11
@@ -149,7 +157,7 @@ my_nd_Graham_IP13 = np.array([1.85e-5,3.38e-5,9.21e-5])
 #my_nd_Graham = my_nd_Graham_T11
 
 #my_nd_E = np.array([6/V1, 3/V2, 2/V3])#8.97e-5]
-my_nd_E = np.array([6/V1, 4/V2, 3/V3])#8.97e-5] BinV
+my_nd_E = np.array([7/V1, 3/V2, 3/V3])#8.97e-5] BinV
 
 my_nd_E_Bin1 = np.array([my_nd_E[0],0])
 my_nd_E_Bin2 = np.array([my_nd_E[1],0])
@@ -258,7 +266,7 @@ def plot_nd_3bins(nd,marker, my_z=my_z,AX=plt):
 
 def plot_nd_Dam(AX):
     AX.plot(Dam_z,Dam_nd,'--d',lw =5,  ms= ms0, color='r',
-            label="Damjanov et al. 2015 (Barro cut)")
+            label=r"$\rm Damjanov~et~al.~(2015)~(Barro~criterion)$")
     AX.errorbar(Dam_z,Dam_nd,yerr=Dam_nd_uerr-Dam_nd,ls='none',
                      linewidth=3, ecolor='r',mew=1,capsize=3) 
 
@@ -281,7 +289,8 @@ def plot_nd_Dam(AX):
     #AX.legend() 
 
 def plot_nd_Dam1(AX):
-    AX.plot(Dam_z1,Dam_nd1,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015")
+    AX.plot(Dam_z1,Dam_nd1,'--d',lw =5,  ms= ms0, color='r',
+            label=r"$\rm Damjanov~et~al.~(2015)$")
 
     AX.errorbar(Dam_z1,Dam_nd1,yerr=Dam_nd_uerr1-Dam_nd1,ls='none',
                      linewidth=3, ecolor='r',mew=1,capsize=3) 
@@ -305,7 +314,8 @@ def plot_nd_Dam1(AX):
     #AX.legend() 
     
 def plot_nd_Dam2(AX):
-    AX.plot(Dam_z2,Dam_nd2,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015")
+    AX.plot(Dam_z2,Dam_nd2,'--d',lw =5,  ms= ms0, color='r',
+            label=r"$\rm Damjanov~et~al.~(2015)$")
     AX.errorbar(Dam_z2,Dam_nd2,yerr=Dam_nd_uerr2-Dam_nd2,ls='none',
                      linewidth=3, ecolor='r',mew=1,capsize=3) 
 
@@ -328,7 +338,8 @@ def plot_nd_Dam2(AX):
     #AX.legend() 
 
 def plot_nd_Dam3(AX):
-    AX.plot(Dam_z3,Dam_nd3,'--d',lw =5,  ms= ms0, color='r',label="Damjanov et al. 2015 (van der Wel cut)")
+    AX.plot(Dam_z3,Dam_nd3,'--d',lw =5,  ms= ms0, color='r',
+            label=r"$\rm Damjanov~et~al.~(2015)~(van~der~Wel~criterion)$")
     AX.errorbar(Dam_z3,Dam_nd3,yerr=Dam_nd_uerr3-Dam_nd3,ls='none',
                      linewidth=3, ecolor='r',mew=1,capsize=3) 
 
@@ -353,7 +364,8 @@ def plot_nd_Dam3(AX):
 
 def plot_nd_Barro(AX):
 
-    AX.plot(Barro_z,Barro_nd,'--d', lw =5,  ms= ms0, color='g',label="Barro et al. 2013")
+    AX.plot(Barro_z,Barro_nd,'--d', lw =5,  ms= ms0, color='g',
+            label=r"$\rm Barro~et~al.~(2013)$")
     AX.errorbar(Barro_z,Barro_nd,yerr=Barro_nd_uerr-Barro_nd,ls='none',
                      linewidth=3, ecolor='g',mew=1,capsize=3) 
 
@@ -379,7 +391,8 @@ def plot_nd_Barro(AX):
 
 def plot_nd_vDokkum(AX):
 
-    AX.plot(vDokkum_z,vDokkum_nd,'--d', lw=5, ms= ms0,color='#e58b1a', label="van Dokkum et al. 2015")
+    AX.plot(vDokkum_z,vDokkum_nd,'--d', lw=5, ms= ms0,color='#e58b1a', 
+            label=r"$\rm van~Dokkum~et~al.~(2015)$")
     AX.errorbar(vDokkum_z,vDokkum_nd,yerr= vDokkum_nd_uerr - vDokkum_nd,ls='none',
                      linewidth=3, ecolor='#e58b1a',mew=1,capsize=3) 
 
@@ -402,7 +415,8 @@ def plot_nd_vDokkum(AX):
 def plot_nd_vdWel(AX):
 
 
-    AX.plot(vdWel_z,vdWel_nd,'--d', lw=5, ms= ms0, color='b', label="van der Wel et al. 2014")
+    AX.plot(vdWel_z,vdWel_nd,'--d', lw=5, ms= ms0, color='b', 
+            label=r"$\rm van~der~Wel~et~al.~(2014)$")
     AX.errorbar(vdWel_z,vdWel_nd,yerr= vdWel_nd_uerr - vdWel_nd,ls='none',
                      linewidth=3, ecolor='b',mew=1,capsize=3) 
 
@@ -473,7 +487,6 @@ def plot_nd_E_3plot():
     #axs1.grid(True)
     axs1.legend(loc=4,fontsize=10)
 
-
     
     #plot Panel (3)
     axs2 = plt.subplot(gs[2],sharex=axs0)  
@@ -529,7 +542,7 @@ def plot_nd_3plot():
     
 
     axs0.plot(Poggianti_z,Poggianti_nd,'d', lw=5, ms= ms0, color='purple', 
-              label="Poggianti et al. 2013")
+              label=r"$\rm Poggianti~et~al.~(2013)$")
     #axs0.errorbar(Poggianti_z,Poggianti_nd,yerr= Poggianti_nd_u - Poggianti_nd
     #              ,ls='none',linewidth=3, ecolor='purple',mew=1,capsize=3) 
 
@@ -547,8 +560,8 @@ def plot_nd_3plot():
 
     plt.setp(axs0.get_xticklabels(), visible=False)
     #axs0.grid(True)
-    axs0.text(1.6,4e-4, r'$\rm Barro~criteria$', weight = "bold", color= "g", fontsize=24)
-    axs0.legend(loc=4,fontsize=12)
+    axs0.text(1.4,4e-4, r'$\rm Barro~criterion$', weight = "bold", color= "g", fontsize=24)
+    axs0.legend(loc=4,fontsize=11)
 
     twin0=axs0.twinx()
     
@@ -556,7 +569,10 @@ def plot_nd_3plot():
     axs1 = plt.subplot(gs[1],sharex=axs0) 
        
     plot_nd_3bins(my_nd_vdWel,'o',AX=axs1)
-    
+    axs1.plot(Charbonnier_data_vdWel_z, Charbonnier_data_vdWel_nd,'--d',ms=ms0,
+             color='cyan',lw=5,
+             label=r"$\rm Charbonnier~et~al.~(2017)~(van~der~Wel~criterion)$")
+        
     print('---n_c,Sph (vdWel)-------')
     plot_compact_sum(my_nd_vdWel, colour='black',label = r"", AX=axs1)
     print('---n_E+ES--------')
@@ -567,8 +583,8 @@ def plot_nd_3plot():
     plot_nd_Dam3(axs1)
     plt.setp(axs1.get_xticklabels(), visible=False)
     #axs1.grid(True)
-    axs1.text(1.0,4e-4, r'$\rm van~der~Wel~criteria$', weight = "bold", color= "b", fontsize=24)
-    axs1.legend(loc=4,fontsize=12)
+    axs1.text(0.8,4e-4, r'$\rm van~der~Wel~criterion$', weight = "bold", color= "b", fontsize=24)
+    axs1.legend(loc=4,fontsize=11)
 
     #plot Panel (3)
     axs2 = plt.subplot(gs[2],sharex=axs0)  
@@ -580,13 +596,15 @@ def plot_nd_3plot():
     print('---n_E+ES--------')
     plot_compact_sum(my_nd_E, colour='red',label = r"", AX=axs2)  
     print('-----------------')
-
+    axs2.plot(Charbonnier_data_vDokkum_z, Charbonnier_data_vDokkum_nd,'--d',ms=ms0,
+             color='cyan', lw=5,
+             label=r"$\rm Charbonnier~et~al.~(2017)~(van~Dokkum~criterion)$")
     plot_nd_vDokkum(axs2)
     plt.setp(axs2.get_xticklabels(), visible=False)
     
     #axs2.grid(True)
-    axs2.text(0.9,4e-4, r'$\rm van~Dokkum~criteria$', weight = "bold", color= "#e58b1a", fontsize=24)
-    axs2.legend(loc=4,fontsize=12)
+    axs2.text(0.7,4e-4, r'$\rm van~Dokkum~criterion$', weight = "bold", color= "#e58b1a", fontsize=24)
+    axs2.legend(loc=4,fontsize=11)
     
     #plot Panel (4)
     axs3= plt.subplot(gs[3],sharex=axs0)  
@@ -606,8 +624,8 @@ def plot_nd_3plot():
 
     axs3.set_xlabel(r"$ z$",fontsize=20)
     #axs2.grid(True)
-    axs3.text(1.2,4e-4, r'$\rm Damjanov~criteria$', weight = "bold", color= "r", fontsize=24)
-    axs3.legend(loc=4,fontsize=12)
+    axs3.text(1.0,4e-4, r'$\rm Damjanov~criterion$', weight = "bold", color= "r", fontsize=24)
+    axs3.legend(loc=4,fontsize=11)
     
     twin0.scatter([],[],label=r"$\rm c,Sph~in~Bin~1 $", color ='#a5200b', 
                marker ="o")
@@ -729,7 +747,7 @@ def plot_nd_all_mass():
     axs3.set_yscale('log')
     
     twin3=axs3.twinx()
-    twin3.set_ylabel(r'$\rm Barro~criteria$',fontsize=16)
+    twin3.set_ylabel(r'$\rm Barro~criterion$',fontsize=16)
     
     axs3.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='g')
     plt.xticks([-0.1, 0.1],[],fontsize=18)
@@ -822,7 +840,7 @@ def plot_nd_all_mass():
         
     twin7 = axs7.twinx()
     #twin7.set_yscale('log')
-    twin7.set_ylabel(r'$\rm van~der~Wel~criteria$',fontsize=16)
+    twin7.set_ylabel(r'$\rm van~der~Wel~criterion$',fontsize=16)
     #axs7.yaxis.tick_right()
     #axs7.yaxis.set_label_position("right")
     #axs7.set_ylabel(r'$\rm van~der~Wel~cut$',fontsize=16)
@@ -918,7 +936,7 @@ def plot_nd_all_mass():
     axs11.set_yscale('log')
 
     twin11 = axs11.twinx()
-    twin11.set_ylabel(r'$\rm van~Dokkum~criteria$',fontsize=14)
+    twin11.set_ylabel(r'$\rm van~Dokkum~criterion$',fontsize=14)
     
     axs11.fill(xlim_allmass, ylim_allmass, alpha=alpha_allmass, color='y')
     plt.xticks([-0.1, 0.1],[])
@@ -1021,7 +1039,7 @@ def plot_nd_all_mass():
 
     twin15 = axs15.twinx()
     #twin15.set_yscale('log')
-    twin15.set_ylabel(r'$\rm Damjanov~criteria$',fontsize=14)
+    twin15.set_ylabel(r'$\rm Damjanov~criterion$',fontsize=14)
     #axs15.yaxis.tick_right()
     #axs15.set_yticks([])
     #axs15.yaxis.set_label_position("right")
