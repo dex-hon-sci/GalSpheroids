@@ -1249,7 +1249,7 @@ def cpt_classifier_demo(input_list_name, input_sep_dict ,output_list_name,
     return sample
 
 #%%
-def bundle_creation(obj_list,equvi=False,override_list=[]):
+def bundle_creation(obj_list,input_name, output_name, equvi=False,override_list=[]):
     """
     A method to create galaxy bundle, in an single execution.
     If you want to save the in
