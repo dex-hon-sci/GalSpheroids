@@ -1,6 +1,7 @@
 
 *GalSpheroirds*, an utility package that analyse galaxy structures.
-==============================================================================
+===================================================================
+|Python||arXiv|
 
 
 Introduction
