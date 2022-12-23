@@ -1,4 +1,4 @@
-|Python|  |arXiv|
+|PyPI| |Python| |Azure| |ReadTheDocs| |Coverage| |Gitter| |arXiv|
 
 *GalSpheroirds*, an utility package that analyse galaxy structures.
 ===================================================================
