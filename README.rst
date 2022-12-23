@@ -88,6 +88,7 @@ To make a plot with the data
                                centre,r_max=400, alp=15)  
 
 >>> 
+
 .. image:: https://github.com/dex-hon-sci/GalSpheroids/blob/master/galaxy_images/NGC3805.fits.png
 
 To make a Galaxy Bundle
