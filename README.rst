@@ -1,4 +1,4 @@
-|PyPI| |Python| |Azure| |ReadTheDocs| |Coverage| |Gitter| |arXiv|
+|PyPI| |Python| |arXiv|
 
 *GalSpheroirds*, an utility package that analyse galaxy structures.
 ===================================================================
@@ -158,7 +158,7 @@ To acknowledge this work and reference the original galaxy structure data, pleas
         adsnote = {Provided by the SAO/NASA Astrophysics Data System}
       }
          
-.._paper: https://arxiv.org/abs/2204.13408
+.. _paper: https://arxiv.org/abs/2204.13408
 
 
 Acknowledgements
