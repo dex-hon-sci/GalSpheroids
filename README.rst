@@ -157,7 +157,6 @@ To acknowledge this work and reference the original galaxy structure data, pleas
         adsurl = {https://ui.adsabs.harvard.edu/abs/2022MNRAS.514.3410H},
         adsnote = {Provided by the SAO/NASA Astrophysics Data System}
       }
-         
 .. _paper: https://arxiv.org/abs/2204.13408
 
 
