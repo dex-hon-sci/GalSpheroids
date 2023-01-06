@@ -131,7 +131,7 @@ To make a Galaxy Bundle
   
 Community guidelines
 ====================
-PRISM is an open-source and free-to-use software package (and it always will be), provided under the BSD-3 license.
+GalSpheroids is an open-source and free-to-use software package (and it always will be), provided under the BSD-3 license.
 
 Users are highly encouraged to make contributions to the package or request new features by opening a GitHub issue. 
 If you would like to contribute to the package, but do not know what, then there are quite a few ToDos in the code that may give you some inspiration. 
