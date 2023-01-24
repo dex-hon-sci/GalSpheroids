@@ -40,19 +40,6 @@ This package contains four main modules, each with a specific functionality:
  -SphAnalysis.py: It contains the functions used in analyzing, fitting, and modelling of the data in the galaxy bundle.
     
 
-Utility example
-
-Getting started
-===============
-Installation
-------------
-*GalSpheroids* can be easily installed by either cloning the `repository`_ and installing it manually::
-
-    $ git clone https://github.com/dex-hon-sci/GalSpheroids
-    $ cd GalSpheroids
-    $ pip install .
-    
-
 Example usage
 =============
 To create a Galaxy Bundle
